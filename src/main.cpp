@@ -13,7 +13,6 @@ int main() {
         CLEAR_MEMORY(exit_mark)
 
     }
-    stk->size = 52;
 
     stack_push(stk, 52, &last_err);
     if (last_err != ERR_OK) {
