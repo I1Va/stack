@@ -18,6 +18,9 @@ const char *get_descr(enum err_code err) {
         DESCR_(ERR_ARGS)
         DESCR_(ERR_WRONG_COEF)
         DESCR_(ERR_INIT)
+        DESCR_(ERR_STACK_NULLPTR)
+        DESCR_(ERR_STACK_CONT_NULLPTR)
+        DESCR_(ERR_STACK_OVERFLOW)
         default: return "VERY STRANGE ERROR:(";
     }
 }

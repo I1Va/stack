@@ -18,6 +18,11 @@ enum err_code {
     ERR_ARGS = 9,
     ERR_WRONG_COEF = 10,
     ERR_INIT = 11,
+
+    ERR_STACK_NULLPTR = 12,
+    ERR_STACK_CONT_NULLPTR = 13,
+    ERR_STACK_OVERFLOW = 14,
+
 };
 
 const char *get_descr(enum err_code err = ERR_UNKNOWN);
