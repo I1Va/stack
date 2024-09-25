@@ -2,6 +2,7 @@
 #include "general.h"
 #include "error_processing.h"
 #include <cassert>
+#include <cstddef>
 #include <cstdlib>
 
 typedef int stack_elem_t;
@@ -104,5 +105,23 @@ void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
     }
     stk->data[stk->size++] = value;
     VERIFY(stderr, stk, return_err, return)
+}
+
+stack_elem_t stack_pop(stack_t *stk, err_code *return_err) {
+    assert(return_err != NULL);
+
+    VERIFY(stderr, stk, return_err, return 0) // TODO: нетревиальный макрос. написать документацию к нему
+
+    if (stk->size == 0) {
+        *return_err = ERR_STACK_POP;
+        DEBUG_ERROR(*return_err);
+        return 0;
+    }
+    if (stk->size - 1 == stk->capacity) {
+        // TODO: realloc
+    }
+    stack_elem_t last_elem = stk->data[--stk->size];
+    stk->data[stk->size] = 0;
+    return last_elem;
 
 }

@@ -22,6 +22,7 @@ enum err_code {
     ERR_STACK_NULLPTR = 12,
     ERR_STACK_CONT_NULLPTR = 13,
     ERR_STACK_OVERFLOW = 14,
+    ERR_STACK_POP = 15,
 
 };
 

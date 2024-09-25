@@ -30,6 +30,7 @@ err_code verify(FILE *stream, stack_t *stk, err_code *return_err, const char *fi
 
 void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err);
 
+stack_elem_t stack_pop(stack_t *stk, err_code *return_err);
 
 #define DUMP(stream, stk) dump(stream, stk, __FILE__, __LINE__);
 
