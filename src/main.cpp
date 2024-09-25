@@ -1,5 +1,6 @@
 #include "error_processing.h"
 #include "general.h"
+#include <cstddef>
 #include <cstdlib>
 
 typedef int stack_elem_t;
@@ -15,24 +16,17 @@ int main() {
 
     }
     // stk->size = 52;
-    stack_push(stk, 52, &last_err);
-    stack_push(stk, 12, &last_err);
 
-    stack_push(stk, -5, &last_err);
-    DUMP(stderr, stk)
-    stack_push(stk, 3, &last_err);
-    printf("last: %d\n", stack_pop(stk, &last_err));
-    printf("last: %d\n", stack_pop(stk, &last_err));
-    DUMP(stderr, stk)
-    printf("last: %d\n", stack_pop(stk, &last_err));
-    printf("last: %d\n", stack_pop(stk, &last_err));
-    printf("last: %d\n", stack_pop(stk, &last_err));
-    if (last_err != ERR_OK) {
-        DEBUG_ERROR(last_err)
-        CLEAR_MEMORY(exit_mark)
+    for (stack_elem_t i = 0; i < 30; i++) {
+        stack_push(stk, i, &last_err);
+        DUMP(stderr, stk)
+        printf("\n\n");
     }
-
-    DUMP(stderr, stk)
+    for (stack_elem_t i = 30; i >= 0; i--) {
+        stack_pop(stk, &last_err);
+        DUMP(stderr, stk)
+        printf("\n\n");
+    }
 
     stack_destroy(stk);
     return EXIT_SUCCESS;

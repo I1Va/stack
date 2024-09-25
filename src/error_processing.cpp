@@ -22,6 +22,7 @@ const char *get_descr(enum err_code err) {
         DESCR_(ERR_STACK_CONT_NULLPTR)
         DESCR_(ERR_STACK_OVERFLOW)
         DESCR_(ERR_STACK_POP)
+        DESCR_(ERR_REALLOC)
         default: return "VERY STRANGE ERROR:(";
     }
 }

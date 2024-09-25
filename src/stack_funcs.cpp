@@ -96,13 +96,43 @@ void stack_destroy(stack_t *stk) {
     FREE(stk);
 }
 
+void resize(stack_t *stk, err_code *return_err) {
+    if (stk->size + 1 == stk->capacity) {
+        stk->capacity *= 2;
+
+        stk->data = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
+        if (stk->data == NULL) {
+            *return_err = ERR_REALLOC;
+            DEBUG_ERROR(*return_err);
+            return;
+        }
+
+    } else if (stk->size + 1 <= stk->capacity / 4) {
+        stk->capacity /= 2;
+
+        stk->data = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
+        if (stk->data == NULL) {
+            *return_err = ERR_REALLOC;
+            DEBUG_ERROR(*return_err);
+            return;
+        }
+    }
+}
+
 void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
     assert(return_err != NULL);
 
     VERIFY(stderr, stk, return_err, return) // TODO: нетревиальный макрос. написать документацию к нему
-    if (stk->size + 1 == stk->capacity) {
-        // TODO: realloc
+
+    err_code last_err = ERR_OK;
+
+    resize(stk, &last_err);
+    if (last_err != ERR_OK) {
+        *return_err = last_err;
+        DEBUG_ERROR(last_err);
+        return;
     }
+
     stk->data[stk->size++] = value;
     VERIFY(stderr, stk, return_err, return)
 }
@@ -112,14 +142,21 @@ stack_elem_t stack_pop(stack_t *stk, err_code *return_err) {
 
     VERIFY(stderr, stk, return_err, return 0) // TODO: нетревиальный макрос. написать документацию к нему
 
+    err_code last_err = ERR_OK;
+
     if (stk->size == 0) {
         *return_err = ERR_STACK_POP;
         DEBUG_ERROR(*return_err);
         return 0;
     }
-    if (stk->size - 1 == stk->capacity) {
-        // TODO: realloc
+
+    resize(stk, &last_err);
+    if (last_err != ERR_OK) {
+        *return_err = last_err;
+        DEBUG_ERROR(last_err);
+        return 0;
     }
+
     stack_elem_t last_elem = stk->data[--stk->size];
     stk->data[stk->size] = 0;
     return last_elem;

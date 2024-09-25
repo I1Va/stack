@@ -28,6 +28,8 @@ void dump(FILE *stream, stack_t *stk, const char *file_name, const int line_idx)
 
 err_code verify(FILE *stream, stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx);
 
+void resize(stack_t *stk, err_code *return_err);
+
 void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err);
 
 stack_elem_t stack_pop(stack_t *stk, err_code *return_err);
