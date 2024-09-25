@@ -31,6 +31,7 @@ err_code verify(FILE *stream, stack_t *stk, err_code *return_err, const char *fi
 void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err);
 
 
+#define DUMP(stream, stk) dump(stream, stk, __FILE__, __LINE__);
 
 #ifdef _DEBUG
     #define VERIFY(stream, stk, return_err, exit_instruction)                                         \
@@ -39,11 +40,11 @@ void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err);
                 exit_instruction;                                                                     \
             }                                                                                          \
         }
-    #define DUMP(stk)
     #define INIT(size) stack_init(size, __FILE__, __LINE__, __PRETTY_FUNCTION__);
 #else
     #define VERIFY(stream, stk, return_err, exit_instruction) ;
     #define INIT(size) stack_init(size, "0", 0, "0");
+
 
 #endif // _DEBUG
 

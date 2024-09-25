@@ -97,9 +97,12 @@ void stack_destroy(stack_t *stk) {
 
 void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
     assert(return_err != NULL);
-    if (value) {}
+
     VERIFY(stderr, stk, return_err, return) // TODO: нетревиальный макрос. написать документацию к нему
-
-
+    if (stk->size + 1 == stk->capacity) {
+        // TODO: realloc
+    }
+    stk->data[stk->size++] = value;
+    VERIFY(stderr, stk, return_err, return)
 
 }
