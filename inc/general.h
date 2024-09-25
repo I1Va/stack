@@ -46,12 +46,11 @@ enum RETURN_STATES {
 #ifdef _DEBUG
     #define debug(str_, ...) fprintf_red(stderr, "{%s} [%s: %d]: descr{" str_ "}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
     #define DEBUG_ERROR(code) fprintf_red(stderr, "{%s} [%s: %d]: descr{%s}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, get_descr(code));
-
+    #define ON_DEBUG(...) __VA_ARGS__
 #else
     #define debug(str_, ...) ;
     #define DEBUG_ERROR(code) ;
+    #define ON_DEBUG(...) ;
 #endif // _DEBUG
-
-
 
 #endif // ARRAY_H
