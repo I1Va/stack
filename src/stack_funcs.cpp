@@ -12,24 +12,26 @@ void dump(FILE *stream, stack_t *stk, const char *file_name, const int line_idx)
     if (stk == NULL) {
         return;
     }
-    fprintf_red(stream, "stack_t [%p] at %s:%d born at %s:%d(%s)\n{\n", \
+    fprintf_red(stream, "stack_t [%p] at %s:%d born at %s:%d(%s)\n", \
     stk, file_name, line_idx, stk->born_file, stk->born_line, stk->born_func);
 
-    fprintf_red(stream, "size = %lu\n", stk->size);
-    fprintf_red(stream, "capacity = %lu\n", stk->capacity);
-    fprintf_red(stream, "data[%p]\n", stk->data);
+    fprintf_wht(stream, "{\n");
 
-    fprintf_red(stream, "{\n");
+    fprintf_yel(stream, "size = %lu\n", stk->size);
+    fprintf_yel(stream, "capacity = %lu\n", stk->capacity);
+    fprintf_yel(stream, "data[%p]\n", stk->data);
+
+    fprintf_wht(stream, "{\n");
     if (stk->data == NULL) {
         fprintf_red(stream, "NULLPTR\n");
     } else {
         for (size_t i = 0; i < stk->capacity; i++) {
-            fprintf_red(stream, "[%lu] = %d;\n", i, stk->data[i]);
+            fprintf_grn(stream, "[%lu] = %d;\n", i, stk->data[i]);
         }
     }
-    fprintf_red(stream, "}\n");
+    fprintf_wht(stream, "}\n");
 
-    fprintf_red(stream, "}\n");
+    fprintf_wht(stream, "}\n");
 }
 
 err_code verify(FILE *stream, stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx) {

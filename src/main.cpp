@@ -15,17 +15,26 @@ int main() {
         CLEAR_MEMORY(exit_mark)
 
     }
-    // stk->size = 52;
 
     for (stack_elem_t i = 0; i < 30; i++) {
         stack_push(stk, i, &last_err);
         DUMP(stderr, stk)
-        printf("\n\n");
+        fprintf(stderr, "\n\n");
+        if (last_err != ERR_OK) {
+            DEBUG_ERROR(last_err);
+            CLEAR_MEMORY(exit_mark);
+        }
+
     }
     for (stack_elem_t i = 30; i >= 0; i--) {
         stack_pop(stk, &last_err);
         DUMP(stderr, stk)
-        printf("\n\n");
+        fprintf(stderr, "\n\n");
+        if (last_err != ERR_OK) {
+            DEBUG_ERROR(last_err);
+            CLEAR_MEMORY(exit_mark);
+        }
+
     }
 
     stack_destroy(stk);
