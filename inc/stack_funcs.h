@@ -18,6 +18,10 @@ struct stack_t {
     const char *born_func;
 };
 
+const size_t resize_up_coeff = 2;
+const size_t resize_down_check_coeff = 4;
+const size_t resize_down_coeff = 2;
+
 const size_t dump_output_sz = 10;
 
 stack_t *stack_init(const size_t size, const char born_file[], const int born_line, const char born_func[]);

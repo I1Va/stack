@@ -34,7 +34,6 @@ int main() {
             DEBUG_ERROR(last_err);
             CLEAR_MEMORY(exit_mark);
         }
-
     }
 
     stack_destroy(stk);

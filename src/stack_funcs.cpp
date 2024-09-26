@@ -61,7 +61,7 @@ err_code verify(FILE *stream, stack_t *stk, err_code *return_err, const char *fi
 }
 
 stack_t *stack_init(const size_t size, const char born_file[], const int born_line, const char born_func[]) {
-    stack_t *stk = (stack_t *) calloc(1, sizeof(stack_t));
+    stack_t *stk = (stack_t *) calloc(1, sizeof(stack_t)); // TOOD: статически лучше
     if (stk == NULL) {
         DEBUG_ERROR(ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
@@ -99,26 +99,25 @@ void stack_destroy(stack_t *stk) {
 }
 
 void resize(stack_t *stk, err_code *return_err) {
+    assert(stk != NULL);
+    assert(return_err != NULL);
+
     if (stk->size + 1 == stk->capacity) {
-        stk->capacity *= 2;
-
-        stk->data = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
-        if (stk->data == NULL) {
-            *return_err = ERR_REALLOC;
-            DEBUG_ERROR(*return_err);
-            return;
-        }
-
-    } else if (stk->size + 1 <= stk->capacity / 4) {
-        stk->capacity /= 2;
-
-        stk->data = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
-        if (stk->data == NULL) {
-            *return_err = ERR_REALLOC;
-            DEBUG_ERROR(*return_err);
-            return;
-        }
+        stk->capacity *= resize_up_coeff;
+    } else if (stk->size + 1 <= stk->capacity / resize_down_check_coeff) {
+        stk->capacity /= resize_down_coeff;
+    } else {
+        return;
     }
+
+    stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
+    if (tmp_stk_ptr == NULL) {
+        *return_err = ERR_REALLOC;
+        DEBUG_ERROR(*return_err);
+        return;
+    }
+
+    stk->data =  tmp_stk_ptr;
 }
 
 void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
