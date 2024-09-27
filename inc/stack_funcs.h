@@ -38,21 +38,4 @@ void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err);
 
 stack_elem_t stack_pop(stack_t *stk, err_code *return_err);
 
-#define DUMP(stk) dump(stk, __FILE__, __LINE__);
-
-#ifdef _DEBUG
-    #define VERIFY(stk, return_err, exit_instruction)                                         \
-        {                                                                                             \
-            if (verify(stk, return_err, __FILE__,__PRETTY_FUNCTION__, __LINE__) != ERR_OK) { \
-                exit_instruction;                                                                     \
-            }                                                                                          \
-        }
-    #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err, __FILE__, __LINE__, __PRETTY_FUNCTION__);
-#else
-    #define VERIFY(stk, return_err, exit_instruction) ;
-    #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err);
-
-
-#endif // _DEBUG
-
 #endif // STACK_FUNCS_H

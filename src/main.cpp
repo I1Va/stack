@@ -1,49 +1,24 @@
+#include <cstdarg>
 #include <cstddef>
 #include <cstdlib>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 
 #include "error_processing.h"
+#include "args_proc.h"
+#include "conf_ctor.h"
 #include "general.h"
 
 
-typedef int stack_elem_t;
-#include "stack_funcs.h"
+int main(const int argc, const char *argv[]) {
+    main_launch_config_t main_launch_config = {};
+    main_launch_config_ctor(&main_launch_config);
 
-int main() {
-    err_code last_err = ERR_OK;
+    const size_t n_options = 0;
+    opt_data options[n_options];
+    get_options(argc, argv, options, n_options);
 
-    stack_t stk = {};
-    STACK_INIT(&stk, 10, &last_err)
-    if (last_err != ERR_OK) {
-        DEBUG_ERROR(ERR_INIT)
-        CLEAR_MEMORY(exit_mark)
-    }
-
-    for (stack_elem_t i = 0; i < 100; i++) {
-        stack_push(&stk, i, &last_err);
-        DUMP(&stk)
-        fprintf(stderr, "\n\n");
-        if (last_err != ERR_OK) {
-            DEBUG_ERROR(last_err);
-            CLEAR_MEMORY(exit_mark);
-        }
-    }
-
-    for (stack_elem_t i = 30; i >= 1; i--) {
-        stack_pop(&stk, &last_err);
-        DUMP(&stk)
-        fprintf(stderr, "\n\n");
-        if (last_err != ERR_OK) {
-            DEBUG_ERROR(last_err);
-            CLEAR_MEMORY(exit_mark);
-        }
-    }
-
-    stack_destroy(&stk);
-    return EXIT_SUCCESS;
-
-    exit_mark:
-
-    stack_destroy(&stk);
-
-    return EXIT_FAILURE;
+    main_mode_launch(&main_launch_config);
 }

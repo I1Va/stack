@@ -25,6 +25,8 @@ INCLUDE_FLAGS = -Iinc
 
 DEFINE_FLAGS = -D_DEBUG
 
+SECURITY_FLAGS = -D_CANARY -D_HASHES -D_DUBLICATE
+
 BUILD_DIR = build
 
 SRC_DIR = src
@@ -42,7 +44,11 @@ build:
 
 debug:
 	$(CC) $(SRC_FILES) -o $(SRC_OUTPUTFILE) $(DEFINE_FLAGS) $(INCLUDE_FLAGS) $(CC_DEBUG_FLAGS)
-	./$(SRC_OUTPUTFILE) onegin_eng.txt out.txt
+	./$(SRC_OUTPUTFILE)
 
 launch: build
-	./$(SRC_OUTPUTFILE) onegin_eng.txt out.txt # отделить запуск от компиляции
+	./$(SRC_OUTPUTFILE)
+
+args:
+	$(CC) $(SRC_FILES) -o $(SRC_OUTPUTFILE) $(DEFINE_FLAGS) $(SECURITY_FLAGS) $(INCLUDE_FLAGS) $(CC_DEBUG_FLAGS)
+	./$(SRC_OUTPUTFILE)
