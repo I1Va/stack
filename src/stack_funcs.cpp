@@ -5,6 +5,8 @@
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
+#include <stdlib.h>
+#include <stdio.h>
 
 typedef int stack_elem_t;
 #include "stack_funcs.h"

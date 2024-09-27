@@ -1,10 +1,6 @@
 #ifndef ERROR_PROCESSING_H
 #define ERROR_PROCESSING_H
 
-#include <stdio.h>
-
-#include "general.h"
-
 enum err_code {
     ERR_OK = 0,
     ERR_NULLPTR = 1, // TODO: подравняй нумерацию

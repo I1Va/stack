@@ -1,14 +1,14 @@
 #ifndef STACK_FUNCS_H
 #define STACK_FUNCS_H
 
-#include <cstddef>
-#include <stdio.h>
-
-#include "general.h"
-#include "string.h"
+#include <string.h>
 #include "error_processing.h"
+#include "general.h"
+
+const unsigned long long CANARY_VALUE = 0xC0FFEEABACABABAC;
 
 struct stack_t {
+    ON_CANARY()
     size_t size;
     size_t capacity;
     stack_elem_t *data;

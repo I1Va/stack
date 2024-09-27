@@ -13,6 +13,8 @@
 
 
 int main(const int argc, const char *argv[]) {
+    err_code last_err = ERR_OK;
+
     main_launch_config_t main_launch_config = {};
     main_launch_config_ctor(&main_launch_config);
 
@@ -20,5 +22,15 @@ int main(const int argc, const char *argv[]) {
     opt_data options[n_options];
     get_options(argc, argv, options, n_options);
 
-    main_mode_launch(&main_launch_config);
+    main_mode_launch(&main_launch_config, &last_err);
+    if (last_err != ERR_OK) {
+        DEBUG_ERROR(last_e)
+        CLEAR_MEMORY(exit_mark)
+    }
+
+    return EXIT_SUCCESS;
+
+    exit_mark:
+
+    return EXIT_FAILURE;
 }
