@@ -1,5 +1,5 @@
-#ifndef ARRAY_H
-#define ARRAY_H
+#ifndef GENERAL_H
+#define GENERAL_H
 
 #include <cstddef>
 #include <time.h>
@@ -50,7 +50,7 @@ enum RETURN_STATES {
 #else
     #define debug(str_, ...) ;
     #define DEBUG_ERROR(code) ;
-    #define ON_DEBUG(...) ;
+    #define ON_DEBUG(...)
 #endif // _DEBUG
 
-#endif // ARRAY_H
+#endif // GENERAL

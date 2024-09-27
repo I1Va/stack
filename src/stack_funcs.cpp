@@ -4,37 +4,41 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
+#include <cstring>
 
 typedef int stack_elem_t;
 #include "stack_funcs.h"
 
-void dump(FILE *stream, stack_t *stk, const char *file_name, const int line_idx) {
+FILE *dump_output_file_ptr = stderr;
+const stack_elem_t POISON_STACK_VALUE = 0x0BAD0DED;
+
+void dump(stack_t *stk, const char *file_name, const int line_idx) {
     if (stk == NULL) {
         return;
     }
-    fprintf_red(stream, "stack_t [%p] at %s:%d born at %s:%d(%s)\n", \
+    fprintf_red(dump_output_file_ptr, "stack_t [%p] at %s:%d born at %s:%d(%s)\n", \
     stk, file_name, line_idx, stk->born_file, stk->born_line, stk->born_func);
 
-    fprintf_wht(stream, "{\n");
+    fprintf_wht(dump_output_file_ptr, "{\n");
 
-    fprintf_yel(stream, "size = %lu\n", stk->size);
-    fprintf_yel(stream, "capacity = %lu\n", stk->capacity);
-    fprintf_yel(stream, "data[%p]\n", stk->data);
+    fprintf_yel(dump_output_file_ptr, "size = %lu\n", stk->size);
+    fprintf_yel(dump_output_file_ptr, "capacity = %lu\n", stk->capacity);
+    fprintf_yel(dump_output_file_ptr, "data[%p]\n", stk->data);
 
-    fprintf_wht(stream, "{\n");
+    fprintf_wht(dump_output_file_ptr, "{\n");
     if (stk->data == NULL) {
-        fprintf_red(stream, "NULLPTR\n");
+        fprintf_red(dump_output_file_ptr, "NULLPTR\n");
     } else {
         for (size_t i = 0; i < stk->capacity; i++) {
-            fprintf_grn(stream, "[%lu] = %d;\n", i, stk->data[i]);
+            fprintf_grn(dump_output_file_ptr, "[%lu] = %d;\n", i, stk->data[i]);
         }
     }
-    fprintf_wht(stream, "}\n");
+    fprintf_wht(dump_output_file_ptr, "}\n");
 
-    fprintf_wht(stream, "}\n");
+    fprintf_wht(dump_output_file_ptr, "}\n");
 }
 
-err_code verify(FILE *stream, stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx) {
+err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx) {
     if (stk == NULL) {
         *return_err = ERR_STACK_NULLPTR;
         goto dump_mark;
@@ -54,14 +58,14 @@ err_code verify(FILE *stream, stack_t *stk, err_code *return_err, const char *fi
 
     dump_mark:
 
-    fprintf_red(stream, "{%s} [%s: %d]: descr{%s}\n", file_name, func_name, line_idx, get_descr(*return_err));
-    dump(stream, stk, file_name, line_idx);
+    fprintf_red(dump_output_file_ptr, "{%s} [%s: %d]: descr{%s}\n", file_name, func_name, line_idx, get_descr(*return_err));
+    dump(stk, file_name, line_idx);
 
     return *return_err;
 }
 
-stack_t *stack_init(const size_t size, const char born_file[], const int born_line, const char born_func[]) {
-    stack_t *stk = (stack_t *) calloc(1, sizeof(stack_t)); // TOOD: статически лучше
+void stack_init(stack_t *stk, const size_t size, const char born_file[], const int born_line, const char born_func[]) {
+
     if (stk == NULL) {
         DEBUG_ERROR(ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
@@ -69,7 +73,6 @@ stack_t *stack_init(const size_t size, const char born_file[], const int born_li
 
     stk->size = 0;
     stk->capacity = size;
-
     stk->born_file = born_file;
     stk->born_line = born_line;
     stk->born_func = born_func;
@@ -79,8 +82,9 @@ stack_t *stack_init(const size_t size, const char born_file[], const int born_li
         DEBUG_ERROR(ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
     }
+    // memset(stk->data, POISON_STACK_VALUE, stk->capacity);
 
-    return stk;
+    return;
 
     exit_mark:
     if (stk != NULL) {
@@ -90,12 +94,11 @@ stack_t *stack_init(const size_t size, const char born_file[], const int born_li
         FREE(stk->data);
     }
 
-    return NULL;
+    return;
 }
 
 void stack_destroy(stack_t *stk) {
     FREE(stk->data);
-    FREE(stk);
 }
 
 void resize(stack_t *stk, err_code *return_err) {
@@ -111,6 +114,8 @@ void resize(stack_t *stk, err_code *return_err) {
     }
 
     stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
+    // memset(stk->data + stk->size, POISON_STACK_VALUE, stk->capacity - stk->size); //TODO: как заполнить стэк значениями POISON?
+
     if (tmp_stk_ptr == NULL) {
         *return_err = ERR_REALLOC;
         DEBUG_ERROR(*return_err);
@@ -123,8 +128,10 @@ void resize(stack_t *stk, err_code *return_err) {
 void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
     assert(return_err != NULL);
 
-    VERIFY(stderr, stk, return_err, return) // TODO: нетревиальный макрос. написать документацию к нему
-
+    VERIFY(stk, return_err, return) // TODO: нетревиальный макрос. написать документацию к нему
+    // VERIFY(stderr, stk, return_err, return) вместо stderr сделать глобальную переменную FILE *
+    // переименовать в ASSERT так как убирается в релизе
+    // verify проверяется в релизе
     err_code last_err = ERR_OK;
 
     resize(stk, &last_err);
@@ -135,13 +142,13 @@ void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
     }
 
     stk->data[stk->size++] = value;
-    VERIFY(stderr, stk, return_err, return)
+    VERIFY(stk, return_err, return)
 }
 
 stack_elem_t stack_pop(stack_t *stk, err_code *return_err) {
     assert(return_err != NULL);
 
-    VERIFY(stderr, stk, return_err, return 0) // TODO: нетревиальный макрос. написать документацию к нему
+    VERIFY(stk, return_err, return 0) // TODO: нетревиальный макрос. написать документацию к нему
 
     err_code last_err = ERR_OK;
 
