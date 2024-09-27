@@ -24,7 +24,7 @@ int main(const int argc, const char *argv[]) {
 
     main_mode_launch(&main_launch_config, &last_err);
     if (last_err != ERR_OK) {
-        DEBUG_ERROR(last_e)
+        DEBUG_ERROR(last_err)
         CLEAR_MEMORY(exit_mark)
     }
 

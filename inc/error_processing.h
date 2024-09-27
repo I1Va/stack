@@ -21,6 +21,10 @@ enum err_code {
     ERR_STACK_POP = 15,
     ERR_REALLOC = 16,
 
+    ERR_CANARY_LEFT = 18,
+    ERR_CANARY_MID = 17,
+
+
 };
 
 const char *get_descr(enum err_code err = ERR_UNKNOWN);

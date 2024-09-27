@@ -23,6 +23,8 @@ const char *get_descr(enum err_code err) {
         DESCR_(ERR_STACK_OVERFLOW)
         DESCR_(ERR_STACK_POP)
         DESCR_(ERR_REALLOC)
+        DESCR_(ERR_CANARY_LEFT)
+        DESCR_(ERR_CANARY_MID)
         default: return "VERY STRANGE ERROR:(";
     }
 }

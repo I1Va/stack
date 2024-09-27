@@ -41,6 +41,19 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
 }
 
 err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx) {
+
+    if (ON_CANARY(stk->CANARY_LEFT != CANARY_VALUE ||) 0) {
+        *return_err = ERR_CANARY_LEFT;
+        assert(0 && "CANARY_LEFT ERROR");
+        return *return_err;
+    }
+
+    if (ON_CANARY(stk->CANARY_MID != CANARY_VALUE ||) 0) {
+        *return_err = ERR_CANARY_MID;
+        assert(0 && "CANARY_MID ERROR");
+        return *return_err;
+    }
+
     if (stk == NULL) {
         *return_err = ERR_STACK_NULLPTR;
         goto dump_mark;
@@ -75,9 +88,6 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
 
     stk->size = 0;
     stk->capacity = size;
-    stk->born_file = born_file;
-    stk->born_line = born_line;
-    stk->born_func = born_func;
 
     stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));
     if (stk->data == NULL) {
@@ -85,6 +95,11 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
         DEBUG_ERROR(ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
     }
+
+    stk->born_file = born_file;
+    stk->born_line = born_line;
+    stk->born_func = born_func;
+
     // memset(stk->data, POISON_STACK_VALUE, stk->capacity);
 
     return;
@@ -117,7 +132,7 @@ void resize(stack_t *stk, err_code *return_err) {
     }
 
     stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
-    // memset(stk->data + stk->size, POISON_STACK_VALUE, stk->capacity - stk->size); //TODO: как заполнить стэк значениями POISON?
+    // memset(stk->data + stk->size, POISON_STACK_VALUE, stk->capacity - stk->size); // TODO: как заполнить стэк значениями POISON?
 
     if (tmp_stk_ptr == NULL) {
         *return_err = ERR_REALLOC;

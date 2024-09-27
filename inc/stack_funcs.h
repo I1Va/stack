@@ -8,9 +8,13 @@
 const unsigned long long CANARY_VALUE = 0xC0FFEEABACABABAC;
 
 struct stack_t {
-    ON_CANARY()
+    ON_CANARY(const unsigned long long CANARY_LEFT = CANARY_VALUE;)
+
     size_t size;
     size_t capacity;
+
+    ON_CANARY(const unsigned long long CANARY_MID = CANARY_VALUE;)
+
     stack_elem_t *data;
 
     const char *born_file;
