@@ -64,7 +64,7 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
     return *return_err;
 }
 
-void stack_init(stack_t *stk, const size_t size, const char born_file[], const int born_line, const char born_func[]) {
+void stack_init(stack_t *stk, const size_t size, err_code *return_err, const char born_file[], const int born_line, const char born_func[]) {
 
     if (stk == NULL) {
         DEBUG_ERROR(ERR_CALLOC)
@@ -79,6 +79,7 @@ void stack_init(stack_t *stk, const size_t size, const char born_file[], const i
 
     stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));
     if (stk->data == NULL) {
+        *return_err = ERR_CALLOC;
         DEBUG_ERROR(ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
     }

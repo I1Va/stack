@@ -11,13 +11,12 @@ typedef int stack_elem_t;
 int main() {
     err_code last_err = ERR_OK;
 
-    stack_t stk;
-    STACK_INIT(&stk, 10)
-    // if (stk == NULL) {
-    //     DEBUG_ERROR(ERR_INIT)
-    //     CLEAR_MEMORY(exit_mark)
-
-    // }
+    stack_t stk = {};
+    STACK_INIT(&stk, 10, &last_err)
+    if (last_err != ERR_OK) {
+        DEBUG_ERROR(ERR_INIT)
+        CLEAR_MEMORY(exit_mark)
+    }
 
     for (stack_elem_t i = 0; i < 100; i++) {
         stack_push(&stk, i, &last_err);

@@ -24,7 +24,7 @@ const size_t resize_down_coeff = 2;
 
 const size_t dump_output_sz = 10;
 
-void stack_init(stack_t *stk, const size_t size, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
+void stack_init(stack_t *stk, const size_t size, err_code *return_err, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
 
 void stack_destroy(stack_t *stk);
 
@@ -47,10 +47,10 @@ stack_elem_t stack_pop(stack_t *stk, err_code *return_err);
                 exit_instruction;                                                                     \
             }                                                                                          \
         }
-    #define STACK_INIT(stk, size) stack_init(stk, size, __FILE__, __LINE__, __PRETTY_FUNCTION__);
+    #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err, __FILE__, __LINE__, __PRETTY_FUNCTION__);
 #else
     #define VERIFY(stk, return_err, exit_instruction) ;
-    #define STACK_INIT(stk, size) stack_init(stk, size);
+    #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err);
 
 
 #endif // _DEBUG
