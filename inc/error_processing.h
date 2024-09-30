@@ -24,6 +24,7 @@ enum err_code {
     ERR_CANARY_LEFT = 17,
     ERR_CANARY_MID = 18,
     ERR_CANARY_RIGHT = 19,
+    ERR_CANARY_STK_RIGHT = 20,
 
 
 };

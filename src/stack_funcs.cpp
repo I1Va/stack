@@ -66,7 +66,7 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
     ON_CANARY( // FIXME: копипаст. Можно просто сделать массив с указателями на канарейки и выдавать индекс ломанной (с описанием)
         if (*CANARIES.canary_left_ptr != CANARY_VALUE) {
             *return_err = ERR_CANARY_LEFT;
-            assert(0 && get_descr(ERR_CANARY_LEFT));
+            assert(0 && get_descr(*return_err));
             return *return_err;
         }
     )
@@ -74,14 +74,14 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
     ON_CANARY(
         if (*CANARIES.canary_mid_ptr != CANARY_VALUE) {
             *return_err = ERR_CANARY_MID;
-            assert(0 && get_descr(ERR_CANARY_MID));
+            assert(0 && get_descr(*return_err));
             return *return_err;
         }
     )
     ON_CANARY(
-        if (*CANARIES.canary_right_ptr != CANARY_VALUE) {
-            *return_err = ERR_CANARY_RIGHT;
-            assert(0 && get_descr(ERR_CANARY_RIGHT));
+        if (*CANARIES.canary_stk_right_ptr != CANARY_VALUE) {
+            *return_err = ERR_CANARY_STK_RIGHT;
+            assert(0 && get_descr(*return_err));
             return *return_err;
         }
     )
@@ -127,7 +127,7 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
     ON_CANARY(CANARIES.canary_mid_ptr = &stk->CANARY_MID;)
 
     NOT_ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));)
-    ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 1 * CANARY_NMEMB, sizeof(char));)
+    ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB, sizeof(char));)
 
     if (stk->data == NULL) {
         *return_err = ERR_CALLOC;
@@ -139,7 +139,7 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
 
     ON_CANARY(
         stack_end_canary_assign(stk, CANARY_VALUE);
-        CANARIES.canary_right_ptr = stack_end_canary_getptr(stk);
+        CANARIES.canary_stk_right_ptr = stack_end_canary_getptr(stk);
     )
 
     stk->born_file = born_file;
@@ -196,7 +196,7 @@ void resize(stack_t *stk, err_code *return_err) {
 
     NOT_ON_CANARY(stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));)
     ON_CANARY(
-        stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, 8 - (unsigned long long) stk->data % 8ull + stk->capacity * sizeof(stack_elem_t) + 1 * CANARY_NMEMB);
+        stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
     )
 
 
@@ -215,7 +215,7 @@ void resize(stack_t *stk, err_code *return_err) {
 
     ON_CANARY(
         stack_end_canary_assign(stk, CANARY_VALUE);
-        CANARIES.canary_right_ptr = stack_end_canary_getptr(stk);
+        CANARIES.canary_stk_right_ptr = stack_end_canary_getptr(stk);
     )
 }
 
