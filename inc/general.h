@@ -68,8 +68,10 @@ enum RETURN_STATES {
 
 #ifdef _CANARY
     #define ON_CANARY(...) __VA_ARGS__
+    #define NOT_ON_CANARY(...)
 #else
     #define ON_CANARY(...)
+    #define NOT_ON_CANARY(...) __VA_ARGS__
 #endif // _CANARY
 
 #define DUMP(stk) dump(stk, __FILE__, __LINE__);

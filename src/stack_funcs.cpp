@@ -13,8 +13,6 @@ typedef int stack_elem_t;
 
 FILE *dump_output_file_ptr = stderr;
 
-const stack_elem_t POISON_STACK_VALUE = 0x0BAD0DED; // FIXME: использовать при resize
-
 ON_CANARY(canaries_t CANARIES = {};)
 
 void dump(stack_t *stk, const char *file_name, const int line_idx) {
@@ -36,7 +34,12 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
     } else {
         for (size_t i = 0; i < stk->capacity; i++) {
             fprintf_grn(dump_output_file_ptr, "[%lu] = %d;\n", i, stk->data[i]);
+            // FIXME: ЧЗХ??? почему значения после realloc в 0x равны "bebebebe" (в 10-ой: -1094795586)
         }
+        ON_CANARY(
+            canary_elem_t canary_val = *stack_end_canary_getptr(stk);
+            fprintf_grn(dump_output_file_ptr, "[-1] = %llx;\n", canary_val); //FIXME: %x? для unsigned long long работает?
+        )
     }
     fprintf_wht(dump_output_file_ptr, "}\n");
 
@@ -101,12 +104,16 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
 
     ON_CANARY(CANARIES.canary_mid_ptr = &stk->CANARY_MID;)
 
-    stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));
+    NOT_ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));)
+    ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 1 * CANARY_NMEMB, sizeof(char));)
+
     if (stk->data == NULL) {
         *return_err = ERR_CALLOC;
         DEBUG_ERROR(ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
     }
+
+    ON_CANARY(stack_end_canary_assign(stk, CANARY_VALUE);)
 
     stk->born_file = born_file;
     stk->born_line = born_line;
@@ -131,19 +138,37 @@ void stack_destroy(stack_t *stk) {
     FREE(stk->data);
 }
 
+canary_elem_t *stack_end_canary_getptr(stack_t *stk) {
+    size_t stack_byte_size = stk->capacity * sizeof(stack_elem_t);
+    canary_elem_t *canary_ptr = (canary_elem_t *)((char *) stk->data + stack_byte_size);
+    canary_ptr = (canary_elem_t *) ((char *) (canary_ptr) + (unsigned long long) canary_ptr % 8ull); // FIXME: корявый нечитаемый padding fix. Придумать что-то по изящней
+    return canary_ptr;
+}
+
+void stack_end_canary_assign(stack_t *stk, const canary_elem_t value) {
+    canary_elem_t *canary_ptr = stack_end_canary_getptr(stk);
+    *canary_ptr = value;
+}
+
 void resize(stack_t *stk, err_code *return_err) {
     assert(stk != NULL);
     assert(return_err != NULL);
 
+
     if (stk->size + 1 == stk->capacity) {
+        ON_CANARY(stack_end_canary_assign(stk, 0));
         stk->capacity *= resize_up_coeff;
     } else if (stk->size + 1 <= stk->capacity / resize_down_check_coeff) {
+        ON_CANARY(stack_end_canary_assign(stk, 0));
         stk->capacity /= resize_down_coeff;
     } else {
         return;
     }
 
-    stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
+    NOT_ON_CANARY(stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));)
+    ON_CANARY(
+        stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, 8 - (unsigned long long) stk->data % 8ull + stk->capacity * sizeof(stack_elem_t) + 1 * CANARY_NMEMB);
+    )
     // memset(stk->data + stk->size, POISON_STACK_VALUE, stk->capacity - stk->size); // TODO: как заполнить стэк значениями POISON?
 
     if (tmp_stk_ptr == NULL) {
@@ -153,6 +178,10 @@ void resize(stack_t *stk, err_code *return_err) {
     }
 
     stk->data =  tmp_stk_ptr;
+    ON_CANARY(
+        stack_end_canary_assign(stk, CANARY_VALUE);
+        CANARIES.canary_right_ptr = stack_end_canary_getptr(stk);
+    )
 }
 
 void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
