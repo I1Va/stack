@@ -29,4 +29,6 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
 
 void main_mode_launch(main_launch_config_t *conf, err_code *return_err);
 
+void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err);
+
 #endif // ARGS_PROC_H

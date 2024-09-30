@@ -86,6 +86,7 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
         CLEAR_MEMORY(exit_mark)
     }
 
+    ON_CANARY()
     stk->size = 0;
     stk->capacity = size;
 

@@ -22,7 +22,9 @@ int main(const int argc, const char *argv[]) {
     opt_data options[n_options];
     get_options(argc, argv, options, n_options);
 
-    main_mode_launch(&main_launch_config, &last_err);
+    // TODO: написать mode_launcher. Если config.exist = true, то вызывает функцию по указателю в структуре config
+
+    main_testing_mode_launch(&main_launch_config, &last_err);
     if (last_err != ERR_OK) {
         DEBUG_ERROR(last_err)
         CLEAR_MEMORY(exit_mark)

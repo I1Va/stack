@@ -29,7 +29,7 @@ void opt_data_ctor(opt_data *option, const char *const short_name_src, const cha
 }
 
 void opt_data_dtor(opt_data *option) {
-    option = NULL; // FIXME: создается копия указателя и option = NULL в рамках блока opt_data_dtor
+    *option = {};
     return;
 }
 
@@ -55,12 +55,15 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
         if (ptr != NULL) {
             ptr->exist = true;
 
-            sscanf(value + 1, (ptr->fmt), ptr->val_ptr);
+            sscanf(value + 1, (ptr->fmt), ptr->val_ptr); // FIXME: исправить warning. Мб использовать __atribute__
         }
     }
 }
 
-void main_mode_launch(main_launch_config_t *conf, err_code *return_err) {
+void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) {
+    assert(conf != NULL);
+    assert(return_err != NULL);
+
     err_code last_err = ERR_OK;
 
     char *ptr = NULL;
@@ -73,11 +76,11 @@ void main_mode_launch(main_launch_config_t *conf, err_code *return_err) {
         CLEAR_MEMORY(exit_mark)
     }
 
-    printf("canary_left: %llu\n", stk.CANARY_LEFT);
-    printf("canary_left: %llu\n", stk.CANARY_MID);
+    // printf("canary_left: %llu\n", stk.CANARY_LEFT);
+    // printf("canary_left: %llu\n", stk.CANARY_MID);
 
     ptr = (char *) &stk;
-    *(ptr + 24) = 0xB0B;
+    *(ptr + 24) = 0x37;
     printf("destruction is done:)))\n\n");
 
     for (stack_elem_t i = 0; i < 5; i++) {
@@ -101,8 +104,8 @@ void main_mode_launch(main_launch_config_t *conf, err_code *return_err) {
         }
     }
 
-    printf("canary_left: %llu\n", stk.CANARY_LEFT);
-    printf("canary_left: %llu\n", stk.CANARY_MID);
+    // printf("canary_left: %llu\n", stk.CANARY_LEFT);
+    // printf("canary_left: %llu\n", stk.CANARY_MID);
     stack_destroy(&stk);
 
     return;
@@ -112,4 +115,11 @@ void main_mode_launch(main_launch_config_t *conf, err_code *return_err) {
     stack_destroy(&stk);
 
     return;
+}
+
+void main_mode_launch(main_launch_config_t *conf, err_code *return_err) {
+    assert(conf != NULL);
+    assert(return_err != NULL);
+
+    printf("THERE IS SHOULD BE MAIN MODE");
 }
