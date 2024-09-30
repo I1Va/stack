@@ -15,6 +15,13 @@ FILE *dump_output_file_ptr = stderr;
 
 ON_CANARY(canaries_t CANARIES = {};)
 
+void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) {
+    for (size_t i = 0; i < n; i++) {
+        *(data + i) = value;
+    }
+}
+
+
 void dump(stack_t *stk, const char *file_name, const int line_idx) {
     if (stk == NULL) {
         return;
@@ -23,17 +30,25 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
     stk, file_name, line_idx, stk->born_file, stk->born_line, stk->born_func);
 
     fprintf_wht(dump_output_file_ptr, "{\n");
-
+    ON_CANARY(fprintf_yel(dump_output_file_ptr, "canl_ptr[%p]\n", &stk->CANARY_LEFT);)
     fprintf_yel(dump_output_file_ptr, "size = %lu\n", stk->size);
+    // fprintf_yel(dump_output_file_ptr, "size_ptr[%p]\n", &stk->size);
     fprintf_yel(dump_output_file_ptr, "capacity = %lu\n", stk->capacity);
-    fprintf_yel(dump_output_file_ptr, "data[%p]\n", stk->data);
+    // fprintf_yel(dump_output_file_ptr, "capa_ptr[%p]\n", &stk->capacity);
+    // fprintf_yel(dump_output_file_ptr, "data_ptr[%p]\n", &stk->data);
+    fprintf_yel(dump_output_file_ptr, "stack[%p]\n", stk->data);
 
     fprintf_wht(dump_output_file_ptr, "{\n");
     if (stk->data == NULL) {
         fprintf_red(dump_output_file_ptr, "NULLPTR\n");
     } else {
         for (size_t i = 0; i < stk->capacity; i++) {
-            fprintf_grn(dump_output_file_ptr, "[%lu] = %d;\n", i, stk->data[i]);
+            if (stk->data[i] == POISON_STACK_VALUE) {
+                fprintf_grn(dump_output_file_ptr, "[%lu] = POISON;\n", i);
+            } else {
+                fprintf_grn(dump_output_file_ptr, "*[%lu] = %d;\n", i, stk->data[i]);
+            }
+
             // FIXME: ЧЗХ??? почему значения после realloc в 0x равны "bebebebe" (в 10-ой: -1094795586)
         }
         ON_CANARY(
@@ -51,7 +66,7 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
     ON_CANARY( // FIXME: копипаст. Можно просто сделать массив с указателями на канарейки и выдавать индекс ломанной (с описанием)
         if (*CANARIES.canary_left_ptr != CANARY_VALUE) {
             *return_err = ERR_CANARY_LEFT;
-            assert(0 && "CANARY_LEFT ERROR");
+            assert(0 && get_descr(ERR_CANARY_LEFT));
             return *return_err;
         }
     )
@@ -59,7 +74,14 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
     ON_CANARY(
         if (*CANARIES.canary_mid_ptr != CANARY_VALUE) {
             *return_err = ERR_CANARY_MID;
-            assert(0 && "CANARY_MID ERROR");
+            assert(0 && get_descr(ERR_CANARY_MID));
+            return *return_err;
+        }
+    )
+    ON_CANARY(
+        if (*CANARIES.canary_right_ptr != CANARY_VALUE) {
+            *return_err = ERR_CANARY_RIGHT;
+            assert(0 && get_descr(ERR_CANARY_RIGHT));
             return *return_err;
         }
     )
@@ -113,13 +135,18 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
         CLEAR_MEMORY(exit_mark)
     }
 
-    ON_CANARY(stack_end_canary_assign(stk, CANARY_VALUE);)
+    stack_memset(stk->data, POISON_STACK_VALUE, stk->capacity);
+
+    ON_CANARY(
+        stack_end_canary_assign(stk, CANARY_VALUE);
+        CANARIES.canary_right_ptr = stack_end_canary_getptr(stk);
+    )
 
     stk->born_file = born_file;
     stk->born_line = born_line;
     stk->born_func = born_func;
 
-    // memset(stk->data, POISON_STACK_VALUE, stk->capacity);
+
 
     return;
 
@@ -154,10 +181,12 @@ void resize(stack_t *stk, err_code *return_err) {
     assert(stk != NULL);
     assert(return_err != NULL);
 
+    bool resize_up_state = false;
 
     if (stk->size + 1 == stk->capacity) {
         ON_CANARY(stack_end_canary_assign(stk, 0));
         stk->capacity *= resize_up_coeff;
+        resize_up_state = true;
     } else if (stk->size + 1 <= stk->capacity / resize_down_check_coeff) {
         ON_CANARY(stack_end_canary_assign(stk, 0));
         stk->capacity /= resize_down_coeff;
@@ -169,15 +198,21 @@ void resize(stack_t *stk, err_code *return_err) {
     ON_CANARY(
         stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, 8 - (unsigned long long) stk->data % 8ull + stk->capacity * sizeof(stack_elem_t) + 1 * CANARY_NMEMB);
     )
-    // memset(stk->data + stk->size, POISON_STACK_VALUE, stk->capacity - stk->size); // TODO: как заполнить стэк значениями POISON?
+
+
 
     if (tmp_stk_ptr == NULL) {
         *return_err = ERR_REALLOC;
         DEBUG_ERROR(*return_err);
         return;
     }
-
     stk->data =  tmp_stk_ptr;
+
+    if (resize_up_state) {
+        size_t old_capacity = stk->capacity / resize_up_coeff;
+        stack_memset(stk->data + old_capacity, POISON_STACK_VALUE, old_capacity * (resize_up_coeff - 1));
+    }
+
     ON_CANARY(
         stack_end_canary_assign(stk, CANARY_VALUE);
         CANARIES.canary_right_ptr = stack_end_canary_getptr(stk);

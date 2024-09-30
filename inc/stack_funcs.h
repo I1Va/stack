@@ -53,6 +53,8 @@ void dump(stack_t *stk, const char *file_name, const int line_idx);
 
 err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx);
 
+void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n);
+
 void resize(stack_t *stk, err_code *return_err);
 
 void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err);

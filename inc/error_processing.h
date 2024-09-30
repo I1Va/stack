@@ -21,8 +21,9 @@ enum err_code {
     ERR_STACK_POP = 15,
     ERR_REALLOC = 16,
 
-    ERR_CANARY_LEFT = 18,
-    ERR_CANARY_MID = 17,
+    ERR_CANARY_LEFT = 17,
+    ERR_CANARY_MID = 18,
+    ERR_CANARY_RIGHT = 19,
 
 
 };
