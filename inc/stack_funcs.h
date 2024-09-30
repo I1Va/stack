@@ -8,9 +8,9 @@
 const unsigned long long CANARY_VALUE = 0xC0FFEEABACABABAC;
 
 struct canaries_t {
-    unsigned long long *canary_left_ptr;
-    unsigned long long *canary_mid_ptr;
-    unsigned long long *canary_right_ptr;
+    const unsigned long long *canary_left_ptr;
+    const unsigned long long *canary_mid_ptr;
+    const unsigned long long *canary_right_ptr;
 };
 
 struct stack_t {

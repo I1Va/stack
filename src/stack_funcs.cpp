@@ -12,7 +12,10 @@ typedef int stack_elem_t;
 #include "stack_funcs.h"
 
 FILE *dump_output_file_ptr = stderr;
-const stack_elem_t POISON_STACK_VALUE = 0x0BAD0DED;
+
+const stack_elem_t POISON_STACK_VALUE = 0x0BAD0DED; // FIXME: использовать при resize
+
+ON_CANARY(canaries_t CANARIES = {};)
 
 void dump(stack_t *stk, const char *file_name, const int line_idx) {
     if (stk == NULL) {
@@ -42,17 +45,22 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
 
 err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx) {
 
-    if (ON_CANARY(stk->CANARY_LEFT != CANARY_VALUE ||) 0) {
-        *return_err = ERR_CANARY_LEFT;
-        assert(0 && "CANARY_LEFT ERROR");
-        return *return_err;
-    }
+    ON_CANARY( // FIXME: копипаст. Можно просто сделать массив с указателями на канарейки и выдавать индекс ломанной (с описанием)
+        if (*CANARIES.canary_left_ptr != CANARY_VALUE) {
+            *return_err = ERR_CANARY_LEFT;
+            assert(0 && "CANARY_LEFT ERROR");
+            return *return_err;
+        }
+    )
 
-    if (ON_CANARY(stk->CANARY_MID != CANARY_VALUE ||) 0) {
-        *return_err = ERR_CANARY_MID;
-        assert(0 && "CANARY_MID ERROR");
-        return *return_err;
-    }
+    ON_CANARY(
+        if (*CANARIES.canary_mid_ptr != CANARY_VALUE) {
+            *return_err = ERR_CANARY_MID;
+            assert(0 && "CANARY_MID ERROR");
+            return *return_err;
+        }
+    )
+
 
     if (stk == NULL) {
         *return_err = ERR_STACK_NULLPTR;
@@ -86,9 +94,12 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
         CLEAR_MEMORY(exit_mark)
     }
 
-    ON_CANARY()
+    ON_CANARY(CANARIES.canary_left_ptr = &stk->CANARY_LEFT;)
+
     stk->size = 0;
     stk->capacity = size;
+
+    ON_CANARY(CANARIES.canary_mid_ptr = &stk->CANARY_MID;)
 
     stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));
     if (stk->data == NULL) {
