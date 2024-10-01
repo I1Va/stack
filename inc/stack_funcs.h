@@ -33,6 +33,8 @@ struct hash_t {
 };
 
 struct stack_t {
+    //TODO: можно сделать указатель на дубль тут
+
     ON_CANARY(canaries_t CANARIES;)
 
     ON_CANARY(const unsigned long long CANARY_LEFT = CANARY_VALUE;)
@@ -49,6 +51,8 @@ struct stack_t {
     const char *born_file;
     int born_line;
     const char *born_func;
+
+    // TODO: сделать cCANARY_RIGHT
 };
 
 const size_t resize_up_coeff = 2;

@@ -83,10 +83,10 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
 
     // printf("canary_left: %llx\n", stk.CANARY_LEFT);
     // printf("canary_left: %llx\n", stk.CANARY_MID);
-
-    ptr = (char *) (&stk) + 1; // если написать +12, то изменится указатель *data. Это все поломает. Канарейки не спасут
+    
+    ptr = ((char *) (&stk)) + 3; // если написать +12, то изменится указатель *data. Это все поломает. Канарейки не спасут
     printf("ptr: [%p]\n", ptr);
-    *ptr = 0x11;
+    *ptr = 0x1;
 
     printf("destruction is done:)))\n\n");
 
@@ -106,16 +106,16 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
     }
     // HASH_print(&stk.HASH);
 
-    // for (stack_elem_t i = 5; i > 0; i--) {
-    //     stack_pop(&stk, &last_err);
-    //     DUMP(&stk)
-    //     // fprintf(stderr, "\n\n");
-    //     if (last_err != ERR_OK) {
-    //         *return_err = last_err;
-    //         DEBUG_ERROR(last_err);
-    //         CLEAR_MEMORY(exit_mark);
-    //     }
-    // }
+    for (stack_elem_t i = 5; i > 0; i--) {
+        stack_pop(&stk, &last_err);
+        DUMP(&stk)
+        // fprintf(stderr, "\n\n");
+        if (last_err != ERR_OK) {
+            *return_err = last_err;
+            DEBUG_ERROR(last_err);
+            CLEAR_MEMORY(exit_mark);
+        }
+    }
 
     // HASH_print();
     // printf("\n");

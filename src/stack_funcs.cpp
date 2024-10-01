@@ -122,14 +122,12 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
     ON_CANARY(
         if (*stk->CANARIES.canary_mid_ptr != CANARY_VALUE) {
             MY_ASSERT(ERR_CANARY_MID, abort())
-            assert(0);
         }
     )
 
     ON_CANARY(
         if (*stk->CANARIES.canary_stk_right_ptr != CANARY_VALUE) {
             MY_ASSERT(ERR_CANARY_STK_RIGHT, abort())
-            assert(0);
         }
     )
 
@@ -138,7 +136,6 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
             HASH_print(&stk->HASH);
             printf("_cur_value: [%llu]\n", HASH_get(&stk->HASH));
             MY_ASSERT(ERR_HASH_MISMATCH, abort())
-            assert(0);
         }
     )
 
@@ -182,7 +179,7 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
     ON_CANARY(stk->CANARIES.canary_mid_ptr = &stk->CANARY_MID;)
 
     NOT_ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));)
-    ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB, sizeof(char));)
+    ON_CANARY    (stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB, sizeof(char));)
 
     if (stk->data == NULL) {
         *return_err = ERR_CALLOC;
