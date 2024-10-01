@@ -89,7 +89,7 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
     // *(ptr + 10) = 0x11;
     // printf("destruction is done:)))\n\n");
 
-    HASH_print();
+    HASH_print(&stk.HASH);
     DUMP(&stk)
     VERIFY(&stk, &last_err, )
     DEBUG_ERROR(last_err)
@@ -103,7 +103,7 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
         }
 
     }
-    HASH_print();
+    HASH_print(&stk.HASH);
 
     // for (stack_elem_t i = 5; i > 0; i--) {
     //     stack_pop(&stk, &last_err);

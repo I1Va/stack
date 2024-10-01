@@ -15,8 +15,6 @@ FILE *dump_output_file_ptr = stderr;
 
 ON_CANARY(canaries_t CANARIES = {};)
 
-ON_HASH(hash_t HASH = {};)
-
 void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) {
     for (size_t i = 0; i < n; i++) {
         *(data + i) = value;
@@ -83,9 +81,9 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
     )
 
     ON_HASH(
-        if (HASH.hash_value != HASH_get()) {
-            HASH_print();
-            printf("hash_value: [%llu]\n", HASH.hash_value);
+        if (HASH_check(&stk->HASH)) {
+            HASH_print(&stk->HASH);
+            printf("hash_value: [%llu]\n", stk->HASH.hash_value);
             MY_ASSERT(ERR_HASH_MISMATCH, abort())
             assert(0);
         }
@@ -152,8 +150,9 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
     stk->born_func = born_func;
 
     ON_HASH(
-        HASH_rebuild_ptr(stk, stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
-        HASH_rebuild_value();
+        stk->HASH = {};
+        HASH_rebuild_ptr(&stk->HASH, stk, stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
+        HASH_rebuild_value(&stk->HASH);
     )
 
 
@@ -171,44 +170,44 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
 }
 
 ON_HASH(
-    void HASH_print() {
-        printf("struct_seg: [%p - %p)\n", HASH.struct_left, HASH.struct_right);
-        printf("stackd_seg: [%p - %p)\n", HASH.data_left, HASH.data_right);
-        printf("hash_value: [%llu]\n", HASH.hash_value);
+    void HASH_print(hash_t *HASH) {
+        printf("struct_seg: [%p - %p)\n", HASH->struct_left, HASH->struct_right);
+        printf("stackd_seg: [%p - %p)\n", HASH->data_left, HASH->data_right);
+        printf("hash_value: [%llu]\n", HASH->hash_value);
     }
 
-    unsigned long long HASH_get() {
-        char *left_ptr = (char *) HASH.struct_left;
-        char *right_ptr = (char *) HASH.struct_right;
+    unsigned long long HASH_get(hash_t *HASH) {
+        char *left_ptr = (char *) HASH->struct_left;
+        char *right_ptr = (char *) HASH->struct_right;
         unsigned long long hash_value = 0;
 
         while (left_ptr < right_ptr) {
-            hash_value += *left_ptr++ * HASH.hash_mult; // использую переполнение
+            hash_value += *left_ptr++ * HASH->hash_mult; // использую переполнение
         }
 
-        left_ptr = (char *) HASH.data_left;
-        right_ptr = (char *) HASH.data_right;
+        left_ptr = (char *) HASH->data_left;
+        right_ptr = (char *) HASH->data_right;
 
         while (left_ptr < right_ptr) {
-            hash_value += *left_ptr++ * HASH.hash_mult; // использую переполнение
+            hash_value += *left_ptr++ * HASH->hash_mult; // использую переполнение
         }
 
         return hash_value;
     }
 
-    void HASH_rebuild_ptr(stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes) {
-        HASH.struct_left = stk;
-        HASH.struct_right = stk + 1;
-        HASH.data_left = data_ptr;
-        HASH.data_right = (char *) data_ptr + n_bytes;
+    void HASH_rebuild_ptr(hash_t *HASH, stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes) {
+        HASH->struct_left = stk;
+        HASH->struct_right = stk + 1;
+        HASH->data_left = data_ptr;
+        HASH->data_right = (char *) data_ptr + n_bytes;
     }
 
-    void HASH_rebuild_value() {
-        HASH.hash_value = HASH_get();
+    void HASH_rebuild_value(hash_t *HASH) {
+        HASH->hash_value = HASH_get(HASH);
     }
 
-    bool HASH_check() {
-        return HASH.hash_value == HASH_get();
+    bool HASH_check(hash_t *HASH) {
+        return HASH->hash_value == HASH_get(HASH);
     }
 )
 
@@ -273,7 +272,7 @@ void resize(stack_t *stk, err_code *return_err) {
     }
 
     ON_HASH(
-        HASH_rebuild_ptr(stk, stk->data, new_byte_size);
+        HASH_rebuild_ptr(&stk->HASH, stk, stk->data, new_byte_size);
     )
 
     ON_CANARY(
@@ -300,7 +299,7 @@ void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
 
     stk->data[stk->size++] = value;
 
-    ON_HASH(HASH_rebuild_value();)
+    ON_HASH(HASH_rebuild_value(&stk->HASH);)
 
     VERIFY(stk, return_err, return)
 }
@@ -328,7 +327,7 @@ stack_elem_t stack_pop(stack_t *stk, err_code *return_err) {
     stack_elem_t last_elem = stk->data[--stk->size];
     stk->data[stk->size] = 0;
 
-    ON_HASH(HASH_rebuild_value();)
+    ON_HASH(HASH_rebuild_value(&stk->HASH);)
 
     return last_elem;
 

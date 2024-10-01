@@ -40,6 +40,8 @@ struct stack_t {
 
     ON_CANARY(const unsigned long long CANARY_MID = CANARY_VALUE;)
 
+    ON_HASH(hash_t HASH;)
+
     stack_elem_t *data;
 
     const char *born_file;
@@ -60,17 +62,16 @@ ON_CANARY(
 )
 
 ON_HASH(
-    void HASH_print();
+    void HASH_print(hash_t *HASH);
 
-    unsigned long long HASH_get();
+    unsigned long long HASH_get(hash_t *HASH);
 
-    void HASH_rebuild_ptr(stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes);
+    void HASH_rebuild_ptr(hash_t *HASH, stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes);
 
-    void HASH_rebuild_value();
+    void HASH_rebuild_value(hash_t *HASH);
 
-    bool HASH_check();
+    bool HASH_check(hash_t *HASH);
 )
-
 
 
 void stack_init(stack_t *stk, const size_t size, err_code *return_err, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
