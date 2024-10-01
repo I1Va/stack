@@ -84,12 +84,13 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
     // printf("canary_left: %llx\n", stk.CANARY_LEFT);
     // printf("canary_left: %llx\n", stk.CANARY_MID);
 
-    // ptr = (char *) stk.data;
-    // printf("ptr: [%p]\n", ptr + 35);
-    // *(ptr + 10) = 0x11;
-    // printf("destruction is done:)))\n\n");
+    ptr = (char *) (&stk) + 1; // если написать +12, то изменится указатель *data. Это все поломает. Канарейки не спасут
+    printf("ptr: [%p]\n", ptr);
+    *ptr = 0x11;
 
-    HASH_print(&stk.HASH);
+    printf("destruction is done:)))\n\n");
+
+    // HASH_print(&stk.HASH);
     DUMP(&stk)
     VERIFY(&stk, &last_err, )
     DEBUG_ERROR(last_err)
@@ -103,7 +104,7 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
         }
 
     }
-    HASH_print(&stk.HASH);
+    // HASH_print(&stk.HASH);
 
     // for (stack_elem_t i = 5; i > 0; i--) {
     //     stack_pop(&stk, &last_err);
@@ -121,7 +122,8 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
     // HASH_print();
     // printf("canary_left: %llu\n", stk.CANARY_LEFT);
     // printf("canary_left: %llu\n", stk.CANARY_MID);
-    // stack_destroy(&stk);
+
+    stack_destroy(&stk);
 
     return;
 

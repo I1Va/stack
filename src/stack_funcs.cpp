@@ -13,162 +13,6 @@ typedef int stack_elem_t;
 
 FILE *dump_output_file_ptr = stderr;
 
-ON_CANARY(canaries_t CANARIES = {};)
-
-void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) {
-    for (size_t i = 0; i < n; i++) {
-        *(data + i) = value;
-    }
-}
-
-void dump(stack_t *stk, const char *file_name, const int line_idx) {
-    if (stk == NULL) {
-        return;
-    }
-    fprintf_red(dump_output_file_ptr, "stack_t [%p] at %s:%d born at %s:%d(%s)\n", \
-    stk, file_name, line_idx, stk->born_file, stk->born_line, stk->born_func);
-
-    fprintf_wht(dump_output_file_ptr, "{\n");
-    ON_CANARY(fprintf_yel(dump_output_file_ptr, "canl_ptr[%p]\n", &stk->CANARY_LEFT);)
-    fprintf_yel(dump_output_file_ptr, "size = %lu\n", stk->size);
-    // fprintf_yel(dump_output_file_ptr, "size_ptr[%p]\n", &stk->size);
-    fprintf_yel(dump_output_file_ptr, "capacity = %lu\n", stk->capacity);
-    // fprintf_yel(dump_output_file_ptr, "capa_ptr[%p]\n", &stk->capacity);
-    // fprintf_yel(dump_output_file_ptr, "data_ptr[%p]\n", &stk->data);
-    fprintf_yel(dump_output_file_ptr, "stack[%p]\n", stk->data);
-
-    fprintf_wht(dump_output_file_ptr, "{\n");
-    if (stk->data == NULL) {
-        fprintf_red(dump_output_file_ptr, "NULLPTR\n");
-    } else {
-        for (size_t i = 0; i < stk->capacity; i++) {
-            if (stk->data[i] == POISON_STACK_VALUE) {
-                fprintf_grn(dump_output_file_ptr, "[%lu] = POISON;\n", i);
-            } else {
-                fprintf_grn(dump_output_file_ptr, "*[%lu] = %d;\n", i, stk->data[i]);
-            }
-        }
-        ON_CANARY(
-            canary_elem_t canary_val = *stack_end_canary_getptr(stk);
-            fprintf_grn(dump_output_file_ptr, "[-1] = %llx;\n", canary_val); //FIXME: %x? для unsigned long long работает?
-        )
-    }
-    fprintf_wht(dump_output_file_ptr, "}\n");
-
-    fprintf_wht(dump_output_file_ptr, "}\n");
-}
-
-err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx) {
-
-    ON_CANARY( // FIXME: копипаст. Можно просто сделать массив с указателями на канарейки и выдавать индекс ломанной (с описанием)
-        if (*CANARIES.canary_left_ptr != CANARY_VALUE) {
-            MY_ASSERT(ERR_CANARY_LEFT, abort())
-        }
-    )
-
-    ON_CANARY(
-        if (*CANARIES.canary_mid_ptr != CANARY_VALUE) {
-            MY_ASSERT(ERR_CANARY_MID, abort())
-            assert(0);
-        }
-    )
-
-    ON_CANARY(
-        if (*CANARIES.canary_stk_right_ptr != CANARY_VALUE) {
-            MY_ASSERT(ERR_CANARY_STK_RIGHT, abort())
-            assert(0);
-        }
-    )
-
-    ON_HASH(
-        if (HASH_check(&stk->HASH)) {
-            HASH_print(&stk->HASH);
-            printf("hash_value: [%llu]\n", stk->HASH.hash_value);
-            MY_ASSERT(ERR_HASH_MISMATCH, abort())
-            assert(0);
-        }
-    )
-
-
-    if (stk == NULL) {
-        *return_err = ERR_STACK_NULLPTR;
-        goto dump_mark;
-    }
-
-    if (stk->data == NULL) {
-        *return_err = ERR_STACK_CONT_NULLPTR;
-        goto dump_mark;
-    }
-
-    if (stk->size >= stk->capacity) {
-        *return_err = ERR_STACK_OVERFLOW;
-        goto dump_mark;
-    }
-
-    return ERR_OK;
-
-    dump_mark:
-
-    fprintf_red(dump_output_file_ptr, "{%s} [%s: %d]: descr{%s}\n", file_name, func_name, line_idx, get_descr(*return_err));
-    dump(stk, file_name, line_idx);
-
-    return *return_err;
-}
-
-void stack_init(stack_t *stk, const size_t size, err_code *return_err, const char born_file[], const int born_line, const char born_func[]) {
-
-    if (stk == NULL) {
-        DEBUG_ERROR(ERR_CALLOC)
-        CLEAR_MEMORY(exit_mark)
-    }
-
-    ON_CANARY(CANARIES.canary_left_ptr = &stk->CANARY_LEFT;)
-
-    stk->size = 0;
-    stk->capacity = size;
-
-    ON_CANARY(CANARIES.canary_mid_ptr = &stk->CANARY_MID;)
-
-    NOT_ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));)
-    ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB, sizeof(char));)
-
-    if (stk->data == NULL) {
-        *return_err = ERR_CALLOC;
-        DEBUG_ERROR(ERR_CALLOC)
-        CLEAR_MEMORY(exit_mark)
-    }
-
-    stack_memset(stk->data, POISON_STACK_VALUE, stk->capacity);
-
-    ON_CANARY(
-        stack_end_canary_assign(stk, CANARY_VALUE);
-        CANARIES.canary_stk_right_ptr = stack_end_canary_getptr(stk);
-    )
-
-    stk->born_file = born_file;
-    stk->born_line = born_line;
-    stk->born_func = born_func;
-
-    ON_HASH(
-        stk->HASH = {};
-        HASH_rebuild_ptr(&stk->HASH, stk, stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
-        HASH_rebuild_value(&stk->HASH);
-    )
-
-
-    return;
-
-    exit_mark:
-    if (stk != NULL) {
-        FREE(stk);
-    }
-    if (stk->data != NULL) {
-        FREE(stk->data);
-    }
-
-    return;
-}
-
 ON_HASH(
     void HASH_print(hash_t *HASH) {
         printf("struct_seg: [%p - %p)\n", HASH->struct_left, HASH->struct_right);
@@ -225,6 +69,158 @@ ON_CANARY(
     }
 )
 
+void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) {
+    for (size_t i = 0; i < n; i++) {
+        *(data + i) = value;
+    }
+}
+
+void dump(stack_t *stk, const char *file_name, const int line_idx) {
+    if (stk == NULL) {
+        return;
+    }
+    fprintf_red(dump_output_file_ptr, "stack_t [%p] at %s:%d born at %s:%d(%s)\n", \
+    stk, file_name, line_idx, stk->born_file, stk->born_line, stk->born_func);
+
+    fprintf_wht(dump_output_file_ptr, "{\n");
+    ON_CANARY(fprintf_yel(dump_output_file_ptr, "canl_ptr[%p]\n", &stk->CANARY_LEFT);)
+    fprintf_yel(dump_output_file_ptr, "size = %lu\n", stk->size);
+    // fprintf_yel(dump_output_file_ptr, "size_ptr[%p]\n", &stk->size);
+    fprintf_yel(dump_output_file_ptr, "capacity = %lu\n", stk->capacity);
+    // fprintf_yel(dump_output_file_ptr, "capa_ptr[%p]\n", &stk->capacity);
+    // fprintf_yel(dump_output_file_ptr, "data_ptr[%p]\n", &stk->data);
+    fprintf_yel(dump_output_file_ptr, "stack[%p]\n", stk->data);
+
+    fprintf_wht(dump_output_file_ptr, "{\n");
+    if (stk->data == NULL) {
+        fprintf_red(dump_output_file_ptr, "NULLPTR\n");
+    } else {
+        for (size_t i = 0; i < stk->capacity; i++) {
+            if (stk->data[i] == POISON_STACK_VALUE) {
+                fprintf_grn(dump_output_file_ptr, "[%lu] = POISON;\n", i);
+            } else {
+                fprintf_grn(dump_output_file_ptr, "*[%lu] = %d;\n", i, stk->data[i]);
+            }
+        }
+        ON_CANARY(
+            canary_elem_t canary_val = *stack_end_canary_getptr(stk);
+            fprintf_grn(dump_output_file_ptr, "[-1] = %llx;\n", canary_val); //FIXME: %x? для unsigned long long работает?
+        )
+    }
+    fprintf_wht(dump_output_file_ptr, "}\n");
+
+    fprintf_wht(dump_output_file_ptr, "}\n");
+}
+
+err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx) {
+    ON_CANARY( // FIXME: копипаст. Можно просто сделать массив с указателями на канарейки и выдавать индекс ломанной (с описанием)
+        if (*stk->CANARIES.canary_left_ptr != CANARY_VALUE) {
+            MY_ASSERT(ERR_CANARY_LEFT, abort())
+        }
+    )
+
+    ON_CANARY(
+        if (*stk->CANARIES.canary_mid_ptr != CANARY_VALUE) {
+            MY_ASSERT(ERR_CANARY_MID, abort())
+            assert(0);
+        }
+    )
+
+    ON_CANARY(
+        if (*stk->CANARIES.canary_stk_right_ptr != CANARY_VALUE) {
+            MY_ASSERT(ERR_CANARY_STK_RIGHT, abort())
+            assert(0);
+        }
+    )
+
+    ON_HASH(
+        if (!HASH_check(&stk->HASH)) {
+            HASH_print(&stk->HASH);
+            printf("_cur_value: [%llu]\n", HASH_get(&stk->HASH));
+            MY_ASSERT(ERR_HASH_MISMATCH, abort())
+            assert(0);
+        }
+    )
+
+
+    if (stk == NULL) {
+        *return_err = ERR_STACK_NULLPTR;
+        goto dump_mark;
+    }
+
+    if (stk->data == NULL) {
+        *return_err = ERR_STACK_CONT_NULLPTR;
+        goto dump_mark;
+    }
+
+    if (stk->size >= stk->capacity) {
+        *return_err = ERR_STACK_OVERFLOW;
+        goto dump_mark;
+    }
+
+    return ERR_OK;
+
+    dump_mark:
+
+    fprintf_red(dump_output_file_ptr, "{%s} [%s: %d]: descr{%s}\n", file_name, func_name, line_idx, get_descr(*return_err));
+    dump(stk, file_name, line_idx);
+
+    return *return_err;
+}
+
+void stack_init(stack_t *stk, const size_t size, err_code *return_err, const char born_file[], const int born_line, const char born_func[]) {
+    if (stk == NULL) {
+        DEBUG_ERROR(ERR_CALLOC)
+        CLEAR_MEMORY(exit_mark)
+    }
+
+    ON_CANARY(stk->CANARIES.canary_left_ptr = &stk->CANARY_LEFT;)
+
+    stk->size = 0;
+    stk->capacity = size;
+
+    ON_CANARY(stk->CANARIES.canary_mid_ptr = &stk->CANARY_MID;)
+
+    NOT_ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));)
+    ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB, sizeof(char));)
+
+    if (stk->data == NULL) {
+        *return_err = ERR_CALLOC;
+        DEBUG_ERROR(ERR_CALLOC)
+        CLEAR_MEMORY(exit_mark)
+    }
+
+    stack_memset(stk->data, POISON_STACK_VALUE, stk->capacity);
+
+    ON_CANARY(
+        stack_end_canary_assign(stk, CANARY_VALUE);
+        stk->CANARIES.canary_stk_right_ptr = stack_end_canary_getptr(stk);
+    )
+
+    stk->born_file = born_file;
+    stk->born_line = born_line;
+    stk->born_func = born_func;
+
+    ON_HASH(
+        stk->HASH = {};
+        HASH_rebuild_ptr(&stk->HASH, stk, stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
+        HASH_rebuild_value(&stk->HASH);
+    )
+
+
+    return;
+
+    exit_mark:
+    if (stk != NULL) {
+        FREE(stk);
+    }
+    if (stk->data != NULL) {
+        FREE(stk->data);
+    }
+
+    return;
+}
+
 void stack_destroy(stack_t *stk) {
     FREE(stk->data);
 }
@@ -248,23 +244,21 @@ void resize(stack_t *stk, err_code *return_err) {
     }
 
     NOT_ON_CANARY(
-        stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
+        stk->data = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
         new_byte_size = stk->capacity * sizeof(stack_elem_t);
     )
 
     ON_CANARY(
-        stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
+        stk->data = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
         new_byte_size = stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB;
     )
 
-
-
-    if (tmp_stk_ptr == NULL) {
+    if (stk->data == NULL) {
         *return_err = ERR_REALLOC;
         DEBUG_ERROR(*return_err);
         return;
     }
-    stk->data = tmp_stk_ptr;
+
 
     if (resize_up_state) {
         size_t old_capacity = stk->capacity / resize_up_coeff;
@@ -277,7 +271,7 @@ void resize(stack_t *stk, err_code *return_err) {
 
     ON_CANARY(
         stack_end_canary_assign(stk, CANARY_VALUE);
-        CANARIES.canary_stk_right_ptr = stack_end_canary_getptr(stk);
+        stk->CANARIES.canary_stk_right_ptr = stack_end_canary_getptr(stk);
     )
 }
 

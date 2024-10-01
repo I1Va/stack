@@ -33,6 +33,8 @@ struct hash_t {
 };
 
 struct stack_t {
+    ON_CANARY(canaries_t CANARIES;)
+
     ON_CANARY(const unsigned long long CANARY_LEFT = CANARY_VALUE;)
 
     size_t size;
