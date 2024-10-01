@@ -74,6 +74,15 @@ enum RETURN_STATES {
     #define NOT_ON_CANARY(...) __VA_ARGS__
 #endif // _CANARY
 
+#ifdef _HASH
+    #define ON_HASH(...) __VA_ARGS__
+    #define NOT_ON_HASH(...)
+#else
+    #define NOT_ON_HASH(...) __VA_ARGS__
+    #define ON_HASH(...)
+#endif // _HASH
+
+
 #define DUMP(stk) dump(stk, __FILE__, __LINE__);
 
 #endif // GENERAL

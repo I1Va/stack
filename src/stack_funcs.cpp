@@ -15,6 +15,8 @@ FILE *dump_output_file_ptr = stderr;
 
 ON_CANARY(canaries_t CANARIES = {};)
 
+ON_HASH(hash_t HASH = {};)
+
 void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) {
     for (size_t i = 0; i < n; i++) {
         *(data + i) = value;
@@ -146,6 +148,9 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
     stk->born_line = born_line;
     stk->born_func = born_func;
 
+    ON_HASH(
+        HASH_rebuild(stk, stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
+    )
 
 
     return;
@@ -160,6 +165,46 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
 
     return;
 }
+
+ON_HASH(
+    void HASH_print() {
+        printf("struct_seg: [%p - %p)\n", HASH.struct_left, HASH.struct_right);
+        printf("stackd_seg: [%p - %p)\n", HASH.data_left, HASH.data_right);
+        printf("hash_value: [%llu]\n", HASH.hash_value);
+    }
+
+    unsigned long long HASH_get() {
+        char *left_ptr = (char *) HASH.struct_left;
+        char *right_ptr = (char *) HASH.struct_right;
+        unsigned long long hash_value = 0;
+
+        while (left_ptr < right_ptr) {
+            hash_value += *left_ptr++ * HASH.hash_mult; // использую переполнение
+        }
+
+        left_ptr = (char *) HASH.data_left;
+        right_ptr = (char *) HASH.data_right;
+
+        while (left_ptr < right_ptr) {
+            hash_value += *left_ptr++ * HASH.hash_mult; // использую переполнение
+        }
+
+        return hash_value;
+    }
+
+    void HASH_rebuild(stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes) {
+        HASH.struct_left = stk;
+        HASH.struct_right = stk + 1;
+        HASH.data_left = data_ptr;
+        HASH.data_right = (char *) data_ptr + n_bytes;
+
+        HASH.hash_value = HASH_get();
+    }
+
+    bool HASH_check() {
+        return HASH.hash_value == HASH_get();
+    }
+)
 
 void stack_destroy(stack_t *stk) {
     FREE(stk->data);
@@ -194,7 +239,10 @@ void resize(stack_t *stk, err_code *return_err) {
         return;
     }
 
-    NOT_ON_CANARY(stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));)
+    NOT_ON_CANARY(
+        stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
+    )
+
     ON_CANARY(
         stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
     )
@@ -206,7 +254,7 @@ void resize(stack_t *stk, err_code *return_err) {
         DEBUG_ERROR(*return_err);
         return;
     }
-    stk->data =  tmp_stk_ptr;
+    stk->data = tmp_stk_ptr;
 
     if (resize_up_state) {
         size_t old_capacity = stk->capacity / resize_up_coeff;

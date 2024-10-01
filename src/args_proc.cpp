@@ -66,8 +66,6 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
 
     err_code last_err = ERR_OK;
 
-    char *ptr = NULL;
-
     stack_t stk = {};
     STACK_INIT(&stk, 10, &last_err)
     if (last_err != ERR_OK) {
@@ -83,8 +81,9 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
     // printf("ptr: [%p]\n", ptr + 35);
     // *(ptr + 40) = 0x11;
     printf("destruction is done:)))\n\n");
-
+    HASH_print();
     DUMP(&stk)
+
     VERIFY(&stk, &last_err, )
     DEBUG_ERROR(last_err)
     for (stack_elem_t i = 0; i < 30; i++) {
@@ -108,8 +107,8 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
         }
     }
 
-    // printf("canary_left: %llu\n", stk.CANARY_LEFT);
-    // printf("canary_left: %llu\n", stk.CANARY_MID);
+    printf("canary_left: %llu\n", stk.CANARY_LEFT);
+    printf("canary_left: %llu\n", stk.CANARY_MID);
     stack_destroy(&stk);
 
     return;

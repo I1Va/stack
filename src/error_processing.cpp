@@ -26,6 +26,7 @@ const char *get_descr(enum err_code err) {
         DESCR_(ERR_CANARY_LEFT)
         DESCR_(ERR_CANARY_MID)
         DESCR_(ERR_CANARY_RIGHT)
+        DESCR_(ERR_CANARY_STK_RIGHT)
         default: return "VERY STRANGE ERROR:(";
     }
 }
