@@ -55,12 +55,14 @@ const size_t dump_output_sz = 10;
 
 canary_elem_t *stack_end_canary_getptr(stack_t *stk);
 
-ON_HASH ( // TODO: сделать такое же для функций CANARY
+ON_HASH(
     void HASH_print();
 
     unsigned long long HASH_get();
 
-    void HASH_rebuild(stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes);
+    void HASH_rebuild_ptr(stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes);
+
+    void HASH_rebuild_value();
 
     bool HASH_check();
 )

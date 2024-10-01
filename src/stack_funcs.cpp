@@ -67,24 +67,30 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
 
     ON_CANARY( // FIXME: копипаст. Можно просто сделать массив с указателями на канарейки и выдавать индекс ломанной (с описанием)
         if (*CANARIES.canary_left_ptr != CANARY_VALUE) {
-            *return_err = ERR_CANARY_LEFT;
-            assert(0 && get_descr(*return_err));
-            return *return_err;
+            MY_ASSERT(ERR_CANARY_LEFT, abort())
         }
     )
 
     ON_CANARY(
         if (*CANARIES.canary_mid_ptr != CANARY_VALUE) {
-            *return_err = ERR_CANARY_MID;
-            assert(0 && get_descr(*return_err));
-            return *return_err;
+            MY_ASSERT(ERR_CANARY_MID, abort())
+            assert(0);
         }
     )
+
     ON_CANARY(
         if (*CANARIES.canary_stk_right_ptr != CANARY_VALUE) {
-            *return_err = ERR_CANARY_STK_RIGHT;
-            assert(0 && get_descr(*return_err));
-            return *return_err;
+            MY_ASSERT(ERR_CANARY_STK_RIGHT, abort())
+            assert(0);
+        }
+    )
+
+    ON_HASH(
+        if (HASH.hash_value != HASH_get()) {
+            HASH_print();
+            printf("hash_val: %llu\n", HASH_get());
+            MY_ASSERT(ERR_HASH_MISMATCH, abort())
+            assert(0);
         }
     )
 
@@ -149,7 +155,8 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
     stk->born_func = born_func;
 
     ON_HASH(
-        HASH_rebuild(stk, stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
+        HASH_rebuild_ptr(stk, stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
+        HASH_rebuild_value();
     )
 
 
@@ -192,12 +199,14 @@ ON_HASH(
         return hash_value;
     }
 
-    void HASH_rebuild(stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes) {
+    void HASH_rebuild_ptr(stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes) {
         HASH.struct_left = stk;
         HASH.struct_right = stk + 1;
         HASH.data_left = data_ptr;
         HASH.data_right = (char *) data_ptr + n_bytes;
+    }
 
+    void HASH_rebuild_value() {
         HASH.hash_value = HASH_get();
     }
 
@@ -227,6 +236,7 @@ void resize(stack_t *stk, err_code *return_err) {
     assert(return_err != NULL);
 
     bool resize_up_state = false;
+    size_t new_byte_size = 0;
 
     if (stk->size + 1 == stk->capacity) {
         ON_CANARY(stack_end_canary_assign(stk, 0));
@@ -241,10 +251,12 @@ void resize(stack_t *stk, err_code *return_err) {
 
     NOT_ON_CANARY(
         stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t));
+        new_byte_size = stk->capacity * sizeof(stack_elem_t);
     )
 
     ON_CANARY(
         stack_elem_t *tmp_stk_ptr = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
+        new_byte_size = stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB;
     )
 
 
@@ -260,6 +272,10 @@ void resize(stack_t *stk, err_code *return_err) {
         size_t old_capacity = stk->capacity / resize_up_coeff;
         stack_memset(stk->data + old_capacity, POISON_STACK_VALUE, old_capacity * (resize_up_coeff - 1));
     }
+
+    ON_HASH(
+        HASH_rebuild_ptr(stk, stk->data, new_byte_size);
+    )
 
     ON_CANARY(
         stack_end_canary_assign(stk, CANARY_VALUE);
@@ -284,6 +300,9 @@ void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
     }
 
     stk->data[stk->size++] = value;
+
+    ON_HASH(HASH_rebuild_value();)
+
     VERIFY(stk, return_err, return)
 }
 
@@ -309,6 +328,9 @@ stack_elem_t stack_pop(stack_t *stk, err_code *return_err) {
 
     stack_elem_t last_elem = stk->data[--stk->size];
     stk->data[stk->size] = 0;
+
+    ON_HASH(HASH_rebuild_value();)
+
     return last_elem;
 
 }
