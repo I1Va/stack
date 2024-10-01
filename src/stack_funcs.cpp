@@ -23,7 +23,6 @@ void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) 
     }
 }
 
-
 void dump(stack_t *stk, const char *file_name, const int line_idx) {
     if (stk == NULL) {
         return;
@@ -50,8 +49,6 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
             } else {
                 fprintf_grn(dump_output_file_ptr, "*[%lu] = %d;\n", i, stk->data[i]);
             }
-
-            // FIXME: ЧЗХ??? почему значения после realloc в 0x равны "bebebebe" (в 10-ой: -1094795586)
         }
         ON_CANARY(
             canary_elem_t canary_val = *stack_end_canary_getptr(stk);
@@ -88,7 +85,7 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
     ON_HASH(
         if (HASH.hash_value != HASH_get()) {
             HASH_print();
-            printf("hash_val: %llu\n", HASH_get());
+            printf("hash_value: [%llu]\n", HASH.hash_value);
             MY_ASSERT(ERR_HASH_MISMATCH, abort())
             assert(0);
         }
@@ -215,20 +212,22 @@ ON_HASH(
     }
 )
 
+ON_CANARY(
+    canary_elem_t *stack_end_canary_getptr(stack_t *stk) {
+        size_t stack_byte_size = stk->capacity * sizeof(stack_elem_t);
+        canary_elem_t *canary_ptr = (canary_elem_t *)((char *) stk->data + stack_byte_size);
+        canary_ptr = (canary_elem_t *) ((char *) (canary_ptr) + (unsigned long long) canary_ptr % 8ull); // FIXME: корявый нечитаемый padding fix. Придумать что-то по изящней
+        return canary_ptr;
+    }
+
+    void stack_end_canary_assign(stack_t *stk, const canary_elem_t value) {
+        canary_elem_t *canary_ptr = stack_end_canary_getptr(stk);
+        *canary_ptr = value;
+    }
+)
+
 void stack_destroy(stack_t *stk) {
     FREE(stk->data);
-}
-
-canary_elem_t *stack_end_canary_getptr(stack_t *stk) {
-    size_t stack_byte_size = stk->capacity * sizeof(stack_elem_t);
-    canary_elem_t *canary_ptr = (canary_elem_t *)((char *) stk->data + stack_byte_size);
-    canary_ptr = (canary_elem_t *) ((char *) (canary_ptr) + (unsigned long long) canary_ptr % 8ull); // FIXME: корявый нечитаемый padding fix. Придумать что-то по изящней
-    return canary_ptr;
-}
-
-void stack_end_canary_assign(stack_t *stk, const canary_elem_t value) {
-    canary_elem_t *canary_ptr = stack_end_canary_getptr(stk);
-    *canary_ptr = value;
 }
 
 void resize(stack_t *stk, err_code *return_err) {

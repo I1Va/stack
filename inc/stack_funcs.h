@@ -53,7 +53,11 @@ const size_t resize_down_coeff = 2;
 
 const size_t dump_output_sz = 10;
 
-canary_elem_t *stack_end_canary_getptr(stack_t *stk);
+ON_CANARY(
+    void stack_end_canary_assign(stack_t *stk, const canary_elem_t value);
+
+    canary_elem_t *stack_end_canary_getptr(stack_t *stk);
+)
 
 ON_HASH(
     void HASH_print();
@@ -68,7 +72,6 @@ ON_HASH(
 )
 
 
-void stack_end_canary_assign(stack_t *stk, const canary_elem_t value);
 
 void stack_init(stack_t *stk, const size_t size, err_code *return_err, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
 

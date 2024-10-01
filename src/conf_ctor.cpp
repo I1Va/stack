@@ -4,9 +4,8 @@
 #include <cstdlib>
 
 void main_launch_config_ctor(main_launch_config_t *conf) {
-    conf->canary = false;
-    conf->hashes = false;
-    conf->duplication = false;
+    if (conf) {}
+    return;
 }
 
 void main_launch_config_dtor(main_launch_config_t *conf) {

@@ -61,8 +61,13 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
 }
 
 void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) {
+
     assert(conf != NULL);
     assert(return_err != NULL);
+
+    if (!conf->exist) {
+        return;
+    }
 
     err_code last_err = ERR_OK;
 
@@ -79,10 +84,10 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
     // printf("canary_left: %llx\n", stk.CANARY_LEFT);
     // printf("canary_left: %llx\n", stk.CANARY_MID);
 
-    ptr = (char *) stk.data;
-    printf("ptr: [%p]\n", ptr + 35);
-    *(ptr + 10) = 0x11;
-    printf("destruction is done:)))\n\n");
+    // ptr = (char *) stk.data;
+    // printf("ptr: [%p]\n", ptr + 35);
+    // *(ptr + 10) = 0x11;
+    // printf("destruction is done:)))\n\n");
 
     HASH_print();
     DUMP(&stk)

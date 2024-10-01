@@ -2,9 +2,8 @@
 #define CONF_CTOR_H
 
 struct main_launch_config_t {
-    bool canary;
-    bool hashes;
-    bool duplication;
+    bool exist = true;
+    
 };
 
 void main_launch_config_ctor(main_launch_config_t *conf);

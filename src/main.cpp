@@ -22,6 +22,10 @@ int main(const int argc, const char *argv[]) {
     opt_data options[n_options];
     get_options(argc, argv, options, n_options);
 
+    // config_state mode_laumcher_list =
+    // {
+    //     {}
+    // }
     // TODO: написать mode_launcher. Если config.exist = true, то вызывает функцию по указателю в структуре config
 
     main_testing_mode_launch(&main_launch_config, &last_err);
@@ -30,6 +34,8 @@ int main(const int argc, const char *argv[]) {
         CLEAR_MEMORY(exit_mark)
     }
 
+
+    
     return EXIT_SUCCESS;
 
     exit_mark:
