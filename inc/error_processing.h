@@ -26,6 +26,7 @@ enum err_code {
     ERR_CANARY_RIGHT = 19,
     ERR_CANARY_STK_RIGHT = 20,
     ERR_HASH_MISMATCH = 21,
+    ERR_CANARY_STK_LEFT = 22,
 };
 
 const char *get_descr(enum err_code err = ERR_UNKNOWN);

@@ -18,8 +18,8 @@ struct canaries_t {
     const canary_elem_t *canary_left_ptr;
     const canary_elem_t *canary_mid_ptr;
     const canary_elem_t *canary_right_ptr;
-    const canary_elem_t *canary_stk_right_ptr;
     const canary_elem_t *canary_stk_left_ptr;
+    const canary_elem_t *canary_stk_right_ptr;
 };
 
 struct hash_t {

@@ -67,6 +67,8 @@ ON_CANARY(
         canary_elem_t *canary_ptr = stack_end_canary_getptr(stk);
         *canary_ptr = value;
     }
+
+    const size_t LEFT_CANARY_INDENT = (CANARY_NMEMB + sizeof(stack_elem_t) - 1) / sizeof(stack_elem_t);
 )
 
 void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) {
@@ -95,6 +97,10 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
     if (stk->data == NULL) {
         fprintf_red(dump_output_file_ptr, "NULLPTR\n");
     } else {
+        ON_CANARY(
+            canary_elem_t left_canary_val = *(canary_elem_t *)(stk->data - LEFT_CANARY_INDENT);
+            fprintf_grn(dump_output_file_ptr, "[_left_canary] = %llx;\n", left_canary_val); //FIXME: %x? для unsigned long long работает?
+        )
         for (size_t i = 0; i < stk->capacity; i++) {
             if (stk->data[i] == POISON_STACK_VALUE) {
                 fprintf_grn(dump_output_file_ptr, "[%lu] = POISON;\n", i);
@@ -103,8 +109,8 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
             }
         }
         ON_CANARY(
-            canary_elem_t canary_val = *stack_end_canary_getptr(stk);
-            fprintf_grn(dump_output_file_ptr, "[-1] = %llx;\n", canary_val); //FIXME: %x? для unsigned long long работает?
+            canary_elem_t right_canary_val = *stack_end_canary_getptr(stk);
+            fprintf_grn(dump_output_file_ptr, "[right_canary] = %llx;\n", right_canary_val); //FIXME: %x? для unsigned long long работает?
         )
     }
     fprintf_wht(dump_output_file_ptr, "}\n");
@@ -122,6 +128,9 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
         }
         if (*stk->CANARIES.canary_right_ptr != CANARY_VALUE) {
             MY_ASSERT(ERR_CANARY_RIGHT, abort())
+        }
+        if (*stk->CANARIES.canary_stk_left_ptr != CANARY_VALUE) {
+            MY_ASSERT(ERR_CANARY_STK_LEFT, abort())
         }
         if (*stk->CANARIES.canary_stk_right_ptr != CANARY_VALUE) {
             MY_ASSERT(ERR_CANARY_STK_RIGHT, abort())
@@ -178,7 +187,7 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
 
 
     NOT_ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));)
-    ON_CANARY    (stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB, sizeof(char));)
+    ON_CANARY    (stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB + LEFT_CANARY_INDENT * sizeof(stack_elem_t), sizeof(char));)
 
     if (stk->data == NULL) {
         *return_err = ERR_CALLOC;
@@ -186,12 +195,14 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
         CLEAR_MEMORY(exit_mark)
     }
 
-    stack_memset(stk->data, POISON_STACK_VALUE, stk->capacity);
-
     ON_CANARY(
+        stk->CANARIES.canary_stk_left_ptr = (canary_elem_t *) stk->data;
+        *(canary_elem_t *) stk->data = CANARY_VALUE;
+        stk->data += LEFT_CANARY_INDENT;
         stack_end_canary_assign(stk, CANARY_VALUE);
         stk->CANARIES.canary_stk_right_ptr = stack_end_canary_getptr(stk);
     )
+    stack_memset(stk->data, POISON_STACK_VALUE, stk->capacity);
 
     stk->born_file = born_file;
     stk->born_line = born_line;
@@ -207,9 +218,12 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
     return;
 
     exit_mark:
-    if (stk != NULL) {
-        FREE(stk);
-    }
+    ON_CANARY(
+        if (stk->data != NULL) {
+            stk->data -= LEFT_CANARY_INDENT;
+        }
+    )
+
     if (stk->data != NULL) {
         FREE(stk->data);
     }
@@ -218,6 +232,12 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
 }
 
 void stack_destroy(stack_t *stk) {
+    ON_CANARY(
+        if (stk->data != NULL) {
+            stk->data -= LEFT_CANARY_INDENT;
+        }
+    )
+
     FREE(stk->data);
 }
 
@@ -245,8 +265,10 @@ void resize(stack_t *stk, err_code *return_err) {
     )
 
     ON_CANARY(
-        stk->data = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
-        new_byte_size = stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB;
+        stk->data -= LEFT_CANARY_INDENT;
+        stk->data = (stack_elem_t *) realloc(stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB + LEFT_CANARY_INDENT * sizeof(stack_elem_t));
+        stk->data += LEFT_CANARY_INDENT;
+        new_byte_size = stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB + LEFT_CANARY_INDENT * sizeof(stack_elem_t);
     )
 
     if (stk->data == NULL) {
@@ -268,6 +290,7 @@ void resize(stack_t *stk, err_code *return_err) {
     ON_CANARY(
         stack_end_canary_assign(stk, CANARY_VALUE);
         stk->CANARIES.canary_stk_right_ptr = stack_end_canary_getptr(stk);
+        stk->CANARIES.canary_stk_left_ptr = (canary_elem_t *) (stk->data - LEFT_CANARY_INDENT);
     )
 }
 
@@ -315,7 +338,7 @@ stack_elem_t stack_pop(stack_t *stk, err_code *return_err) {
     }
 
     stack_elem_t last_elem = stk->data[--stk->size];
-    stk->data[stk->size] = 0;
+    stk->data[stk->size] = POISON_STACK_VALUE;
 
     ON_HASH(HASH_rebuild_value(&stk->HASH);)
 
