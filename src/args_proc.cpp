@@ -60,7 +60,7 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
     }
 }
 
-void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) {
+void main_testing_mode_launch(main_config_t *conf, err_code *return_err) {
 
     assert(conf != NULL);
     assert(return_err != NULL);
@@ -84,9 +84,9 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
     // printf("canary_left: %llx\n", stk.CANARY_LEFT);
     // printf("canary_left: %llx\n", stk.CANARY_MID);
 
-    // ptr = ((char *) (&stk)) + 20; // если написать +20, то изменится указатель *data. Это все поломает. Канарейки не спасут
-    // printf("ptr: [%p]\n", ptr);
-    // *ptr = 0x1;
+    ptr = ((char *) (&stk)) + 80; // если написать +20-60, то изменяются указатели на data, canary_t, hash_t, ломая защиту
+    printf("ptr: [%p]\n", ptr);
+    *ptr = 0x1;
 
     // printf("destruction is done:)))\n\n");
 
@@ -94,28 +94,28 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
     DUMP(&stk)
     VERIFY(&stk, &last_err, )
     DEBUG_ERROR(last_err)
-    for (stack_elem_t i = 0; i < 10; i++) {
-        stack_push(&stk, i, &last_err);
-        DUMP(&stk)
-        if (last_err != ERR_OK) {
-            *return_err = last_err;
-            DEBUG_ERROR(last_err);
-            CLEAR_MEMORY(exit_mark);
-        }
-    }
+    // for (stack_elem_t i = 0; i < 10; i++) {
+    //     stack_push(&stk, i, &last_err);
+    //     DUMP(&stk)
+    //     if (last_err != ERR_OK) {
+    //         *return_err = last_err;
+    //         DEBUG_ERROR(last_err);
+    //         CLEAR_MEMORY(exit_mark);
+    //     }
+    // }
 
     // // HASH_print(&stk.HASH);
 
-    for (stack_elem_t i = 5; i > 0; i--) {
-        stack_pop(&stk, &last_err);
-        DUMP(&stk)
-        // fprintf(stderr, "\n\n");
-        if (last_err != ERR_OK) {
-            *return_err = last_err;
-            DEBUG_ERROR(last_err);
-            CLEAR_MEMORY(exit_mark);
-        }
-    }
+    // for (stack_elem_t i = 5; i > 0; i--) {
+    //     stack_pop(&stk, &last_err);
+    //     DUMP(&stk)
+    //     fprintf(stderr, "\n\n");
+    //     if (last_err != ERR_OK) {
+    //         *return_err = last_err;
+    //         DEBUG_ERROR(last_err);
+    //         CLEAR_MEMORY(exit_mark);
+    //     }
+    // }
 
     // HASH_print();
     // printf("\n");
@@ -134,7 +134,10 @@ void main_testing_mode_launch(main_launch_config_t *conf, err_code *return_err) 
     return;
 }
 
-void main_mode_launch(main_launch_config_t *conf, err_code *return_err) {
+void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err) {
+
+}
+void main_mode_launch(main_config_t *conf, err_code *return_err) {
     assert(conf != NULL);
     assert(return_err != NULL);
 

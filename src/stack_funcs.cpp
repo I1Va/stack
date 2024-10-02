@@ -21,16 +21,16 @@ ON_HASH(
     }
 
     unsigned long long HASH_get(hash_t *HASH) {
-        char *left_ptr = (char *) HASH->struct_left;
-        char *right_ptr = (char *) HASH->struct_right;
+        unsigned char *left_ptr = (unsigned char *) HASH->struct_left;
+        unsigned char *right_ptr = (unsigned char *) HASH->struct_right;
         unsigned long long hash_value = 0;
 
         while (left_ptr < right_ptr) {
             hash_value += *left_ptr++ * HASH->hash_mult; // использую переполнение
         }
 
-        left_ptr = (char *) HASH->data_left;
-        right_ptr = (char *) HASH->data_right;
+        left_ptr = (unsigned char *) HASH->data_left;
+        right_ptr = (unsigned char *) HASH->data_right;
 
         while (left_ptr < right_ptr) {
             hash_value += *left_ptr++ * HASH->hash_mult; // использую переполнение
@@ -58,9 +58,10 @@ ON_HASH(
 ON_CANARY(
     canary_elem_t *stack_end_canary_getptr(stack_t *stk) {
         size_t stack_byte_size = stk->capacity * sizeof(stack_elem_t);
-        canary_elem_t *canary_ptr = (canary_elem_t *)((char *) stk->data + stack_byte_size);
-        canary_ptr = (canary_elem_t *) ((char *) (canary_ptr) + (unsigned long long) canary_ptr % 8ull); // FIXME: корявый нечитаемый padding fix. Придумать что-то по изящней
-        return canary_ptr;
+        char *canary_ptr = (char *) stk->data + stack_byte_size;
+        unsigned long long alignment = (unsigned long long) canary_ptr % 8;
+        canary_elem_t *canary_ptr_align = (canary_elem_t *) (canary_ptr + alignment); // FIXME: корявый нечитаемый padding fix. Придумать что-то по изящней
+        return canary_ptr_align;
     }
 
     void stack_end_canary_assign(stack_t *stk, const canary_elem_t value) {

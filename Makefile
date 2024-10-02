@@ -25,19 +25,19 @@ INCLUDE_FLAGS = -Iinc
 
 DEFINE_FLAGS = -D_DEBUG
 
-SECURITY_FLAGS = -D_CANARY -D_DUBLICATE
+SECURITY_FLAGS = -D_CANARY -D_DUBLICATE -D_HASH
 
 BUILD_DIR = build
 
 SRC_DIR = src
 SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
-SRC_OUTPUTFILE = $(BUILD_DIR)/onegin.out
+SRC_OUTPUTFILE = $(BUILD_DIR)/stack.out
 
 # LD_FLAGS =
 
 .PHONY: build
 
-all: build launch
+all: launch
 
 build:
 	$(CC) $(SRC_FILES) -O0 -o $(SRC_OUTPUTFILE) $(INCLUDE_FLAGS) $(CC_FLAGS)
@@ -59,4 +59,7 @@ args:
 
 debug_args:
 	$(CC) $(SRC_FILES) -o $(SRC_OUTPUTFILE) $(DEFINE_FLAGS) $(SECURITY_FLAGS) $(INCLUDE_FLAGS) $(CC_DEBUG_FLAGS)
-	./$(SRC_OUTPUTFILE)
+
+# clear
+
+# навести порядок в makefile
