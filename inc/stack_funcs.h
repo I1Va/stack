@@ -17,6 +17,7 @@ const stack_elem_t POISON_STACK_VALUE = 0x0BAD0DED; // FIXME: использов
 struct canaries_t {
     const canary_elem_t *canary_left_ptr;
     const canary_elem_t *canary_mid_ptr;
+    const canary_elem_t *canary_right_ptr;
     const canary_elem_t *canary_stk_right_ptr;
     const canary_elem_t *canary_stk_left_ptr;
 };
@@ -35,9 +36,9 @@ struct hash_t {
 struct stack_t {
     //TODO: можно сделать указатель на дубль тут
 
-    ON_CANARY(canaries_t CANARIES;)
-
     ON_CANARY(const unsigned long long CANARY_LEFT = CANARY_VALUE;)
+
+    ON_CANARY(canaries_t CANARIES;)
 
     size_t size;
     size_t capacity;
@@ -52,7 +53,7 @@ struct stack_t {
     int born_line;
     const char *born_func;
 
-    // TODO: сделать cCANARY_RIGHT
+    ON_CANARY(const unsigned long long CANARY_RIGHT = CANARY_VALUE;)
 };
 
 const size_t resize_up_coeff = 2;

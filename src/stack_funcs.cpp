@@ -113,19 +113,16 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
 }
 
 err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx) {
-    ON_CANARY( // FIXME: копипаст. Можно просто сделать массив с указателями на канарейки и выдавать индекс ломанной (с описанием)
+    ON_CANARY(
         if (*stk->CANARIES.canary_left_ptr != CANARY_VALUE) {
             MY_ASSERT(ERR_CANARY_LEFT, abort())
         }
-    )
-
-    ON_CANARY(
         if (*stk->CANARIES.canary_mid_ptr != CANARY_VALUE) {
             MY_ASSERT(ERR_CANARY_MID, abort())
         }
-    )
-
-    ON_CANARY(
+        if (*stk->CANARIES.canary_right_ptr != CANARY_VALUE) {
+            MY_ASSERT(ERR_CANARY_RIGHT, abort())
+        }
         if (*stk->CANARIES.canary_stk_right_ptr != CANARY_VALUE) {
             MY_ASSERT(ERR_CANARY_STK_RIGHT, abort())
         }
@@ -172,11 +169,13 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
     }
 
     ON_CANARY(stk->CANARIES.canary_left_ptr = &stk->CANARY_LEFT;)
+    ON_CANARY(stk->CANARIES.canary_mid_ptr = &stk->CANARY_MID;)
+    ON_CANARY(stk->CANARIES.canary_right_ptr = &stk->CANARY_RIGHT;)
 
     stk->size = 0;
     stk->capacity = size;
 
-    ON_CANARY(stk->CANARIES.canary_mid_ptr = &stk->CANARY_MID;)
+
 
     NOT_ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));)
     ON_CANARY    (stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB, sizeof(char));)
