@@ -1,9 +1,0 @@
-codestyle
-
-latex
-
-doxygen
-
-?учет ошибок: errno, strerror(errno)
-
-не миксовать библиотеки
