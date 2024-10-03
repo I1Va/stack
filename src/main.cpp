@@ -24,7 +24,7 @@ int main(const int argc, const char *argv[]) {
     // opt_data_ctor(&options[0], "-t@n_tests=", "-testing@n_tests", "%ld", )
     get_options(argc, argv, options, n_options);
 
-    // config_state mode_laumcher_list =
+    // config_state mode_launcher_list =
     // {
     //     {}
     // }

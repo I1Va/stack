@@ -46,3 +46,5 @@ make
 
 make debug
 
+bear --make debug_args - создание compile_commands.json
+
