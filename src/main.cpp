@@ -18,23 +18,28 @@ int main(const int argc, const char *argv[]) {
     main_config_t main_config = {};
     main_config_ctor(&main_config);
 
-    auto_testing_config_t auto_testing_config;
+    auto_testing_config_t auto_testing_config = {};
+
     const size_t n_options = 1;
     opt_data options[n_options] = {};
-    // opt_data_ctor(&options[0], "-t@n_tests=", "-testing@n_tests", "%ld", )
+    opt_data_ctor(&options[0], "-t-n_tests", "-testing-n_tests", "%ld", &auto_testing_config.n_tests); // FIXME: exist всегда false
+
     get_options(argc, argv, options, n_options);
 
-    // config_state mode_launcher_list =
-    // {
-    //     {}
-    // }
-    // TODO: написать mode_launcher. Если config.exist = true, то вызывает функцию по указателю в структуре config
 
-    main_testing_mode_launch(&main_config, &last_err);
+    // main_testing_mode_launch(&main_config, &last_err);
+    // if (last_err != ERR_OK) {
+    //     DEBUG_ERROR(last_err)
+    //     CLEAR_MEMORY(exit_mark)
+    // }
+
+    auto_testing_mode_launch(&auto_testing_config, &last_err);
     if (last_err != ERR_OK) {
         DEBUG_ERROR(last_err)
         CLEAR_MEMORY(exit_mark)
     }
+
+
 
 
 

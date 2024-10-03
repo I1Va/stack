@@ -27,6 +27,9 @@ enum err_code {
     ERR_CANARY_STK_RIGHT = 20,
     ERR_HASH_MISMATCH = 21,
     ERR_CANARY_STK_LEFT = 22,
+    ERR_SYSTEM = 23,
+    ERR_STACK_LAST_ELEM = 24,
+
     // TODO: сделать ошибки через битмаски
 };
 

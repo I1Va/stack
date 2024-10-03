@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef int stack_elem_t;
+typedef long long stack_elem_t;
 #include "stack_funcs.h"
 
 FILE *dump_output_file_ptr = stderr;
@@ -106,7 +106,7 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
             if (stk->data[i] == POISON_STACK_VALUE) {
                 fprintf_grn(dump_output_file_ptr, "[%lu] = POISON;\n", i);
             } else {
-                fprintf_grn(dump_output_file_ptr, "*[%lu] = %d;\n", i, stk->data[i]);
+                fprintf_grn(dump_output_file_ptr, "*[%lu] = %lld;\n", i, stk->data[i]);
             }
         }
         ON_CANARY(
@@ -157,7 +157,7 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
         goto dump_mark;
     }
 
-    if (stk->size >= stk->capacity) {
+    if (stk->size > stk->capacity) {
         *return_err = ERR_STACK_OVERFLOW;
         goto dump_mark;
     }
@@ -247,9 +247,14 @@ void resize(stack_t *stk, err_code *return_err) {
     assert(return_err != NULL);
 
     bool resize_up_state = false;
+    bool unit_length_state = false;
     size_t new_byte_size = 0;
 
-    if (stk->size + 1 == stk->capacity) {
+    if (stk->capacity == 0) {
+        ON_CANARY(stack_end_canary_assign(stk, 0));
+        stk->capacity++;
+        unit_length_state = true;
+    } else if (stk->size + 1 >= stk->capacity) {
         ON_CANARY(stack_end_canary_assign(stk, 0));
         stk->capacity *= resize_up_coeff;
         resize_up_state = true;
@@ -283,11 +288,13 @@ void resize(stack_t *stk, err_code *return_err) {
         size_t old_capacity = stk->capacity / resize_up_coeff;
         stack_memset(stk->data + old_capacity, POISON_STACK_VALUE, old_capacity * (resize_up_coeff - 1));
     }
+    if (unit_length_state) {
+        stack_memset(stk->data, POISON_STACK_VALUE, 1);
+    }
 
     ON_HASH(
         HASH_rebuild_ptr(&stk->HASH, stk, stk->data, new_byte_size);
     )
-
     ON_CANARY(
         stack_end_canary_assign(stk, CANARY_VALUE);
         stk->CANARIES.canary_stk_right_ptr = stack_end_canary_getptr(stk);
@@ -303,7 +310,6 @@ void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err) {
     // переименовать в ASSERT так как убирается в релизе
     // verify проверяется в релизе
     err_code last_err = ERR_OK;
-
     resize(stk, &last_err);
     if (last_err != ERR_OK) {
         *return_err = last_err;
@@ -344,5 +350,18 @@ stack_elem_t stack_pop(stack_t *stk, err_code *return_err) {
     ON_HASH(HASH_rebuild_value(&stk->HASH);)
 
     return last_elem;
+}
 
+stack_elem_t stack_get_last(stack_t *stk, err_code *return_err) {
+    assert(stk != NULL);
+
+    VERIFY(stk, return_err, )
+
+    if (stk->size == 0) {
+        *return_err = ERR_STACK_LAST_ELEM;
+        DEBUG_ERROR(*return_err)
+        return POISON_STACK_VALUE;
+    }
+
+    return stk->data[stk->size - 1];
 }

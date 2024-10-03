@@ -31,4 +31,6 @@ void main_mode_launch(main_config_t *conf, err_code *return_err);
 
 void main_testing_mode_launch(main_config_t *conf, err_code *return_err);
 
+void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err);
+
 #endif // ARGS_PROC_H

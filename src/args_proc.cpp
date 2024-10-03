@@ -5,12 +5,13 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <stdarg.h>
 
 #include "conf_ctor.h"
 #include "general.h"
 #include "error_processing.h"
 
-typedef int stack_elem_t;
+typedef long long stack_elem_t;
 #include "stack_funcs.h"
 
 #include "general.h"
@@ -72,24 +73,125 @@ void main_testing_mode_launch(main_config_t *conf, err_code *return_err) {
     err_code last_err = ERR_OK;
 
     stack_t stk = {};
+    STACK_INIT(&stk, 0, return_err)
+    stack_push(&stk, -7, return_err);
+    stack_push(&stk, 7, return_err);
 
+    DUMP(&stk)
+    printf("last: %lld\n", stack_get_last(&stk, return_err));
 
-
-
-
-    
-
+    stack_pop(&stk, return_err);
     stack_destroy(&stk);
+
 
     return;
 }
 
-void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err) {
 
+void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err) {
+    assert(conf != NULL);
+    assert(return_err != NULL);
+
+    if (!conf->n_tests) {
+        return;
+    }
+
+    err_code last_err = ERR_OK;
+
+    const char test_gen_path[] = "src/testing/tests_gen.py";
+    const char compiler[] = "python3";
+    const char input_path[] = "src/testing/input.txt";
+
+    const char create_test_command[] = "python3 src/testing/test_gen.py > src/testing/input.txt"; // FIXME: фууу, гавнокод
+    const char create_answer_command[] = "python3 src/testing/brut.py < src/testing/input.txt > src/testing/answer.txt"; // FIXME: фууу, гавнокод
+
+    FILE* input_file = NULL;
+    const char output_path[] = "src/testing/output.txt";
+
+    FILE* output_file = NULL;
+
+    size_t n_input_coms = 0;
+
+    stack_t stk = {};
+    STACK_INIT(&stk, 0, &last_err)
+
+
+
+    if (system(create_test_command)) {
+        *return_err = ERR_SYSTEM;
+        DEBUG_ERROR(ERR_SYSTEM)
+        CLEAR_MEMORY(exit_mark)
+    }
+
+    if (system(create_answer_command)) {
+        *return_err = ERR_SYSTEM;
+        DEBUG_ERROR(ERR_SYSTEM)
+        CLEAR_MEMORY(exit_mark)
+    }
+
+    input_file = fopen(input_path, "r");
+    if (input_file == NULL) {
+        *return_err = ERR_FILE_OPEN;
+        DEBUG_ERROR(*return_err)
+        CLEAR_MEMORY(exit_mark)
+    }
+
+    output_file = fopen(output_path, "w");
+    if (output_file == NULL) {
+        *return_err = ERR_FILE_OPEN;
+        DEBUG_ERROR(*return_err)
+        CLEAR_MEMORY(exit_mark)
+    }
+    for (size_t test_idx = 0; test_idx < conf->n_tests; test_idx++) {
+        fscanf(input_file, "%ld", &n_input_coms);
+        for (size_t com_idx = 0; com_idx < n_input_coms; com_idx++) {
+            char com_str[10] = {};
+            long long com_val = 0;
+
+            fscanf(input_file, "%s", com_str);
+            // printf_grn("cur command: %s\n", com_str);
+            // DUMP(&stk);
+            if (strcmp(com_str, "push") == 0) {
+                fscanf(input_file, "%lld", &com_val);
+                stack_push(&stk, com_val, return_err);
+            } else if (strcmp(com_str, "pop") == 0) {
+                stack_pop(&stk, &last_err);
+                if (last_err != ERR_OK) {
+                    fprintf(output_file, "pop_error\n");
+                }
+            } else if (strcmp(com_str, "last") == 0) {
+                stack_elem_t last_elem = stack_get_last(&stk, &last_err);
+                if (last_err != ERR_OK) {
+                    fprintf(output_file, "last_error\n");
+                } else {
+                    fprintf(output_file, "%lld\n", last_elem);
+                }
+            } else {
+                assert(1);
+            }
+        }
+        if (!system("diff src/testing/output.txt src/testing/answer.txt")) {
+            debug("dismatch");
+            abort();
+        }
+    }
+
+
+
+
+    stack_destroy(&stk);
+    return;
+
+    exit_mark:
+    printf_red("Почисть память!\n");
+    return;
 }
+
 void main_mode_launch(main_config_t *conf, err_code *return_err) {
     assert(conf != NULL);
     assert(return_err != NULL);
+
+    stack_t stk = {};
 
     printf("THERE IS SHOULD BE MAIN MODE");
 }

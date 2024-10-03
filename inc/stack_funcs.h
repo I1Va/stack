@@ -97,4 +97,6 @@ void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err);
 
 stack_elem_t stack_pop(stack_t *stk, err_code *return_err);
 
+stack_elem_t stack_get_last(stack_t *stk, err_code *return_err);
+
 #endif // STACK_FUNCS_H
