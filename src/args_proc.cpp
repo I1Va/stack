@@ -91,31 +91,31 @@ void main_testing_mode_launch(main_config_t *conf, err_code *return_err) {
 void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err) {
     assert(conf != NULL);
     assert(return_err != NULL);
-
     if (!conf->n_tests) {
         return;
     }
 
+
     err_code last_err = ERR_OK;
 
+    // FIXME: говно код zone started
     const char test_gen_path[] = "src/testing/tests_gen.py";
     const char compiler[] = "python3";
     const char input_path[] = "src/testing/input.txt";
+    // FIXME: sprintf();
 
-    const char create_test_command[] = "python3 src/testing/test_gen.py > src/testing/input.txt"; // FIXME: фууу, гавнокод
+    const char create_test_command[] = "python3 src/testing/test_gen.py > src/testing/input.txt";
     const char create_answer_command[] = "python3 src/testing/brut.py < src/testing/input.txt > src/testing/answer.txt"; // FIXME: фууу, гавнокод
 
-    FILE* input_file = NULL;
     const char output_path[] = "src/testing/output.txt";
+    // FIXME: говно код zone ended
 
     FILE* output_file = NULL;
-
+    FILE* input_file = NULL;
     size_t n_input_coms = 0;
 
     stack_t stk = {};
     STACK_INIT(&stk, 0, &last_err)
-
-
 
     if (system(create_test_command)) {
         *return_err = ERR_SYSTEM;
@@ -180,10 +180,21 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err)
 
 
     stack_destroy(&stk);
+
+    fclose(input_file);
+    fclose(output_file);
+
     return;
 
     exit_mark:
-    printf_red("Почисть память!\n");
+
+    stack_destroy(&stk);
+    if (input_file != NULL) {
+        fclose(input_file);
+    }
+    if (output_file != NULL) {
+        fclose(output_file);
+    }
     return;
 }
 
