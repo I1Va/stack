@@ -2,4 +2,4 @@
 .clangd
 *.json
 docs
-.cache
+temp.txt
