@@ -23,18 +23,19 @@ struct canaries_t {
 };
 
 struct hash_t {
-    void *struct_left;
-    void *struct_right;
-    void *data_left;
-    void *data_right;
+    void *left_ptr;
+    void *right_ptr;
 
     unsigned long long hash_value;
-    // unsigned long long hash_mod
-    unsigned long long hash_mult = 31;
+    unsigned long long hash_mult;
 };
 
 struct stack_t {
     //TODO: можно сделать указатель на дубль тут
+
+    ON_HASH(hash_t HASH_STACK_STRUCT;)
+    ON_HASH(hash_t HASH_STACK_DATA;)
+
 
     ON_CANARY(const unsigned long long CANARY_LEFT = CANARY_VALUE;)
 
@@ -45,7 +46,7 @@ struct stack_t {
 
     ON_CANARY(const unsigned long long CANARY_MID = CANARY_VALUE;)
 
-    ON_HASH(hash_t HASH;)
+
 
     stack_elem_t *data;
 
@@ -69,11 +70,13 @@ ON_CANARY(
 )
 
 ON_HASH(
+    void HASH_init(hash_t *HASH);
+
     void HASH_print(hash_t *HASH);
 
     unsigned long long HASH_get(hash_t *HASH);
 
-    void HASH_rebuild_ptr(hash_t *HASH, stack_t *stk, stack_elem_t *data_ptr, const size_t n_bytes);
+    void HASH_rebuild_ptr(hash_t *HASH, char *left_ptr, char *right_ptr);
 
     void HASH_rebuild_value(hash_t *HASH);
 

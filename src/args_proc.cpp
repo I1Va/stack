@@ -61,34 +61,6 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
     }
 }
 
-void ptr_stack_dump(FILE* stream, stack_t *stk) {
-    fprintf(stream, RED "------------------------------------------------------------\n" WHT);
-    fprintf(stream, GRN "_________stk: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n" GRN, stk, stk + 1, sizeof(*stk));
-    fprintf(stream, RED "------------------------------------------------------------\n" WHT);
-    ON_CANARY(
-    fprintf(stream, "_CANARY_LEFT: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
-    fprintf(stream, "_CANARY_LEFT: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
-    )
-    fprintf(stream, "________size: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->size, &stk->size + 1, sizeof(stk->size));
-    fprintf(stream, "____capacity: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->capacity, &stk->capacity + 1, sizeof(stk->capacity));
-    ON_CANARY(
-    fprintf(stream, "__CANARY_MID: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->CANARY_MID, &stk->CANARY_MID + 1, sizeof(stk->CANARY_MID));
-    )
-    ON_HASH(
-    fprintf(stream, "________HASH: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->HASH, &stk->HASH + 1, sizeof(stk->HASH));
-    )
-    fprintf(stream, "_______*data: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->data, &stk->data + 1, sizeof(stk->data));
-    fprintf(stream, "__*born_file: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->born_file, &stk->born_file + 1, sizeof(stk->born_file));
-    fprintf(stream, "__*born_line: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->born_line, &stk->born_line + 1, sizeof(stk->born_line));
-    fprintf(stream, "__*born_func: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->born_func, &stk->born_func + 1, sizeof(stk->born_func));
-    ON_CANARY(
-    fprintf(stream, "CANARY_RIGHT: [%10llu:%10llu)" RED " | " WHT "bytes: %lu\n", &stk->CANARY_RIGHT, &stk->CANARY_RIGHT + 1, sizeof(stl->CANARY_RIGHT))
-    )
-    fprintf(stream, RED "------------------------------------------------------------\n" WHT);
-
-
-}
-
 void main_testing_mode_launch(main_config_t *conf, err_code *return_err) {
 
     assert(conf != NULL);
@@ -104,11 +76,21 @@ void main_testing_mode_launch(main_config_t *conf, err_code *return_err) {
     STACK_INIT(&stk, 0, return_err)
 
     ptr_stack_dump(stdout, &stk);
-    // DUMP(&stk)
+    DUMP(&stk)
     // HASH_print(&stk.HASH);
-    // VERIFY(&stk, &last_err, abort())
+    VERIFY(&stk, &last_err, abort())
 
-    // stack_push(&stk, -7, &last_err);
+    for (size_t i = 0; i < 10; i++) {
+        stack_push(&stk, rand() % 64, &last_err);
+    }
+    for (size_t i = 0; i < 10; i++) {
+        DUMP(&stk)
+        stack_pop(&stk, &last_err);
+
+    }
+    DUMP(&stk)
+
+
     // if (last_err != ERR_OK) {
     //     *return_err = last_err;
     //     MY_ASSERT(*return_err, CLEAR_MEMORY(exit_mark));
