@@ -80,6 +80,7 @@ ON_HASH(
     bool HASH_check(hash_t *HASH);
 )
 
+void ptr_stack_dump(FILE* stream, stack_t *stk);
 
 void stack_init(stack_t *stk, const size_t size, err_code *return_err, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
 

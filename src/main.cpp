@@ -29,11 +29,11 @@ int main(const int argc, const char *argv[]) {
 
 
 
-    auto_testing_mode_launch(&auto_testing_config, &last_err);
-    if (last_err != ERR_OK) {
-        DEBUG_ERROR(last_err)
-        CLEAR_MEMORY(exit_mark)
-    }
+    // auto_testing_mode_launch(&auto_testing_config, &last_err);
+    // if (last_err != ERR_OK) {
+    //     DEBUG_ERROR(last_err)
+    //     CLEAR_MEMORY(exit_mark)
+    // }
 
     main_testing_mode_launch(&main_config, &last_err);
     if (last_err != ERR_OK) {

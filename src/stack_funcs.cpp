@@ -122,18 +122,23 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
 err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx) {
     ON_CANARY(
         if (*stk->CANARIES.canary_left_ptr != CANARY_VALUE) {
+            *return_err = ERR_CANARY_LEFT;
             MY_ASSERT(ERR_CANARY_LEFT, abort())
         }
         if (*stk->CANARIES.canary_mid_ptr != CANARY_VALUE) {
+            *return_err = ERR_CANARY_MID;
             MY_ASSERT(ERR_CANARY_MID, abort())
         }
         if (*stk->CANARIES.canary_right_ptr != CANARY_VALUE) {
+            *return_err = ERR_CANARY_RIGHT;
             MY_ASSERT(ERR_CANARY_RIGHT, abort())
         }
         if (*stk->CANARIES.canary_stk_left_ptr != CANARY_VALUE) {
+            *return_err = ERR_CANARY_STK_LEFT;
             MY_ASSERT(ERR_CANARY_STK_LEFT, abort())
         }
         if (*stk->CANARIES.canary_stk_right_ptr != CANARY_VALUE) {
+            *return_err = ERR_CANARY_STK_RIGHT;
             MY_ASSERT(ERR_CANARY_STK_RIGHT, abort())
         }
     )
@@ -142,7 +147,8 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
         if (!HASH_check(&stk->HASH)) {
             HASH_print(&stk->HASH);
             printf("_cur_value: [%llu]\n", HASH_get(&stk->HASH));
-            MY_ASSERT(ERR_HASH_MISMATCH, abort())
+            *return_err = ERR_HASH_MISMATCH;
+            MY_ASSERT(ERR_HASH_MISMATCH, return *return_err)
         }
     )
 
@@ -211,7 +217,13 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
 
     ON_HASH(
         stk->HASH = {};
-        HASH_rebuild_ptr(&stk->HASH, stk, stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
+        ON_CANARY(
+            HASH_rebuild_ptr(&stk->HASH, stk, stk->data, stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB);
+        )
+        NOT_ON_CANARY(
+             HASH_rebuild_ptr(&stk->HASH, stk, stk->data, stk->capacity * sizeof(stack_elem_t));
+        )
+
         HASH_rebuild_value(&stk->HASH);
     )
 
