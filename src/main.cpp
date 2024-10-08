@@ -13,7 +13,7 @@
 
 
 int main(const int argc, const char *argv[]) {
-    err_code last_err = ERR_OK;
+    unsigned long long last_err = ERR_OK;
 
     main_config_t main_config = {};
     main_config_ctor(&main_config);

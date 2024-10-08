@@ -59,20 +59,28 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
     }
 }
 
-void main_testing_mode_launch(main_config_t *conf, err_code *return_err) {
+void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_err) {
     assert(conf != NULL);
     assert(return_err != NULL);
 
+    unsigned long long last_err = ERR_OK;
+    DEBUG_ERROR(last_err)
 
+    stack_t stk = {};
+    STACK_INIT(&stk, 10, &last_err);
+
+
+    ptr_stack_dump(stdout, &stk);
     if (!conf->exist) {
         return;
     }
 
+    stack_destroy(&stk);
     return;
 }
 
 
-void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err) {
+void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *return_err) {
     assert(conf != NULL);
     assert(return_err != NULL);
     if (!conf->n_tests) {
@@ -80,7 +88,7 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err)
     }
 
 
-    err_code last_err = ERR_OK;
+    unsigned long long last_err = ERR_OK;
 
     // FIXME:
     // const char test_gen_path[] = "src/testing/tests_gen.py";
@@ -99,20 +107,20 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err)
     STACK_INIT(&stk, 0, &last_err)
 
     if (system(create_test_command)) {
-        *return_err = ERR_SYSTEM;
-        DEBUG_ERROR(ERR_SYSTEM)
+        *return_err |= ERR_SYSTEM;
+        DEBUG_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
 
     if (system(create_answer_command)) {
-        *return_err = ERR_SYSTEM;
-        DEBUG_ERROR(ERR_SYSTEM)
+        *return_err |= ERR_SYSTEM;
+        DEBUG_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
 
     input_file = fopen(input_path, "r");
     if (input_file == NULL) {
-        *return_err = ERR_FILE_OPEN;
+        *return_err |= ERR_FILE_OPEN;
         DEBUG_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
@@ -179,7 +187,7 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err)
     return;
 }
 
-void main_mode_launch(main_config_t *conf, err_code *return_err) {
+void main_mode_launch(main_config_t *conf, unsigned long long *return_err) {
     assert(conf != NULL);
     assert(return_err != NULL);
 }

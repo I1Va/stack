@@ -36,7 +36,6 @@ struct stack_t {
     ON_HASH(hash_t HASH_STACK_STRUCT;)
     ON_HASH(hash_t HASH_STACK_DATA;)
 
-
     ON_CANARY(const unsigned long long CANARY_LEFT = CANARY_VALUE;)
 
     ON_CANARY(canaries_t CANARIES;)
@@ -45,8 +44,6 @@ struct stack_t {
     size_t capacity;
 
     ON_CANARY(const unsigned long long CANARY_MID = CANARY_VALUE;)
-
-
 
     stack_elem_t *data;
 
@@ -85,22 +82,22 @@ ON_HASH(
 
 void ptr_stack_dump(FILE* stream, stack_t *stk);
 
-void stack_init(stack_t *stk, const size_t size, err_code *return_err, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
+void stack_init(stack_t *stk, const size_t size, unsigned long long *return_err, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
 
 void stack_destroy(stack_t *stk);
 
 void dump(stack_t *stk, const char *file_name, const int line_idx);
 
-err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const char *func_name, const int line_idx);
+unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char *file_name, const char *func_name, const int line_idx);
 
 void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n);
 
-void resize(stack_t *stk, err_code *return_err);
+void resize(stack_t *stk, unsigned long long *return_err);
 
-void stack_push(stack_t *stk, stack_elem_t value, err_code *return_err);
+void stack_push(stack_t *stk, stack_elem_t value, unsigned long long *return_err);
 
-stack_elem_t stack_pop(stack_t *stk, err_code *return_err);
+stack_elem_t stack_pop(stack_t *stk, unsigned long long *return_err);
 
-stack_elem_t stack_get_last(stack_t *stk, err_code *return_err);
+stack_elem_t stack_get_last(stack_t *stk, unsigned long long *return_err);
 
 #endif // STACK_FUNCS_H
