@@ -28,6 +28,10 @@ int main(const int argc, const char *argv[]) {
         CLEAR_MEMORY(exit_mark)
     }
 
+    LogVar("string: %s\n", log_path)
+    LogVar("string: %s\n", log_path)
+    LogVar("string: %s\n", log_path)
+    LogVar("string: %s\n", log_path)
 
 
 

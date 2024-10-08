@@ -18,4 +18,8 @@ void print_err_full_description(const unsigned long long err);
 
 void log_init(const char log_path[], unsigned long long *return_err);
 
+void log_var_print(const char* fmt, ...);
+
+#define LogVar(str_, ...) log_var_print("{%s} [%s: %d]: descr{" str_ "}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__);
+
 #endif // OUTPUT_H

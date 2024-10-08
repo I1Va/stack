@@ -82,7 +82,7 @@ void stack_init(stack_t *stk, const size_t size, unsigned long long *return_err,
 
 void stack_destroy(stack_t *stk);
 
-unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char *file_name, const char *func_name, const int line_idx);
+unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char *file_name, const int line_idx);
 
 void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n);
 

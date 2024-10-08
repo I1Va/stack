@@ -53,7 +53,7 @@ enum RETURN_STATES {
     #define ON_DEBUG(...) __VA_ARGS__
     #define VERIFY(stk, return_err, exit_instruction)                                         \
         {                                                                                             \
-            if (verify(stk, return_err, __FILE__,__PRETTY_FUNCTION__, __LINE__) != ERR_OK) { \
+            if (verify(stk, return_err, __FILE__, __LINE__) != ERR_OK) { \
                 exit_instruction;                                                                     \
             }                                                                                          \
         }

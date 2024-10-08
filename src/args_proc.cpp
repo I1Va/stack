@@ -73,10 +73,13 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
     last_err |= ERR_FILE_OPEN;
 
     print_err_full_description(last_err);
+
     DEBUG_ERROR(last_err)
 
-    // stack_t stk = {};
-    // STACK_INIT(&stk, 10, &last_err);
+    stack_t stk = {};
+    STACK_INIT(&stk, 10, &last_err);
+
+    DUMP(&stk);
 
 
     // ptr_stack_dump(stdout, &stk);
@@ -84,7 +87,7 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
     //     return;
     // }
 
-    // stack_destroy(&stk);
+    stack_destroy(&stk);
     return;
 }
 

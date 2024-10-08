@@ -72,7 +72,7 @@ void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) 
     }
 }
 
-unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char *file_name, const char *func_name, const int line_idx) {
+unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char *file_name, const int line_idx) {
     ON_CANARY(
         if (*stk->CANARIES.canary_left_ptr != CANARY_VALUE) {
             *return_err |= ERR_CANARY_LEFT;
