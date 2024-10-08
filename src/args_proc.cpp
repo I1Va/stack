@@ -64,18 +64,25 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
     assert(return_err != NULL);
 
     unsigned long long last_err = ERR_OK;
+
+    last_err |= ERR_CALLOC;
+    last_err |= ERR_HASH_STACK_DATA_MISMATCH;
+    last_err |= ERR_ARGS;
+    last_err |= ERR_STACK_NULLPTR;
+
+    print_err_full_description(stdout, last_err);
     DEBUG_ERROR(last_err)
 
-    stack_t stk = {};
-    STACK_INIT(&stk, 10, &last_err);
+    // stack_t stk = {};
+    // STACK_INIT(&stk, 10, &last_err);
 
 
-    ptr_stack_dump(stdout, &stk);
-    if (!conf->exist) {
-        return;
-    }
+    // ptr_stack_dump(stdout, &stk);
+    // if (!conf->exist) {
+    //     return;
+    // }
 
-    stack_destroy(&stk);
+    // stack_destroy(&stk);
     return;
 }
 

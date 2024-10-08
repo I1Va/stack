@@ -1,17 +1,53 @@
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #include "error_processing.h"
 
-// #define DESCR_(code) case code : return #code;
+const char *get_bit_descr(unsigned long long err) {
+    #define BIT_DESCR_(code) case code : return #code;
+    switch (err) {
+        BIT_DESCR_(ERR_OK)
+        BIT_DESCR_(ERR_UNKNOWN)
+        BIT_DESCR_(ERR_CALLOC)
+        BIT_DESCR_(ERR_NULLPTR)
+        BIT_DESCR_(ERR_STAT)
+        BIT_DESCR_(ERR_INPUT_DATA)
+        BIT_DESCR_(ERR_MEM)
+        BIT_DESCR_(ERR_FILE_CLOSE)
+        BIT_DESCR_(ERR_FILE_OPEN)
+        BIT_DESCR_(ERR_ARGS)
+        BIT_DESCR_(ERR_WRONG_COEF)
+        BIT_DESCR_(ERR_INIT)
+        BIT_DESCR_(ERR_STACK_NULLPTR)
+        BIT_DESCR_(ERR_STACK_CONT_NULLPTR)
+        BIT_DESCR_(ERR_STACK_OVERFLOW)
+        BIT_DESCR_(ERR_STACK_POP)
+        BIT_DESCR_(ERR_REALLOC)
+        BIT_DESCR_(ERR_CANARY_LEFT)
+        BIT_DESCR_(ERR_CANARY_MID)
+        BIT_DESCR_(ERR_CANARY_RIGHT)
+        BIT_DESCR_(ERR_CANARY_STK_RIGHT)
+        BIT_DESCR_(ERR_HASH_STACK_DATA_MISMATCH)
+        BIT_DESCR_(ERR_CANARY_STK_LEFT)
+        BIT_DESCR_(ERR_SYSTEM)
+        BIT_DESCR_(ERR_STACK_LAST_ELEM)
+        BIT_DESCR_(ERR_HASH_STACK_STRUCT_MISMATCH)
 
-#define DESCR_(code, err)   \
-{                                   \
-    if (code & err) {           \
-        return #err;            \
-    }                               \
-}                                   \
+        default: return "VERY STRANGE ERROR:(";
+    }
+    #undef BIT_DESCR_
+}
+
 
 const char *get_descr(unsigned long long err) {
+    #define DESCR_(code, err)           \
+    {                                   \
+        if (code & err) {               \
+            return #err;                \
+        }                               \
+    }                                   \
+
     DESCR_(err, ERR_NULLPTR)
     DESCR_(err, ERR_CALLOC)
     DESCR_(err, ERR_UNKNOWN)
@@ -46,6 +82,14 @@ const char *get_descr(unsigned long long err) {
     return "STRANGE ERROR!";
 }
 
+void print_err_full_description(FILE* stream, const unsigned long long err) {
+    fprintf(stream, "-----------ERROR_LIST------------------\n");
+    for (size_t err_bit = 0; err_bit < 32; err_bit++) {
+        if ((err >> err_bit) & 1ull) {
+            fprintf(stream, "%s\n", get_bit_descr(1 << err_bit));
+        }
+    }
+    fprintf(stream, "---------------------------------------\n\n");
+}
 
-// #undef DESCR_
 #undef DESCR_
