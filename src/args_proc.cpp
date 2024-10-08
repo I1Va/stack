@@ -1,5 +1,3 @@
-#include <cstddef>
-#include <cstdlib>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -62,16 +60,15 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
 }
 
 void main_testing_mode_launch(main_config_t *conf, err_code *return_err) {
-
     assert(conf != NULL);
     assert(return_err != NULL);
+
 
     if (!conf->exist) {
         return;
     }
 
     return;
-
 }
 
 
