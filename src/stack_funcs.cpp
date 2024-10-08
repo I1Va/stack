@@ -71,6 +71,8 @@ ON_CANARY(
 )
 
 void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) {
+    assert(data != NULL);
+
     for (size_t i = 0; i < n; i++) {
         *(data + i) = value;
     }
@@ -275,6 +277,7 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
 }
 
 void stack_destroy(stack_t *stk) {
+    // FIXME: если stk - невалидный адресс, то будет segfault
     ON_CANARY(
         if (stk->data != NULL) {
             stk->data -= LEFT_CANARY_INDENT;
