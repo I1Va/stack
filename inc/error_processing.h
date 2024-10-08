@@ -36,7 +36,7 @@ const char *get_descr(unsigned long long err);
 
 int fprintf_abort(const char file_name[], const int line, const char function_name[], const char error_descr[]);
 
-void print_err_full_description(FILE* stream, const unsigned long long err);
+const char *get_bit_descr(unsigned long long err);
 
 // err_code fprintf_return(const char file_name[], const int line, const char function_name[], const err_code code);
 

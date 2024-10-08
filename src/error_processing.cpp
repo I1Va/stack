@@ -39,7 +39,6 @@ const char *get_bit_descr(unsigned long long err) {
     #undef BIT_DESCR_
 }
 
-
 const char *get_descr(unsigned long long err) {
     #define DESCR_(code, err)           \
     {                                   \
@@ -80,16 +79,6 @@ const char *get_descr(unsigned long long err) {
     }
 
     return "STRANGE ERROR!";
-}
-
-void print_err_full_description(FILE* stream, const unsigned long long err) {
-    fprintf(stream, "-----------ERROR_LIST------------------\n");
-    for (size_t err_bit = 0; err_bit < 32; err_bit++) {
-        if ((err >> err_bit) & 1ull) {
-            fprintf(stream, "%s\n", get_bit_descr(1 << err_bit));
-        }
-    }
-    fprintf(stream, "---------------------------------------\n\n");
 }
 
 #undef DESCR_

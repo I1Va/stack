@@ -69,8 +69,6 @@ ON_CANARY(
 ON_HASH(
     void HASH_init(hash_t *HASH);
 
-    void HASH_print(hash_t *HASH);
-
     unsigned long long HASH_get(hash_t *HASH);
 
     void HASH_rebuild_ptr(hash_t *HASH, char *left_ptr, char *right_ptr);
@@ -80,13 +78,9 @@ ON_HASH(
     bool HASH_check(hash_t *HASH);
 )
 
-void ptr_stack_dump(FILE* stream, stack_t *stk);
-
 void stack_init(stack_t *stk, const size_t size, unsigned long long *return_err, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
 
 void stack_destroy(stack_t *stk);
-
-void dump(stack_t *stk, const char *file_name, const int line_idx);
 
 unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char *file_name, const char *func_name, const int line_idx);
 

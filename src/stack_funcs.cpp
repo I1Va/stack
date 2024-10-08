@@ -1,5 +1,3 @@
-#include "general.h"
-#include "error_processing.h"
 #include <cassert>
 #include <cstddef>
 #include <cstdlib>
@@ -7,10 +5,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#include "general.h"
+#include "error_processing.h"
+#include "output.h"
+
 typedef long long stack_elem_t;
 #include "stack_funcs.h"
-
-FILE *dump_output_file_ptr = stderr;
 
 ON_HASH(
 
@@ -19,12 +19,6 @@ ON_HASH(
         HASH->right_ptr = NULL;
         HASH->hash_mult = 257;
         HASH->hash_value = 0;
-    }
-
-    void HASH_print(hash_t *HASH) {
-        printf("seg: [%p:%p)\n", HASH->left_ptr, HASH->right_ptr);
-        printf("hash_value: [%llu]\n", HASH->hash_value);
-        printf("get _value: [%llu]\n", HASH_get(HASH));
     }
 
     unsigned long long HASH_get(hash_t *HASH) {
@@ -76,76 +70,6 @@ void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) 
     for (size_t i = 0; i < n; i++) {
         *(data + i) = value;
     }
-}
-
-void ptr_stack_dump(FILE* stream, stack_t *stk) {
-    fprintf(stream, RED "------------------------------------------------------------\n" WHT);
-    fprintf(stream, GRN "_________stk: [%p:%p)" RED " | " WHT "bytes: %2lu\n" GRN, stk, stk + 1, sizeof(*stk));
-    fprintf(stream, RED "------------------------------------------------------------\n" WHT);
-    ON_HASH(
-    fprintf(stream, "________HASH: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->HASH_STACK_STRUCT, &stk->HASH_STACK_STRUCT + 1, sizeof(stk->HASH_STACK_STRUCT));
-    fprintf(stream, "________HASH: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->HASH_STACK_DATA, &stk->HASH_STACK_DATA + 1, sizeof(stk->HASH_STACK_DATA));
-    )
-    ON_CANARY(
-    fprintf(stream, "_CANARY_LEFT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
-    fprintf(stream, "_CANARY_LEFT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
-    )
-    fprintf(stream, "________size: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->size, &stk->size + 1, sizeof(stk->size));
-    fprintf(stream, "____capacity: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->capacity, &stk->capacity + 1, sizeof(stk->capacity));
-    ON_CANARY(
-    fprintf(stream, "__CANARY_MID: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_MID, &stk->CANARY_MID + 1, sizeof(stk->CANARY_MID));
-    )
-    fprintf(stream, "_______*data: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->data, &stk->data + 1, sizeof(stk->data));
-    fprintf(stream, "__*born_file: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->born_file, &stk->born_file + 1, sizeof(stk->born_file));
-    fprintf(stream, "__*born_line: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->born_line, &stk->born_line + 1, sizeof(stk->born_line));
-    fprintf(stream, "__*born_func: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->born_func, &stk->born_func + 1, sizeof(stk->born_func));
-    ON_CANARY(
-    fprintf(stream, "CANARY_RIGHT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_RIGHT, &stk->CANARY_RIGHT + 1, sizeof(stl->CANARY_RIGHT))
-    )
-    fprintf(stream, RED "------------------------------------------------------------\n" WHT);
-}
-
-
-void dump(stack_t *stk, const char *file_name, const int line_idx) {
-    if (stk == NULL) {
-        return;
-    }
-
-    fprintf_red(dump_output_file_ptr, "stack_t [%p] at %s:%d born at %s:%d(%s)\n", \
-    stk, file_name, line_idx, stk->born_file, stk->born_line, stk->born_func);
-
-    fprintf_wht(dump_output_file_ptr, "{\n");
-    ON_CANARY(fprintf_yel(dump_output_file_ptr, "canl_ptr[%p]\n", &stk->CANARY_LEFT);)
-    fprintf_yel(dump_output_file_ptr, "size = %lu\n", stk->size);
-    // fprintf_yel(dump_output_file_ptr, "size_ptr[%p]\n", &stk->size);
-    fprintf_yel(dump_output_file_ptr, "capacity = %lu\n", stk->capacity);
-    // fprintf_yel(dump_output_file_ptr, "capa_ptr[%p]\n", &stk->capacity);
-    // fprintf_yel(dump_output_file_ptr, "data_ptr[%p]\n", &stk->data);
-    fprintf_yel(dump_output_file_ptr, "stack[%p]\n", stk->data);
-
-    fprintf_wht(dump_output_file_ptr, "{\n");
-    if (stk->data == NULL) {
-        fprintf_red(dump_output_file_ptr, "NULLPTR\n");
-    } else {
-        ON_CANARY(
-            canary_elem_t left_canary_val = *(canary_elem_t *)(stk->data - LEFT_CANARY_INDENT);
-            fprintf_grn(dump_output_file_ptr, "[_left_canary] = %llx;\n", left_canary_val); //FIXME: %x? для unsigned long long работает?
-        )
-        for (size_t i = 0; i < stk->capacity; i++) {
-            if (stk->data[i] == POISON_STACK_VALUE) {
-                fprintf_grn(dump_output_file_ptr, "[%lu] = POISON;\n", i);
-            } else {
-                fprintf_grn(dump_output_file_ptr, "*[%lu] = %lld;\n", i, stk->data[i]);
-            }
-        }
-        ON_CANARY(
-            canary_elem_t right_canary_val = *stack_end_canary_getptr(stk);
-            fprintf_grn(dump_output_file_ptr, "[right_canary] = %llx;\n", right_canary_val); //FIXME: %x? для unsigned long long работает?
-        )
-    }
-    fprintf_wht(dump_output_file_ptr, "}\n");
-
-    fprintf_wht(dump_output_file_ptr, "}\n");
 }
 
 unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char *file_name, const char *func_name, const int line_idx) {
@@ -205,7 +129,7 @@ unsigned long long verify(stack_t *stk, unsigned long long *return_err, const ch
 
     dump_mark:
 
-    fprintf_red(dump_output_file_ptr, "{%s} [%s: %d]: descr{%s}\n", file_name, func_name, line_idx, get_descr(*return_err));
+    DEBUG_ERROR(*return_err);
     dump(stk, file_name, line_idx);
 
     return *return_err;

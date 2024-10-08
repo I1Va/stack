@@ -8,6 +8,7 @@
 #include "conf_ctor.h"
 #include "general.h"
 #include "error_processing.h"
+#include "output.h"
 
 typedef long long stack_elem_t;
 #include "stack_funcs.h"
@@ -69,8 +70,9 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
     last_err |= ERR_HASH_STACK_DATA_MISMATCH;
     last_err |= ERR_ARGS;
     last_err |= ERR_STACK_NULLPTR;
+    last_err |= ERR_FILE_OPEN;
 
-    print_err_full_description(stdout, last_err);
+    print_err_full_description(last_err);
     DEBUG_ERROR(last_err)
 
     // stack_t stk = {};
