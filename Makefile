@@ -40,23 +40,27 @@ SRC_OUTPUTFILE = $(BUILD_DIR)/stack.out
 
 all: launch
 
-build:
+make_src_folder:
+	@mkdir -p $(BUILD_DIR)
+
+build: make_src_folder
+
 	$(CC) $(SRC_FILES) -O0 -o $(SRC_OUTPUTFILE) $(INCLUDE_FLAGS) $(CC_FLAGS)
 
-debug:
+debug: make_src_folder
 	$(CC) $(SRC_FILES) -o $(SRC_OUTPUTFILE) $(DEFINE_FLAGS) $(INCLUDE_FLAGS) $(CC_FLAGS)
 
-san_debug:
+san_debug: make_src_folder
 	$(CC) $(SRC_FILES) -o $(SRC_OUTPUTFILE) $(DEFINE_FLAGS) $(INCLUDE_FLAGS) $(CC_DEBUG_FLAGS)
 	./build/stack.out -t-n_tests=10
 
 launch: build
 	./$(SRC_OUTPUTFILE)
 
-security:
+security: make_src_folder
 	$(CC) $(SRC_FILES) -o $(SRC_OUTPUTFILE) $(DEFINE_FLAGS) $(SECURITY_FLAGS) $(INCLUDE_FLAGS) $(CC_FLAGS)
 
-debug_security:
+debug_security: make_src_folder
 	$(CC) $(SRC_FILES) -o $(SRC_OUTPUTFILE) $(DEFINE_FLAGS) $(SECURITY_FLAGS) $(INCLUDE_FLAGS) $(CC_DEBUG_FLAGS)
 
 # clear

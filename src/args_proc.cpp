@@ -107,10 +107,6 @@ void main_testing_mode_launch(main_config_t *conf, err_code *return_err) {
 
     return;
 
-    exit_mark:
-
-    stack_destroy(&stk);
-    return;
 }
 
 
@@ -124,17 +120,14 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err)
 
     err_code last_err = ERR_OK;
 
-    // FIXME: говно код zone started
-    const char test_gen_path[] = "src/testing/tests_gen.py";
-    const char compiler[] = "python3";
+    // FIXME:
+    // const char test_gen_path[] = "src/testing/tests_gen.py";
+    // const char compiler[] = "python3";
     const char input_path[] = "src/testing/input.txt";
-    // FIXME: sprintf();
-
     const char create_test_command[] = "python3 src/testing/test_gen.py > src/testing/input.txt";
-    const char create_answer_command[] = "python3 src/testing/brut.py < src/testing/input.txt > src/testing/answer.txt"; // FIXME: фууу, гавнокод
-
+    const char create_answer_command[] = "python3 src/testing/brut.py < src/testing/input.txt > src/testing/answer.txt";
     const char output_path[] = "src/testing/output.txt";
-    // FIXME: говно код zone ended
+    // FIXME:
 
     FILE* output_file = NULL;
     FILE* input_file = NULL;
@@ -169,7 +162,7 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err)
         CLEAR_MEMORY(exit_mark)
     }
     for (size_t test_idx = 0; test_idx < conf->n_tests; test_idx++) {
-        fscanf(input_file, "%ld", &n_input_coms);
+        fscanf(input_file, "%lu", &n_input_coms);
         for (size_t com_idx = 0; com_idx < n_input_coms; com_idx++) {
             char com_str[10] = {};
             long long com_val = 0;
@@ -227,8 +220,4 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, err_code *return_err)
 void main_mode_launch(main_config_t *conf, err_code *return_err) {
     assert(conf != NULL);
     assert(return_err != NULL);
-
-    stack_t stk = {};
-
-    printf("THERE IS SHOULD BE MAIN MODE");
 }

@@ -22,7 +22,7 @@ ON_HASH(
     }
 
     void HASH_print(hash_t *HASH) {
-        printf("seg: [%15llu:%15llu)\n", HASH->left_ptr, HASH->right_ptr);
+        printf("seg: [%p:%p)\n", HASH->left_ptr, HASH->right_ptr);
         printf("hash_value: [%llu]\n", HASH->hash_value);
         printf("get _value: [%llu]\n", HASH_get(HASH));
     }
@@ -78,27 +78,27 @@ void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) 
 
 void ptr_stack_dump(FILE* stream, stack_t *stk) {
     fprintf(stream, RED "------------------------------------------------------------\n" WHT);
-    fprintf(stream, GRN "_________stk: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n" GRN, stk, stk + 1, sizeof(*stk));
+    fprintf(stream, GRN "_________stk: [%p:%p)" RED " | " WHT "bytes: %2lu\n" GRN, stk, stk + 1, sizeof(*stk));
     fprintf(stream, RED "------------------------------------------------------------\n" WHT);
     ON_HASH(
-    fprintf(stream, "________HASH: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->HASH_STACK_STRUCT, &stk->HASH_STACK_STRUCT + 1, sizeof(stk->HASH_STACK_STRUCT));
-    fprintf(stream, "________HASH: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->HASH_STACK_DATA, &stk->HASH_STACK_DATA + 1, sizeof(stk->HASH_STACK_DATA));
+    fprintf(stream, "________HASH: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->HASH_STACK_STRUCT, &stk->HASH_STACK_STRUCT + 1, sizeof(stk->HASH_STACK_STRUCT));
+    fprintf(stream, "________HASH: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->HASH_STACK_DATA, &stk->HASH_STACK_DATA + 1, sizeof(stk->HASH_STACK_DATA));
     )
     ON_CANARY(
-    fprintf(stream, "_CANARY_LEFT: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
-    fprintf(stream, "_CANARY_LEFT: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
+    fprintf(stream, "_CANARY_LEFT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
+    fprintf(stream, "_CANARY_LEFT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
     )
-    fprintf(stream, "________size: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->size, &stk->size + 1, sizeof(stk->size));
-    fprintf(stream, "____capacity: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->capacity, &stk->capacity + 1, sizeof(stk->capacity));
+    fprintf(stream, "________size: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->size, &stk->size + 1, sizeof(stk->size));
+    fprintf(stream, "____capacity: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->capacity, &stk->capacity + 1, sizeof(stk->capacity));
     ON_CANARY(
-    fprintf(stream, "__CANARY_MID: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_MID, &stk->CANARY_MID + 1, sizeof(stk->CANARY_MID));
+    fprintf(stream, "__CANARY_MID: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_MID, &stk->CANARY_MID + 1, sizeof(stk->CANARY_MID));
     )
-    fprintf(stream, "_______*data: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->data, &stk->data + 1, sizeof(stk->data));
-    fprintf(stream, "__*born_file: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->born_file, &stk->born_file + 1, sizeof(stk->born_file));
-    fprintf(stream, "__*born_line: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->born_line, &stk->born_line + 1, sizeof(stk->born_line));
-    fprintf(stream, "__*born_func: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->born_func, &stk->born_func + 1, sizeof(stk->born_func));
+    fprintf(stream, "_______*data: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->data, &stk->data + 1, sizeof(stk->data));
+    fprintf(stream, "__*born_file: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->born_file, &stk->born_file + 1, sizeof(stk->born_file));
+    fprintf(stream, "__*born_line: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->born_line, &stk->born_line + 1, sizeof(stk->born_line));
+    fprintf(stream, "__*born_func: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->born_func, &stk->born_func + 1, sizeof(stk->born_func));
     ON_CANARY(
-    fprintf(stream, "CANARY_RIGHT: [%15llu:%15llu)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_RIGHT, &stk->CANARY_RIGHT + 1, sizeof(stl->CANARY_RIGHT))
+    fprintf(stream, "CANARY_RIGHT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_RIGHT, &stk->CANARY_RIGHT + 1, sizeof(stl->CANARY_RIGHT))
     )
     fprintf(stream, RED "------------------------------------------------------------\n" WHT);
 }
@@ -249,7 +249,7 @@ void stack_init(stack_t *stk, const size_t size, err_code *return_err, const cha
         stk->HASH_STACK_STRUCT = {}; HASH_init(&stk->HASH_STACK_STRUCT);
         stk->HASH_STACK_DATA = {}; HASH_init(&stk->HASH_STACK_DATA);
         HASH_rebuild_ptr(&stk->HASH_STACK_STRUCT, (char *) &stk->size, (char *) (&stk->born_func + 1));
-        HASH_rebuild_ptr(&stk->HASH_STACK_DATA, (char *) stk->data, (char *) ((char *) stk->data + stk->capacity * sizeof(stack_elem_t)));
+        HASH_rebuild_ptr(&stk->HASH_STACK_DATA, (char *) stk->data, ((char *) stk->data + stk->capacity * sizeof(stack_elem_t)));
 
         HASH_rebuild_value(&stk->HASH_STACK_STRUCT);
         HASH_rebuild_value(&stk->HASH_STACK_DATA);
