@@ -70,41 +70,6 @@ void main_testing_mode_launch(main_config_t *conf, err_code *return_err) {
         return;
     }
 
-    err_code last_err = ERR_OK;
-
-    stack_t stk = {};
-    STACK_INIT(&stk, 0, return_err)
-
-    ptr_stack_dump(stdout, &stk);
-    DUMP(&stk)
-    // HASH_print(&stk.HASH);
-    VERIFY(&stk, &last_err, abort())
-
-    for (size_t i = 0; i < 10; i++) {
-        stack_push(&stk, rand() % 64, &last_err);
-    }
-    for (size_t i = 0; i < 10; i++) {
-        DUMP(&stk)
-        stack_pop(&stk, &last_err);
-
-    }
-    DUMP(&stk)
-
-
-    // if (last_err != ERR_OK) {
-    //     *return_err = last_err;
-    //     MY_ASSERT(*return_err, CLEAR_MEMORY(exit_mark));
-    // }
-    // stack_push(&stk, 7, return_err);
-
-
-    // printf("last: %lld\n", stack_get_last(&stk, return_err));
-
-    // stack_pop(&stk, return_err);
-
-    stack_destroy(&stk);
-
-
     return;
 
 }
