@@ -209,6 +209,8 @@ err_code verify(stack_t *stk, err_code *return_err, const char *file_name, const
 }
 
 void stack_init(stack_t *stk, const size_t size, err_code *return_err, const char born_file[], const int born_line, const char born_func[]) {
+    assert(return_err != NULL);
+
     if (stk == NULL) {
         DEBUG_ERROR(ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
