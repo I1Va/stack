@@ -71,7 +71,7 @@ void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) 
     }
 }
 
-unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char *file_name, const int line_idx) {
+unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char file_name[], const char func_name[], const int line_idx) {
     ON_CANARY(
         if (*stk->CANARIES.canary_left_ptr != CANARY_VALUE) {
             *return_err |= ERR_CANARY_LEFT;
@@ -129,7 +129,7 @@ unsigned long long verify(stack_t *stk, unsigned long long *return_err, const ch
     dump_mark:
 
     DEBUG_ERROR(*return_err);
-    dump(stk, file_name, line_idx);
+    dump(stk, file_name, func_name, line_idx);
 
     return *return_err;
 }
@@ -299,30 +299,36 @@ void stack_push(stack_t *stk, stack_elem_t value, unsigned long long *return_err
 stack_elem_t stack_pop(stack_t *stk, unsigned long long *return_err) {
     assert(return_err != NULL);
 
-    VERIFY(stk, return_err, return 0)
-
     unsigned long long last_err = ERR_OK;
+
+    VERIFY(stk, return_err, CLEAR_MEMORY(exit_mark))
+
+    stack_elem_t last_elem = POISON_STACK_VALUE;
 
     if (stk->size == 0) {
         *return_err |= ERR_STACK_POP;
-        DEBUG_ERROR(*return_err);
-        return 0;
+        DEBUG_ERROR(*return_err)
+        CLEAR_MEMORY(exit_mark)
     }
 
     resize(stk, &last_err);
     if (last_err != ERR_OK) {
         *return_err |= last_err;
-        DEBUG_ERROR(last_err);
-        return 0;
+        DEBUG_ERROR(last_err)
+        CLEAR_MEMORY(exit_mark)
     }
 
-    stack_elem_t last_elem = stk->data[--stk->size];
+    last_elem = stk->data[--stk->size];
     stk->data[stk->size] = POISON_STACK_VALUE;
 
     ON_HASH(HASH_rebuild_value(&stk->HASH_STACK_STRUCT);)
     ON_HASH(HASH_rebuild_value(&stk->HASH_STACK_DATA);)
 
     return last_elem;
+
+    exit_mark:
+
+    return POISON_STACK_VALUE;
 }
 
 stack_elem_t stack_get_last(stack_t *stk, unsigned long long *return_err) {

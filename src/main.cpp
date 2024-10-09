@@ -13,27 +13,22 @@
 #include "output.h"
 
 int main(const int argc, const char *argv[]) {
-
     unsigned long long last_err = ERR_OK;
-    main_config_t main_config = {};
-    main_config_ctor(&main_config);
+
+    main_config_t main_config = {}; main_config_ctor(&main_config);
+
     const size_t n_options = 1;
     opt_data options[n_options] = {};
-    auto_testing_config_t auto_testing_config = {};
+
+    auto_testing_config_t auto_testing_config = {}; auto_testing_config_ctor(&auto_testing_config);
+
     const char log_path[] = "./logs/log.txt";
 
-    log_init(NULL, &last_err);
+    log_init(log_path, &last_err);
     if (last_err != ERR_OK) {
         DEBUG_ERROR(last_err);
         CLEAR_MEMORY(exit_mark)
     }
-
-    LogVar("string: %s\n", log_path)
-    LogVar("string: %s\n", log_path)
-    LogVar("string: %s\n", log_path)
-    LogVar("string: %s\n", log_path)
-
-
 
     opt_data_ctor(&options[0], "-t-n_tests", "-testing-n_tests", "%ld", &auto_testing_config.n_tests);
 
@@ -50,7 +45,6 @@ int main(const int argc, const char *argv[]) {
         DEBUG_ERROR(last_err)
         CLEAR_MEMORY(exit_mark)
     }
-
 
     return EXIT_SUCCESS;
 

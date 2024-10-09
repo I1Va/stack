@@ -1,6 +1,8 @@
-#include <cassert>
-#include <cstddef>
+#include <assert.h>
+#include <stddef.h>
+#include <time.h>
 #include <stdio.h>
+#include <time.h>
 #include <stdarg.h>
 
 #include "output.h"
@@ -12,6 +14,9 @@ typedef long long stack_elem_t;
 #include "stack_funcs.h"
 
 FILE* log_output_file_ptr = NULL;
+
+const size_t date_nmemb = 16;
+const size_t time_nmemb = 16;
 
 void log_init(const char log_path[], unsigned long long *return_err) {
     if (log_path == NULL) {
@@ -27,7 +32,51 @@ void log_init(const char log_path[], unsigned long long *return_err) {
     setbuf(log_output_file_ptr, NULL); //disabling buffering
 }
 
-void ptr_stack_dump(stack_t *stk) {
+const char *get_log_descr(enum log_type_t log_type) {
+    #define DESCR_(log_type) case log_type: return #log_type;
+
+    switch (log_type) {
+        DESCR_(LOG_ANALYS)
+        DESCR_(LOG_DEBUG)
+        DESCR_(LOG_ERROR)
+        default: return "STRANGE LOG_TYPE";
+    }
+    #undef DESCR_
+}
+
+void print_log_time() {
+    time_t cur_time;
+    time(&cur_time);
+    struct tm *now = localtime(&cur_time);
+
+    char date_str[date_nmemb] = {};
+    char time_str[time_nmemb] = {};
+    strftime(date_str, date_nmemb, "%m/%d/%Y", now);
+    strftime(time_str, time_nmemb, "%T", now);
+
+    double milliseconds = ((double) clock()) / CLOCKS_PER_SEC;
+    fprintf(log_output_file_ptr, "Date: %s Time: %s Ms: {%f}\n", date_str, time_str, milliseconds);
+}
+
+void print_log_border() {
+    fprintf(log_output_file_ptr, "----------------------------------------------------------------------------------------------------\n");
+}
+
+void print_log_func_info(const char file_name[], const char func_name[], const int line_idx) {
+    fprintf(log_output_file_ptr, "file : {%s}; func: {%s}; line: {%d}\n", file_name, func_name, line_idx);
+}
+
+void print_log_type(enum log_type_t log_type) {
+    fprintf(log_output_file_ptr, "log_type: {%s}\n", get_log_descr(log_type));
+}
+
+void log_ptr_stack_dump(enum log_type_t log_type, stack_t *stk, const char file_name[], const char func_name[], const int line_idx) {
+    print_log_border();
+    print_log_type(log_type);
+    print_log_time();
+    print_log_func_info(file_name, func_name, line_idx);
+    print_log_border();
+
     fprintf(log_output_file_ptr, RED "------------------------------------------------------------\n" WHT);
     fprintf(log_output_file_ptr, GRN "_________stk: [%p:%p)" RED " | " WHT "bytes: %2lu\n" GRN, stk, stk + 1, sizeof(*stk));
     fprintf(log_output_file_ptr, RED "------------------------------------------------------------\n" WHT);
@@ -52,17 +101,26 @@ void ptr_stack_dump(stack_t *stk) {
     fprintf(log_output_file_ptr, "CANARY_RIGHT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_RIGHT, &stk->CANARY_RIGHT + 1, sizeof(stl->CANARY_RIGHT))
     )
     fprintf(log_output_file_ptr, RED "------------------------------------------------------------\n" WHT);
+
+    print_log_border();
+    fprintf(log_output_file_ptr, "\n");
 }
 
 ON_HASH(
     void HASH_print(hash_t *HASH) {
-        printf("seg: [%p:%p)\n", HASH->left_ptr, HASH->right_ptr);
-        printf("hash_value: [%llu]\n", HASH->hash_value);
-        printf("get _value: [%llu]\n", HASH_get(HASH));
+        fprintf(log_output_file_ptr, "seg: [%p:%p)\n", HASH->left_ptr, HASH->right_ptr);
+        fprintf(log_output_file_ptr, "hash_value: [%llu]\n", HASH->hash_value);
+        fprintf(log_output_file_ptr, "get _value: [%llu]\n", HASH_get(HASH));
     }
 )
 
-void dump(stack_t *stk, const char *file_name, const int line_idx) {
+void dump(stack_t *stk, const char file_name[], const char func_name[], const int line_idx) {
+    print_log_border();
+    print_log_type(LOG_DEBUG);
+    print_log_time();
+    print_log_func_info(file_name, func_name, line_idx);
+    print_log_border();
+
     if (stk == NULL) {
         return;
     }
@@ -102,22 +160,34 @@ void dump(stack_t *stk, const char *file_name, const int line_idx) {
     fprintf_wht(log_output_file_ptr, "}\n");
 
     fprintf_wht(log_output_file_ptr, "}\n");
+
+    print_log_border();
+    fprintf(log_output_file_ptr, "\n");
 }
 
-void print_err_full_description(const unsigned long long err) {
+void log_err_print(enum log_type_t log_type, const unsigned long long err, const char file_name[], const char func_name[], const int line_idx) {
+    print_log_border();
+    print_log_type(log_type);
+    print_log_time();
+    print_log_func_info(file_name, func_name, line_idx);
+    print_log_border();
+
     fprintf(log_output_file_ptr, "-----------ERROR_LIST------------------\n");
     for (size_t err_bit = 0; err_bit < 32; err_bit++) {
         if ((err >> err_bit) & 1ull) {
             fprintf(log_output_file_ptr, "%s\n", get_bit_descr(1 << err_bit));
         }
     }
-    fprintf(log_output_file_ptr, "---------------------------------------\n\n");
+    print_log_border();
+    fprintf(log_output_file_ptr, "\n");
 }
 
-void log_var_print(const char file_name[], const char func_name[], size_t line_idx, const char fmt[], ...) {
-    assert(file_name != NULL);
-    assert(func_name != NULL);
-    assert(fmt != NULL);
+void log_var_print(enum log_type_t log_type, const char file_name[], const char func_name[], const int line_idx, const char fmt[], ...) {
+    print_log_border();
+    print_log_type(log_type);
+    print_log_time();
+    print_log_func_info(file_name, func_name, line_idx);
+    print_log_border();
 
     if (line_idx) {}
 
@@ -126,6 +196,8 @@ void log_var_print(const char file_name[], const char func_name[], size_t line_i
     vfprintf(log_output_file_ptr, fmt, args);
 
     va_end(args);
+    print_log_border();
+    fprintf(log_output_file_ptr, "\n");
 }
 
 // TODO: как сделать макросы LogVar(),

@@ -68,8 +68,14 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
     assert(return_err != NULL);
 
     unsigned long long last_err = ERR_OK;
+    last_err |= ERR_CANARY_MID;
+    last_err |= ERR_STACK_LAST_ELEM;
+    last_err |= ERR_ARGS;
+    last_err |= ERR_MEM;
 
-    print_err_full_description(last_err);
+    LogErr(LOG_ERROR, last_err)
+
+    last_err = ERR_OK;
 
     DEBUG_ERROR(last_err)
 
@@ -78,7 +84,7 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
     DUMP(&stk)
 
 
-    for (size_t i = 0; i < 100; i++) {
+    for (size_t i = 0; i < 10; i++) {
         stack_push(&stk, rand(), &last_err);
         if (last_err != ERR_OK) {
             DEBUG_ERROR(last_err)
@@ -86,7 +92,8 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
         }
     }
     DUMP(&stk)
-    for (size_t i = 0; i < 100; i++) {
+    LogStkPtrInfo(LOG_ANALYS, &stk)
+    for (size_t i = 0; i < 10; i++) {
         stack_pop(&stk, &last_err);
         if (last_err != ERR_OK) {
             DEBUG_ERROR(last_err)
@@ -171,7 +178,8 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
             fscanf(input_file, "%s", com_str);
             // printf_grn("cur command: %s\n", com_str);
             DUMP(&stk);
-            print_err_full_description(last_err);
+
+            LogErr(LOG_ERROR, last_err);
             if (strcmp(com_str, "push") == 0) {
                 fscanf(input_file, "%lld", &com_val);
                 stack_push(&stk, com_val, return_err);
