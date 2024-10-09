@@ -1,11 +1,7 @@
-{main.cpp} [int main(int, const char**): 31]: descr{string: ./logs/log.txt
-}
-{main.cpp} [int main(int, const char**): 32]: descr{string: ./logs/log.txt
-}
-{main.cpp} [int main(int, const char**): 33]: descr{string: ./logs/log.txt
-}
-{main.cpp} [int main(int, const char**): 34]: descr{string: ./logs/log.txt
-}
+string: ./logs/log.txt
+string: ./logs/log.txt
+string: ./logs/log.txt
+string: ./logs/log.txt
 -----------ERROR_LIST------------------
 ERR_CALLOC
 ERR_FILE_OPEN
@@ -14,22 +10,3 @@ ERR_STACK_NULLPTR
 ERR_HASH_STACK_DATA_MISMATCH
 ---------------------------------------
 
-[0;31mstack_t [0x7fc730600250] at src/args_proc.cpp:82 born at src/args_proc.cpp:80(void main_testing_mode_launch(main_config_t*, long long unsigned int*))
-[0;20m[0;20m{
-[0;20m[0;33msize = 0
-[0;20m[0;33mcapacity = 10
-[0;20m[0;33mstack[0x507000000090]
-[0;20m[0;20m{
-[0;20m[0;32m[0] = POISON;
-[0;20m[0;32m[1] = POISON;
-[0;20m[0;32m[2] = POISON;
-[0;20m[0;32m[3] = POISON;
-[0;20m[0;32m[4] = POISON;
-[0;20m[0;32m[5] = POISON;
-[0;20m[0;32m[6] = POISON;
-[0;20m[0;32m[7] = POISON;
-[0;20m[0;32m[8] = POISON;
-[0;20m[0;32m[9] = POISON;
-[0;20m[0;20m}
-[0;20m[0;20m}
-[0;20m

@@ -52,8 +52,7 @@ ON_CANARY(
         size_t stack_byte_size = stk->capacity * sizeof(stack_elem_t);
         char *canary_ptr = (char *) stk->data + stack_byte_size;
         unsigned long long alignment = (unsigned long long) canary_ptr % 8;
-        canary_elem_t *canary_ptr_align = (canary_elem_t *) (canary_ptr + alignment); // FIXME: корявый нечитаемый padding fix. Придумать что-то по изящней
-        return canary_ptr_align;
+        canary_elem_t *canary_ptr_align = (canary_elem_t *) (canary_ptr + alignment);
     }
 
     void stack_end_canary_assign(stack_t *stk, const canary_elem_t value) {
@@ -64,7 +63,7 @@ ON_CANARY(
     const size_t LEFT_CANARY_INDENT = (CANARY_NMEMB + sizeof(stack_elem_t) - 1) / sizeof(stack_elem_t);
 )
 
-void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) {
+void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) { // FIXME: можно использовать memcpy (не жалуется на выравнивание)
     assert(data != NULL);
 
     for (size_t i = 0; i < n; i++) {
@@ -78,7 +77,7 @@ unsigned long long verify(stack_t *stk, unsigned long long *return_err, const ch
             *return_err |= ERR_CANARY_LEFT;
             MY_ASSERT(*return_err, abort())
         }
-        if (*stk->CANARIES.canary_mid_ptr != CANARY_VALUE) {
+        if (*stk->CANARIES.canary_mid_ptr != CANARY_VALUE) { // FIXME: что за canary_mid_ptr
             *return_err |= ERR_CANARY_MID;
             MY_ASSERT(*return_err, abort())
         }
@@ -120,7 +119,7 @@ unsigned long long verify(stack_t *stk, unsigned long long *return_err, const ch
         goto dump_mark;
     }
 
-    if (stk->size > stk->capacity) {
+    if (stk->size > stk->capacity) { // TODO: проверку на то, что после size всё в POISON
         *return_err |= ERR_STACK_OVERFLOW;
         goto dump_mark;
     }
@@ -203,7 +202,10 @@ void stack_init(stack_t *stk, const size_t size, unsigned long long *return_err,
 }
 
 void stack_destroy(stack_t *stk) {
-    // FIXME: если stk - невалидный адресс, то будет segfault
+    if (stk == NULL) {
+        return;
+    }
+
     ON_CANARY(
         if (stk->data != NULL) {
             stk->data -= LEFT_CANARY_INDENT;
@@ -225,11 +227,11 @@ void resize(stack_t *stk, unsigned long long *return_err) {
         ON_CANARY(stack_end_canary_assign(stk, 0));
         stk->capacity++;
         unit_length_state = true;
-    } else if (stk->size + 1 >= stk->capacity) {
+    } else if (stk->size >= stk->capacity) {
         ON_CANARY(stack_end_canary_assign(stk, 0));
         stk->capacity *= resize_up_coeff;
         resize_up_state = true;
-    } else if (stk->size + 1 <= stk->capacity / resize_down_check_coeff) {
+    } else if (stk->size <= stk->capacity / resize_down_check_coeff) {
         ON_CANARY(stack_end_canary_assign(stk, 0));
         stk->capacity /= resize_down_coeff;
     } else {
@@ -276,10 +278,8 @@ void resize(stack_t *stk, unsigned long long *return_err) {
 void stack_push(stack_t *stk, stack_elem_t value, unsigned long long *return_err) {
     assert(return_err != NULL);
 
-    VERIFY(stk, return_err, return) // TODO: нетревиальный макрос. написать документацию к нему
-    // VERIFY(stderr, stk, return_err, return) вместо stderr сделать глобальную переменную FILE *
-    // переименовать в ASSERT так как убирается в релизе
-    // verify проверяется в релизе
+    VERIFY(stk, return_err, return)
+
     unsigned long long last_err = ERR_OK;
     resize(stk, &last_err);
     if (last_err != ERR_OK) {
@@ -299,7 +299,7 @@ void stack_push(stack_t *stk, stack_elem_t value, unsigned long long *return_err
 stack_elem_t stack_pop(stack_t *stk, unsigned long long *return_err) {
     assert(return_err != NULL);
 
-    VERIFY(stk, return_err, return 0) // TODO: нетревиальный макрос. написать документацию к нему
+    VERIFY(stk, return_err, return 0)
 
     unsigned long long last_err = ERR_OK;
 

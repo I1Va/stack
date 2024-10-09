@@ -1,3 +1,5 @@
+#include <cassert>
+#include <cstddef>
 #include <stdio.h>
 #include <stdarg.h>
 
@@ -112,9 +114,14 @@ void print_err_full_description(const unsigned long long err) {
     fprintf(log_output_file_ptr, "---------------------------------------\n\n");
 }
 
-void log_var_print(const char* fmt, ...) {
-    va_list args;
+void log_var_print(const char file_name[], const char func_name[], size_t line_idx, const char fmt[], ...) {
+    assert(file_name != NULL);
+    assert(func_name != NULL);
+    assert(fmt != NULL);
 
+    if (line_idx) {}
+
+    va_list args;
     va_start(args, fmt);
     vfprintf(log_output_file_ptr, fmt, args);
 

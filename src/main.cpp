@@ -22,7 +22,7 @@ int main(const int argc, const char *argv[]) {
     auto_testing_config_t auto_testing_config = {};
     const char log_path[] = "./logs/log.txt";
 
-    log_init(log_path, &last_err);
+    log_init(NULL, &last_err);
     if (last_err != ERR_OK) {
         DEBUG_ERROR(last_err);
         CLEAR_MEMORY(exit_mark)
@@ -35,18 +35,15 @@ int main(const int argc, const char *argv[]) {
 
 
 
-    opt_data_ctor(&options[0], "-t-n_tests", "-testing-n_tests", "%ld", &auto_testing_config.n_tests); // FIXME: exist всегда false
+    opt_data_ctor(&options[0], "-t-n_tests", "-testing-n_tests", "%ld", &auto_testing_config.n_tests);
 
     get_options(argc, argv, options, n_options);
 
-
-
-
-    // auto_testing_mode_launch(&auto_testing_config, &last_err);
-    // if (last_err != ERR_OK) {
-    //     DEBUG_ERROR(last_err)
-    //     CLEAR_MEMORY(exit_mark)
-    // }
+    auto_testing_mode_launch(&auto_testing_config, &last_err);
+    if (last_err != ERR_OK) {
+        DEBUG_ERROR(last_err)
+        CLEAR_MEMORY(exit_mark)
+    }
 
     main_testing_mode_launch(&main_config, &last_err);
     if (last_err != ERR_OK) {

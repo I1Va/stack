@@ -1,3 +1,5 @@
+#include <cstddef>
+#include <cstdlib>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -56,6 +58,7 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
             ptr->exist = true;
 
             sscanf(value + 1, (ptr->fmt), ptr->val_ptr); // FIXME: исправить warning. Мб использовать __atribute__
+            ptr->exist = true;
         }
     }
 }
@@ -66,21 +69,32 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
 
     unsigned long long last_err = ERR_OK;
 
-    last_err |= ERR_CALLOC;
-    last_err |= ERR_HASH_STACK_DATA_MISMATCH;
-    last_err |= ERR_ARGS;
-    last_err |= ERR_STACK_NULLPTR;
-    last_err |= ERR_FILE_OPEN;
-
     print_err_full_description(last_err);
 
     DEBUG_ERROR(last_err)
 
     stack_t stk = {};
     STACK_INIT(&stk, 10, &last_err);
+    DUMP(&stk)
+
+
+    for (size_t i = 0; i < 100; i++) {
+        stack_push(&stk, rand(), &last_err);
+        if (last_err != ERR_OK) {
+            DEBUG_ERROR(last_err)
+            CLEAR_MEMORY(exit_mark)
+        }
+    }
+    DUMP(&stk)
+    for (size_t i = 0; i < 100; i++) {
+        stack_pop(&stk, &last_err);
+        if (last_err != ERR_OK) {
+            DEBUG_ERROR(last_err)
+            CLEAR_MEMORY(exit_mark)
+        }
+    }
 
     DUMP(&stk);
-
 
     // ptr_stack_dump(stdout, &stk);
     // if (!conf->exist) {
@@ -89,15 +103,20 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
 
     stack_destroy(&stk);
     return;
+
+    exit_mark:
+    stack_destroy(&stk);
+    return;
 }
 
 
 void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *return_err) {
     assert(conf != NULL);
-    assert(return_err != NULL);
     if (!conf->n_tests) {
         return;
     }
+
+    assert(return_err != NULL);
 
 
     unsigned long long last_err = ERR_OK;
@@ -151,7 +170,8 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
 
             fscanf(input_file, "%s", com_str);
             // printf_grn("cur command: %s\n", com_str);
-            // DUMP(&stk);
+            DUMP(&stk);
+            print_err_full_description(last_err);
             if (strcmp(com_str, "push") == 0) {
                 fscanf(input_file, "%lld", &com_val);
                 stack_push(&stk, com_val, return_err);
@@ -170,6 +190,7 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
             } else {
                 assert(1);
             }
+            last_err = ERR_OK; // спефика авто тестинга. Предыдущие ошибки должны быть аннулированы, чтобы не перетирать будущие
         }
         if (!system("diff src/testing/output.txt src/testing/answer.txt")) {
             debug("dismatch");
