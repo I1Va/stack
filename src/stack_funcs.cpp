@@ -256,7 +256,6 @@ void resize(stack_t *stk, unsigned long long *return_err) {
         return;
     }
 
-
     if (resize_up_state) {
         size_t old_capacity = stk->capacity / resize_up_coeff;
         stack_memset(stk->data + old_capacity, POISON_STACK_VALUE, old_capacity * (resize_up_coeff - 1));
