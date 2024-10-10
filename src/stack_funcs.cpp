@@ -300,10 +300,8 @@ stack_elem_t stack_pop(stack_t *stk, unsigned long long *return_err) {
     assert(return_err != NULL);
 
     unsigned long long last_err = ERR_OK;
-
-    VERIFY(stk, return_err, CLEAR_MEMORY(exit_mark))
-
     stack_elem_t last_elem = POISON_STACK_VALUE;
+    VERIFY(stk, return_err, CLEAR_MEMORY(exit_mark))
 
     if (stk->size == 0) {
         *return_err |= ERR_STACK_POP;
