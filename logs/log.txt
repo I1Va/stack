@@ -1,25 +1,13 @@
 ----------------------------------------------------------------------------------------------------
-log_type: {LOG_ERROR}
-Date: 10/10/2024 Time: 15:36:37 Ms: {0.000699}
-file : {args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {76}
-----------------------------------------------------------------------------------------------------
------------ERROR_LIST------------------
-ERR_MEM
-ERR_ARGS
-ERR_CANARY_MID
-ERR_STACK_LAST_ELEM
-----------------------------------------------------------------------------------------------------
-
-----------------------------------------------------------------------------------------------------
 log_type: {LOG_DEBUG}
-Date: 10/10/2024 Time: 15:36:37 Ms: {0.000726}
-file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {84}
+Date: 10/16/2024 Time: 21:38:23 Ms: {0.003703}
+file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {149}
 ----------------------------------------------------------------------------------------------------
-[0;31mstack_t [0x7ffdc7d95800] at src/args_proc.cpp:84 born at (null):0((null))
+[0;31mstack_t [0x7fd46b100150] at src/args_proc.cpp:149 born at src/args_proc.cpp:148(void main_testing_mode_launch(main_config_t*, long long unsigned int*))
 [0;20m[0;20m{
 [0;20m[0;33msize = 0
-[0;20m[0;33mcapacity = 10
-[0;20m[0;33mstack[0x5638b73997a0]
+[0;20m[0;33mcapacity = 14
+[0;20m[0;33mstack[0x50b000000040]
 [0;20m[0;20m{
 [0;20m[0;32m[0] = POISON;
 [0;20m[0;32m[1] = POISON;
@@ -31,20 +19,65 @@ file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*,
 [0;20m[0;32m[7] = POISON;
 [0;20m[0;32m[8] = POISON;
 [0;20m[0;32m[9] = POISON;
+[0;20m[0;32m[10] = POISON;
+[0;20m[0;32m[11] = POISON;
+[0;20m[0;32m[12] = POISON;
+[0;20m[0;32m[13] = POISON;
+[0;20m[0;20m}
+[0;20m[0;20m}
+[0;20m----------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------
+log_type: {LOG_ERROR}
+Date: 10/16/2024 Time: 21:38:23 Ms: {0.003783}
+file : {args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {159}
+----------------------------------------------------------------------------------------------------
+-----------ERROR_LIST------------------
+ERR_MEM
+ERR_ARGS
+ERR_CANARY_MID
+ERR_STACK_LAST_ELEM
+----------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------
+log_type: {LOG_DEBUG}
+Date: 10/16/2024 Time: 21:38:23 Ms: {0.003864}
+file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {166}
+----------------------------------------------------------------------------------------------------
+[0;31mstack_t [0x7fd46b100150] at src/args_proc.cpp:166 born at src/args_proc.cpp:148(void main_testing_mode_launch(main_config_t*, long long unsigned int*))
+[0;20m[0;20m{
+[0;20m[0;33msize = 0
+[0;20m[0;33mcapacity = 14
+[0;20m[0;33mstack[0x50b000000040]
+[0;20m[0;20m{
+[0;20m[0;32m[0] = POISON;
+[0;20m[0;32m[1] = POISON;
+[0;20m[0;32m[2] = POISON;
+[0;20m[0;32m[3] = POISON;
+[0;20m[0;32m[4] = POISON;
+[0;20m[0;32m[5] = POISON;
+[0;20m[0;32m[6] = POISON;
+[0;20m[0;32m[7] = POISON;
+[0;20m[0;32m[8] = POISON;
+[0;20m[0;32m[9] = POISON;
+[0;20m[0;32m[10] = POISON;
+[0;20m[0;32m[11] = POISON;
+[0;20m[0;32m[12] = POISON;
+[0;20m[0;32m[13] = POISON;
 [0;20m[0;20m}
 [0;20m[0;20m}
 [0;20m----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
 log_type: {LOG_DEBUG}
-Date: 10/10/2024 Time: 15:36:37 Ms: {0.000764}
-file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {94}
+Date: 10/16/2024 Time: 21:38:23 Ms: {0.004058}
+file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {176}
 ----------------------------------------------------------------------------------------------------
-[0;31mstack_t [0x7ffdc7d95800] at src/args_proc.cpp:94 born at (null):0((null))
+[0;31mstack_t [0x7fd46b100150] at src/args_proc.cpp:176 born at src/args_proc.cpp:148(void main_testing_mode_launch(main_config_t*, long long unsigned int*))
 [0;20m[0;20m{
 [0;20m[0;33msize = 10
-[0;20m[0;33mcapacity = 16
-[0;20m[0;33mstack[0x5638b7399800]
+[0;20m[0;33mcapacity = 12
+[0;20m[0;33mstack[0x508000000020]
 [0;20m[0;20m{
 [0;20m[0;32m*[0] = 1804289383;
 [0;20m[0;32m*[1] = 846930886;
@@ -58,45 +91,63 @@ file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*,
 [0;20m[0;32m*[9] = 1189641421;
 [0;20m[0;32m[10] = POISON;
 [0;20m[0;32m[11] = POISON;
-[0;20m[0;32m[12] = POISON;
-[0;20m[0;32m[13] = POISON;
-[0;20m[0;32m[14] = POISON;
-[0;20m[0;32m[15] = POISON;
 [0;20m[0;20m}
 [0;20m[0;20m}
 [0;20m----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
 log_type: {LOG_ANALYS}
-Date: 10/10/2024 Time: 15:36:37 Ms: {0.000810}
-file : {args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {95}
+Date: 10/16/2024 Time: 21:38:23 Ms: {0.004112}
+file : {args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {177}
 ----------------------------------------------------------------------------------------------------
 [0;31m------------------------------------------------------------
-[0;20m[0;32m_________stk: [0x7ffdc7d95800:0x7ffdc7d95830)[0;31m | [0;20mbytes: 48
+[0;20m[0;32m_________stk: [0x7fd46b100150:0x7fd46b1001c0)[0;31m | [0;20mbytes: 112
 [0;32m[0;31m------------------------------------------------------------
-[0;20m________size: [0x7ffdc7d95800:0x7ffdc7d95808)[0;31m | [0;20mbytes:  8
-____capacity: [0x7ffdc7d95808:0x7ffdc7d95810)[0;31m | [0;20mbytes:  8
-_______*data: [0x7ffdc7d95810:0x7ffdc7d95818)[0;31m | [0;20mbytes:  8
-__*born_file: [0x7ffdc7d95818:0x7ffdc7d95820)[0;31m | [0;20mbytes:  8
-__*born_line: [0x7ffdc7d95820:0x7ffdc7d95824)[0;31m | [0;20mbytes:  4
-__*born_func: [0x7ffdc7d95828:0x7ffdc7d95830)[0;31m | [0;20mbytes:  8
+[0;20m________HASH: [0x7fd46b100150:0x7fd46b100170)[0;31m | [0;20mbytes: 32
+________HASH: [0x7fd46b100170:0x7fd46b100190)[0;31m | [0;20mbytes: 32
+________size: [0x7fd46b100190:0x7fd46b100198)[0;31m | [0;20mbytes:  8
+____capacity: [0x7fd46b100198:0x7fd46b1001a0)[0;31m | [0;20mbytes:  8
+_______*data: [0x7fd46b1001a0:0x7fd46b1001a8)[0;31m | [0;20mbytes:  8
+__*born_file: [0x7fd46b1001a8:0x7fd46b1001b0)[0;31m | [0;20mbytes:  8
+__*born_line: [0x7fd46b1001b0:0x7fd46b1001b4)[0;31m | [0;20mbytes:  4
+__*born_func: [0x7fd46b1001b8:0x7fd46b1001c0)[0;31m | [0;20mbytes:  8
 [0;31m------------------------------------------------------------
 [0;20m----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
 log_type: {LOG_DEBUG}
-Date: 10/10/2024 Time: 15:36:37 Ms: {0.000842}
-file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {104}
+Date: 10/16/2024 Time: 21:38:23 Ms: {0.004202}
+file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {186}
 ----------------------------------------------------------------------------------------------------
-[0;31mstack_t [0x7ffdc7d95800] at src/args_proc.cpp:104 born at (null):0((null))
+[0;31mstack_t [0x7fd46b100150] at src/args_proc.cpp:186 born at src/args_proc.cpp:148(void main_testing_mode_launch(main_config_t*, long long unsigned int*))
 [0;20m[0;20m{
 [0;20m[0;33msize = 0
-[0;20m[0;33mcapacity = 2
-[0;20m[0;33mstack[0x5638b7399800]
+[0;20m[0;33mcapacity = 3
+[0;20m[0;33mstack[0x503000000220]
 [0;20m[0;20m{
 [0;20m[0;32m[0] = POISON;
 [0;20m[0;32m[1] = POISON;
+[0;20m[0;32m[2] = POISON;
 [0;20m[0;20m}
 [0;20m[0;20m}
+[0;20m----------------------------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------------------------
+log_type: {LOG_DEBUG}
+Date: 10/16/2024 Time: 21:38:23 Ms: {0.004236}
+file : {args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {189}
+----------------------------------------------------------------------------------------------------
+[0;31m------------------------------------------------------------
+[0;20m[0;32m_________stk: [0x7fd46b100150:0x7fd46b1001c0)[0;31m | [0;20mbytes: 112
+[0;32m[0;31m------------------------------------------------------------
+[0;20m________HASH: [0x7fd46b100150:0x7fd46b100170)[0;31m | [0;20mbytes: 32
+________HASH: [0x7fd46b100170:0x7fd46b100190)[0;31m | [0;20mbytes: 32
+________size: [0x7fd46b100190:0x7fd46b100198)[0;31m | [0;20mbytes:  8
+____capacity: [0x7fd46b100198:0x7fd46b1001a0)[0;31m | [0;20mbytes:  8
+_______*data: [0x7fd46b1001a0:0x7fd46b1001a8)[0;31m | [0;20mbytes:  8
+__*born_file: [0x7fd46b1001a8:0x7fd46b1001b0)[0;31m | [0;20mbytes:  8
+__*born_line: [0x7fd46b1001b0:0x7fd46b1001b4)[0;31m | [0;20mbytes:  4
+__*born_func: [0x7fd46b1001b8:0x7fd46b1001c0)[0;31m | [0;20mbytes:  8
+[0;31m------------------------------------------------------------
 [0;20m----------------------------------------------------------------------------------------------------
 

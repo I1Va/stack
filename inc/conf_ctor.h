@@ -4,11 +4,13 @@
 #include <string.h>
 
 struct main_config_t {
-    bool exist = true;
+    bool exist;
+    int log_file_stderr;
 };
 
 struct auto_testing_config_t {
     bool exist;
+    int log_file_stderr;
     size_t n_tests;
 };
 

@@ -1,8 +1,5 @@
 #ifndef OUTPUT_H
 #define OUTPUT_H
-
-#include <stdio.h>
-
 #include "general.h"
 
 typedef long long stack_elem_t;

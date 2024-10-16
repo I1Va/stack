@@ -4,7 +4,8 @@
 #include <cstdlib>
 
 void main_config_ctor(main_config_t *conf) {
-    if (conf) {}
+    conf->exist = true;
+    conf->log_file_stderr = false;
     return;
 }
 
@@ -16,6 +17,7 @@ void main_config_dtor(main_config_t *conf) {
 void auto_testing_config_ctor(auto_testing_config_t *conf) {
     conf->n_tests = 0;
     conf->exist = false;
+    conf->log_file_stderr = false;
     return;
 }
 

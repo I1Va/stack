@@ -108,9 +108,15 @@ void log_ptr_stack_dump(enum log_type_t log_type, stack_t *stk, const char file_
 
 ON_HASH(
     void HASH_print(hash_t *HASH) {
+        print_log_border();
+        print_log_type(LOG_DEBUG);
+        print_log_time();
+        print_log_border();
         fprintf(log_output_file_ptr, "seg: [%p:%p)\n", HASH->left_ptr, HASH->right_ptr);
         fprintf(log_output_file_ptr, "hash_value: [%llu]\n", HASH->hash_value);
         fprintf(log_output_file_ptr, "get _value: [%llu]\n", HASH_get(HASH));
+        print_log_border();
+        fprintf(log_output_file_ptr, "\n");
     }
 )
 

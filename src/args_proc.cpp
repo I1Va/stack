@@ -1,5 +1,5 @@
-#include <cstddef>
-#include <cstdlib>
+#include <stddef.h>
+#include <stdlib.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -27,7 +27,7 @@ void opt_data_ctor(opt_data *option, const char *const short_name_src, const cha
     option->fmt = fmt_src;
 
     option->val_ptr = val_ptr_src;
-    option->exist = false;
+    option->exist = true;
 }
 
 void opt_data_dtor(opt_data *option) {
@@ -37,7 +37,13 @@ void opt_data_dtor(opt_data *option) {
 
 opt_data *option_list_ptr(const char *name, opt_data opts[], const size_t n_opts) {
     for (size_t i = 0; i < n_opts; i++) {
-        if (strcmp(name, opts[i].short_name) == 0 || strcmp(name, opts[i].long_name) == 0) {
+        if (!opts[i].exist) {
+            continue;
+        }
+        if (strcmp(name, opts[i].short_name) == 0) {
+            return &opts[i];
+        }
+        if (strcmp(name, opts[i].long_name) == 0) {
             return &opts[i];
         }
     }
@@ -55,19 +61,93 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
         opt_data *ptr = option_list_ptr(name, opts, n_opts);
 
         if (ptr != NULL) {
-            ptr->exist = true;
-
             sscanf(value + 1, (ptr->fmt), ptr->val_ptr); // FIXME: исправить warning. Мб использовать __atribute__
             ptr->exist = true;
         }
     }
 }
 
-void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_err) {
+stack_elem_t stack_elem_from_str(const char str[], const size_t n) {
+    char *elem_1 = (char *) calloc(n * 2, sizeof(char));
+    char *start_elem_1 = elem_1;
+
+    for (size_t idx = 0; idx < n; idx++) {
+        *(elem_1 + idx) = str[idx];
+    }
+
+    stack_elem_t stack_elem_1 = *((stack_elem_t *) start_elem_1);
+    FREE(elem_1);
+
+    return stack_elem_1;
+}
+
+void breaking_test_launch(main_config_t *conf, unsigned long long *return_err) {
     assert(conf != NULL);
     assert(return_err != NULL);
+    // Строки туэ морса
+    char string_1[] = "edHsfEHs";
+    char string_2[] = "fEHsedHs";
+    // stk1 = {"edHs", "fEHs"}
+    // stk2 = {"fEHs", "edHs"}
+    // hash(stk1) == hash(stk2);
+
+    hash_t hash1 = {};
+    hash1.hash_mult = 257;
+    hash1.hash_value= 0;
+    hash1.left_ptr = string_1;
+    hash1.right_ptr = string_1 + sizeof(string_1);
+
+    hash_t hash2 = {};
+    hash2.hash_mult = 257;
+    hash2.hash_value = 0;
+    hash2.left_ptr = string_2;
+    hash2.right_ptr = string_2 + sizeof(string_2);
+
+
+    printf("hash1: %llu\n", HASH_get(&hash1));
+    printf("hash2: %llu\n", HASH_get(&hash2));
 
     unsigned long long last_err = ERR_OK;
+    stack_t stk = {};
+    STACK_INIT(&stk, 0, &last_err);
+
+    char string_1_part_1[] = "edHs";
+    char string_1_part_2[] = "fEHs";
+    stack_elem_t elem_1 = stack_elem_from_str(string_1_part_1, 4);
+    stack_elem_t elem_2 = stack_elem_from_str(string_1_part_2, 4);
+
+    stack_push(&stk, elem_1 , &last_err);
+    stack_push(&stk, elem_2, &last_err);
+    HASH_print(&stk.HASH_STACK_DATA);
+    DUMP(&stk);
+    *(stk.data) = 0;
+    *(stk.data + 1) = 0;
+    // VERIFY(&stk, &last_err, abort())
+    DUMP(&stk);
+    *(stk.data) = elem_2;
+    *(stk.data + 1) = elem_1;
+    HASH_print(&stk.HASH_STACK_DATA);
+    DUMP(&stk);
+
+    VERIFY(&stk, &last_err, abort())
+    stack_destroy(&stk);
+}
+
+void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_err) {
+    // breaking_test_launch(conf, return_err);
+    unsigned long long last_err = ERR_OK;
+
+    char log_path[] = "./logs/log.txt";
+    if (!conf->log_file_stderr) {
+        log_init(log_path, &last_err);
+    } else {
+        log_init(NULL, &last_err);
+    }
+
+
+    stack_t stk = {}; STACK_INIT(&stk, 14, return_err)
+    DUMP(&stk)
+
     last_err |= ERR_CANARY_MID;
     last_err |= ERR_STACK_LAST_ELEM;
     last_err |= ERR_ARGS;
@@ -79,8 +159,7 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
 
     DEBUG_ERROR(last_err)
 
-    stack_t stk = {};
-    STACK_INIT(&stk, 10, &last_err);
+
     DUMP(&stk)
 
 
@@ -103,16 +182,14 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
 
     DUMP(&stk);
 
-    // ptr_stack_dump(stdout, &stk);
-    // if (!conf->exist) {
-    //     return;
-    // }
+
+    LogStkPtrInfo(LOG_DEBUG, &stk)
 
     stack_destroy(&stk);
     return;
 
     exit_mark:
-    stack_destroy(&stk);
+
     return;
 }
 
@@ -128,20 +205,29 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
 
     unsigned long long last_err = ERR_OK;
 
-    // FIXME:
-    // const char test_gen_path[] = "src/testing/tests_gen.py";
-    // const char compiler[] = "python3";
+    char log_path[] = "./logs/log.txt";
+
     const char input_path[] = "src/testing/input.txt";
     const char create_test_command[] = "python3 src/testing/test_gen.py > src/testing/input.txt";
     const char create_answer_command[] = "python3 src/testing/brut.py < src/testing/input.txt > src/testing/answer.txt";
     const char output_path[] = "src/testing/output.txt";
-    // FIXME:
 
     FILE* output_file = NULL;
     FILE* input_file = NULL;
     size_t n_input_coms = 0;
 
     stack_t stk = {};
+
+    if (conf->log_file_stderr) {
+        log_init(log_path, &last_err);
+    } else {
+        log_init(NULL, &last_err);
+    }
+    if (last_err != ERR_OK) {
+        DEBUG_ERROR(last_err);
+        CLEAR_MEMORY(exit_mark)
+    }
+
     STACK_INIT(&stk, 0, &last_err)
 
     if (system(create_test_command)) {
