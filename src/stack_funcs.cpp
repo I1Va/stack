@@ -72,6 +72,13 @@ void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) 
 }
 
 unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char file_name[], const char func_name[], const int line_idx) {
+    assert(return_err != NULL);
+
+    if (stk == NULL) {
+        *return_err |= ERR_STACK_NULLPTR;
+        goto dump_mark;
+    }
+
     ON_CANARY(
         if (*stk->CANARIES.canary_left_ptr != CANARY_VALUE) {
             *return_err |= ERR_CANARY_LEFT;
@@ -108,18 +115,12 @@ unsigned long long verify(stack_t *stk, unsigned long long *return_err, const ch
         }
     )
 
-
-    if (stk == NULL) {
-        *return_err |= ERR_STACK_NULLPTR;
-        goto dump_mark;
-    }
-
     if (stk->data == NULL) {
         *return_err |= ERR_STACK_CONT_NULLPTR;
         goto dump_mark;
     }
 
-    if (stk->size > stk->capacity) { // TODO: проверку на то, что после size всё в POISON
+    if (stk->size > stk->capacity) {
         *return_err |= ERR_STACK_OVERFLOW;
         goto dump_mark;
     }
@@ -149,7 +150,6 @@ void stack_init(stack_t *stk, const size_t size, unsigned long long *return_err,
 
     stk->size = 0;
     stk->capacity = size;
-
 
 
     NOT_ON_CANARY(stk->data = (stack_elem_t *) calloc(stk->capacity, sizeof(stack_elem_t));)

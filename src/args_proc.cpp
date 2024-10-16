@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -82,6 +83,8 @@ stack_elem_t stack_elem_from_str(const char str[], const size_t n) {
 }
 
 void breaking_test_launch(main_config_t *conf, unsigned long long *return_err) {
+    log_init(NULL, return_err);
+
     assert(conf != NULL);
     assert(return_err != NULL);
     // Строки туэ морса
@@ -134,72 +137,71 @@ void breaking_test_launch(main_config_t *conf, unsigned long long *return_err) {
 }
 
 void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_err) {
-    // breaking_test_launch(conf, return_err);
-    unsigned long long last_err = ERR_OK;
+    breaking_test_launch(conf, return_err);
+    // unsigned long long last_err = ERR_OK;
 
-    char log_path[] = "./logs/log.txt";
-    if (!conf->log_file_stderr) {
-        log_init(log_path, &last_err);
-    } else {
-        log_init(NULL, &last_err);
-    }
-
-
-    stack_t stk = {}; STACK_INIT(&stk, 14, return_err)
-    DUMP(&stk)
-
-    last_err |= ERR_CANARY_MID;
-    last_err |= ERR_STACK_LAST_ELEM;
-    last_err |= ERR_ARGS;
-    last_err |= ERR_MEM;
-
-    LogErr(LOG_ERROR, last_err)
-
-    last_err = ERR_OK;
-
-    DEBUG_ERROR(last_err)
+    // char log_path[] = "./logs/log.txt";
+    // if (!conf->log_file_stderr) {
+    //     log_init(log_path, &last_err);
+    // } else {
+    //     log_init(NULL, &last_err);
+    // }
 
 
-    DUMP(&stk)
+    // stack_t stk = {}; STACK_INIT(&stk, 14, return_err)
+    // DUMP(&stk)
+
+    // last_err |= ERR_CANARY_MID;
+    // last_err |= ERR_STACK_LAST_ELEM;
+    // last_err |= ERR_ARGS;
+    // last_err |= ERR_MEM;
+
+    // LogErr(LOG_ERROR, last_err)
+
+    // last_err = ERR_OK;
+
+    // DEBUG_ERROR(last_err)
 
 
-    for (size_t i = 0; i < 10; i++) {
-        stack_push(&stk, rand(), &last_err);
-        if (last_err != ERR_OK) {
-            DEBUG_ERROR(last_err)
-            CLEAR_MEMORY(exit_mark)
-        }
-    }
-    DUMP(&stk)
-    LogStkPtrInfo(LOG_ANALYS, &stk)
-    for (size_t i = 0; i < 10; i++) {
-        stack_pop(&stk, &last_err);
-        if (last_err != ERR_OK) {
-            DEBUG_ERROR(last_err)
-            CLEAR_MEMORY(exit_mark)
-        }
-    }
-
-    DUMP(&stk);
+    // DUMP(&stk)
 
 
-    LogStkPtrInfo(LOG_DEBUG, &stk)
+    // for (size_t i = 0; i < 10; i++) {
+    //     stack_push(&stk, rand(), &last_err);
+    //     if (last_err != ERR_OK) {
+    //         DEBUG_ERROR(last_err)
+    //         CLEAR_MEMORY(exit_mark)
+    //     }
+    // }
+    // DUMP(&stk)
+    // LogStkPtrInfo(LOG_ANALYS, &stk)
+    // for (size_t i = 0; i < 10; i++) {
+    //     stack_pop(&stk, &last_err);
+    //     if (last_err != ERR_OK) {
+    //         DEBUG_ERROR(last_err)
+    //         CLEAR_MEMORY(exit_mark)
+    //     }
+    // }
 
-    stack_destroy(&stk);
-    return;
+    // DUMP(&stk);
 
-    exit_mark:
 
-    return;
+    // LogStkPtrInfo(LOG_DEBUG, &stk)
+
+    // stack_destroy(&stk);
+    // return;
+
+    // exit_mark:
+
+    // return;
 }
 
 
 void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *return_err) {
     assert(conf != NULL);
-    if (!conf->n_tests) {
+    if (!conf->exist) {
         return;
     }
-
     assert(return_err != NULL);
 
 

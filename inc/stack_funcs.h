@@ -31,8 +31,7 @@ struct hash_t {
 };
 
 struct stack_t {
-    //TODO: можно сделать указатель на дубль тут
-
+    
     ON_HASH(hash_t HASH_STACK_STRUCT;)
     ON_HASH(hash_t HASH_STACK_DATA;)
 

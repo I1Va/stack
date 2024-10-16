@@ -17,7 +17,7 @@ int main(const int argc, const char *argv[]) {
 
     main_config_t main_config = {}; main_config_ctor(&main_config);
 
-    const size_t n_options = 4;
+    const size_t n_options = 3;
     opt_data options[n_options] = {};
 
     auto_testing_config_t auto_testing_config = {}; auto_testing_config_ctor(&auto_testing_config);

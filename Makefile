@@ -52,7 +52,6 @@ debug: make_src_folder
 
 san_debug: make_src_folder
 	$(CC) $(SRC_FILES) -o $(SRC_OUTPUTFILE) $(DEFINE_FLAGS) $(INCLUDE_FLAGS) $(CC_DEBUG_FLAGS)
-	./build/stack.out -t-n_tests=1 -m-log_stderr=1
 
 launch: build
 	./$(SRC_OUTPUTFILE)
@@ -62,7 +61,6 @@ security: make_src_folder
 
 debug_security: make_src_folder
 	$(CC) $(SRC_FILES) -o $(SRC_OUTPUTFILE) $(DEFINE_FLAGS) $(SECURITY_FLAGS) $(INCLUDE_FLAGS) $(CC_DEBUG_FLAGS)
-	./build/stack.out -t-n_tests=1
 
 # clear
 
