@@ -1,16 +1,16 @@
-# Onegin
+# Stack
 
 
-Program that performs transformations on text
+Program that performs stack operations
 
 ## Installation
 
 ```shell
 git clone https://github.com/I1Va/stack.git
 
-make build - компиляция без флагов
+make build - compile without flags
 
-make security - компиляция с флагами защиты
+make security - compile with sucrity flags
 ```
 
 ## Usage
