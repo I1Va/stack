@@ -1,9 +1,7 @@
 #ifndef ERROR_PROCESSING_H
 #define ERROR_PROCESSING_H
 
-#include <stdio.h>
-
-enum err_code {
+enum stack_err {
     ERR_OK                         = 0,
     ERR_NULLPTR                    = 1 << 0,
     ERR_CALLOC                     = 1 << 1,
@@ -38,7 +36,7 @@ int fprintf_abort(const char file_name[], const int line, const char function_na
 
 const char *get_bit_descr(unsigned long long err);
 
-// err_code fprintf_return(const char file_name[], const int line, const char function_name[], const err_code code);
+// stack_err fprintf_return(const char file_name[], const int line, const char function_name[], const stack_err code);
 
 // #ifndef _REALIZE
 //     #define asserted(code) ? 1 : printf_red(stderr, "{%s}; [%s: %d]; err_info: %s\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, get_descr(code));

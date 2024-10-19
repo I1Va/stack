@@ -1,12 +1,8 @@
-#include <cstdlib>
+#include <stdlib.h>
 #include <stddef.h>
-#include <stdlib.h>
 #include <string.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
-#include <string.h>
-#include <stdarg.h>
 
 #include "conf_ctor.h"
 #include "general.h"
@@ -16,7 +12,6 @@
 typedef long long stack_elem_t;
 #include "stack_funcs.h"
 
-#include "general.h"
 
 #include "args_proc.h"
 
@@ -62,94 +57,98 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
         opt_data *ptr = option_list_ptr(name, opts, n_opts);
 
         if (ptr != NULL) {
-            sscanf(value + 1, (ptr->fmt), ptr->val_ptr); // FIXME: исправить warning. Мб использовать __atribute__
+            sscanf(value + 1, (ptr->fmt), ptr->val_ptr);
             ptr->exist = true;
         }
     }
 }
 
-stack_elem_t stack_elem_from_str(const char str[], const size_t n) {
-    char *elem_1 = (char *) calloc(n * 2, sizeof(char));
-    char *start_elem_1 = elem_1;
+// stack_elem_t stack_elem_from_str(const char str[], const size_t n) {
+//     char *elem_1 = (char *) calloc(n * 2, sizeof(char));
+//     char *start_elem_1 = elem_1;
 
-    for (size_t idx = 0; idx < n; idx++) {
-        *(elem_1 + idx) = str[idx];
-    }
+//     for (size_t idx = 0; idx < n; idx++) {
+//         *(elem_1 + idx) = str[idx];
+//     }
 
-    stack_elem_t stack_elem_1 = *((stack_elem_t *) start_elem_1);
-    FREE(elem_1);
+//     stack_elem_t stack_elem_1 = *((stack_elem_t *) start_elem_1);
+//     FREE(elem_1);
 
-    return stack_elem_1;
-}
+//     return stack_elem_1;
+// }
 
-void breaking_test_launch(main_config_t *conf, unsigned long long *return_err) {
-    log_init(NULL, return_err);
+// void breaking_test_launch(main_config_t *conf, unsigned long long *return_err) {
+//     log_init(NULL, return_err);
 
-    assert(conf != NULL);
-    assert(return_err != NULL);
-    // Строки туэ морса
-    char string_1[] = "edHsfEHs";
-    char string_2[] = "fEHsedHs";
-    // stk1 = {"edHs", "fEHs"}
-    // stk2 = {"fEHs", "edHs"}
-    // hash(stk1) == hash(stk2);
+//     assert(conf != NULL);
+//     assert(return_err != NULL);
+//     // Строки туэ морса
+//     char string_1[] = "edHsfEHs";
+//     char string_2[] = "fEHsedHs";
+//     // stk1 = {"edHs", "fEHs"}
+//     // stk2 = {"fEHs", "edHs"}
+//     // hash(stk1) == hash(stk2);
 
-    hash_t hash1 = {};
-    hash1.hash_mult = 257;
-    hash1.hash_value= 0;
-    hash1.left_ptr = string_1;
-    hash1.right_ptr = string_1 + sizeof(string_1);
+//     hash_t hash1 = {};
+//     hash1.hash_mult = 257;
+//     hash1.hash_value= 0;
+//     hash1.left_ptr = string_1;
+//     hash1.right_ptr = string_1 + sizeof(string_1);
 
-    hash_t hash2 = {};
-    hash2.hash_mult = 257;
-    hash2.hash_value = 0;
-    hash2.left_ptr = string_2;
-    hash2.right_ptr = string_2 + sizeof(string_2);
+//     hash_t hash2 = {};
+//     hash2.hash_mult = 257;
+//     hash2.hash_value = 0;
+//     hash2.left_ptr = string_2;
+//     hash2.right_ptr = string_2 + sizeof(string_2);
 
 
-    printf("hash1: %llu\n", HASH_get(&hash1));
-    printf("hash2: %llu\n", HASH_get(&hash2));
+//     printf("hash1: %llu\n", HASH_get(&hash1));
+//     printf("hash2: %llu\n", HASH_get(&hash2));
 
-    unsigned long long last_err = ERR_OK;
-    stack_t stk = {};
-    STACK_INIT(&stk, 0, &last_err);
+//     unsigned long long last_err = ERR_OK;
+//     stack_t stk = {};
+//     STACK_INIT(&stk, 0, &last_err);
 
-    char string_1_part_1[] = "edHs";
-    char string_1_part_2[] = "fEHs";
-    stack_elem_t elem_1 = stack_elem_from_str(string_1_part_1, 4);
-    stack_elem_t elem_2 = stack_elem_from_str(string_1_part_2, 4);
+//     char string_1_part_1[] = "edHs";
+//     char string_1_part_2[] = "fEHs";
+//     stack_elem_t elem_1 = stack_elem_from_str(string_1_part_1, 4);
+//     stack_elem_t elem_2 = stack_elem_from_str(string_1_part_2, 4);
 
-    stack_push(&stk, elem_1 , &last_err);
-    stack_push(&stk, elem_2, &last_err);
-    HASH_print(&stk.HASH_STACK_DATA);
-    DUMP(&stk);
-    *(stk.data) = 0;
-    *(stk.data + 1) = 0;
-    // VERIFY(&stk, &last_err, abort())
-    DUMP(&stk);
-    *(stk.data) = elem_2;
-    *(stk.data + 1) = elem_1;
-    HASH_print(&stk.HASH_STACK_DATA);
-    DUMP(&stk);
+//     stack_push(&stk, elem_1 , &last_err);
+//     stack_push(&stk, elem_2, &last_err);
+//     HASH_print(&stk.HASH_STACK_DATA);
+//     DUMP(&stk);
+//     *(stk.data) = 0;
+//     *(stk.data + 1) = 0;
+//     // VERIFY(&stk, &last_err, abort())
+//     DUMP(&stk);
+//     *(stk.data) = elem_2;
+//     *(stk.data + 1) = elem_1;
+//     HASH_print(&stk.HASH_STACK_DATA);
+//     DUMP(&stk);
 
-    VERIFY(&stk, &last_err, abort())
-    stack_destroy(&stk);
-}
+//     VERIFY(&stk, &last_err, abort())
+//     stack_destroy(&stk);
+// }
 
 void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_err) {
-    breaking_test_launch(conf, return_err);
-    // unsigned long long last_err = ERR_OK;
+    printf(RED "main_testing_mode_launch" WHT "\n");
+    unsigned long long last_err = ERR_OK;
 
-    // char log_path[] = "./logs/log.txt";
-    // if (!conf->log_file_stderr) {
-    //     log_init(log_path, &last_err);
-    // } else {
-    //     log_init(NULL, &last_err);
-    // }
+    char log_path[] = "./logs/log.txt";
+    if (!conf->log_file_stderr) {
+        log_init(log_path, &last_err);
+    } else {
+        log_init(NULL, &last_err);
+    }
+    stack_t stk = {}; STACK_INIT(&stk, 14, return_err)
+    DUMP(&stk)
+    // breaking_test_launch(conf, return_err);
 
 
-    // stack_t stk = {}; STACK_INIT(&stk, 14, return_err)
-    // DUMP(&stk)
+
+
+
 
     // last_err |= ERR_CANARY_MID;
     // last_err |= ERR_STACK_LAST_ELEM;
@@ -195,7 +194,6 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
 
     // return;
 }
-
 
 void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *return_err) {
     assert(conf != NULL);

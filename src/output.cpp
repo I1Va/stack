@@ -1,6 +1,4 @@
-#include <assert.h>
 #include <stddef.h>
-#include <time.h>
 #include <stdio.h>
 #include <time.h>
 #include <stdarg.h>
@@ -8,7 +6,6 @@
 #include "output.h"
 #include "error_processing.h"
 #include "general.h"
-
 
 typedef long long stack_elem_t;
 #include "stack_funcs.h"

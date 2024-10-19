@@ -1,7 +1,4 @@
 #include "conf_ctor.h"
-#include "error_processing.h"
-
-#include <cstdlib>
 
 void main_config_ctor(main_config_t *conf) {
     conf->exist = true;

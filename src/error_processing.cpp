@@ -1,7 +1,3 @@
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-
 #include "error_processing.h"
 
 const char *get_bit_descr(unsigned long long err) {

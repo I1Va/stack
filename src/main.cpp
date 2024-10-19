@@ -1,16 +1,9 @@
-#include <cstdarg>
-#include <cstddef>
-#include <cstdlib>
-#include <string.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 #include "error_processing.h"
 #include "args_proc.h"
 #include "conf_ctor.h"
 #include "general.h"
-#include "output.h"
 
 int main(const int argc, const char *argv[]) {
     unsigned long long last_err = ERR_OK;
@@ -21,8 +14,7 @@ int main(const int argc, const char *argv[]) {
     opt_data options[n_options] = {};
 
     auto_testing_config_t auto_testing_config = {}; auto_testing_config_ctor(&auto_testing_config);
-
-    opt_data_ctor(&options[0], "-at-n_tests", "-auto_testing-n_tests", "%ld", &auto_testing_config.n_tests);
+    opt_data_ctor(&options[0], "-at-n_tests", "-auto_testing-n_tests", "%ld%s%f", &auto_testing_config.n_tests);
     opt_data_ctor(&options[1], "-at-log_stderr", "-auto_testing-log_stderr", "%d", &auto_testing_config.log_file_stderr);
     opt_data_ctor(&options[2], "-m-log_stderr", "-main-log_stderr", "%d", &main_config.log_file_stderr);
     get_options(argc, argv, options, n_options);
@@ -42,6 +34,6 @@ int main(const int argc, const char *argv[]) {
     return EXIT_SUCCESS;
 
     exit_mark:
-
+    
     return EXIT_FAILURE;
 }

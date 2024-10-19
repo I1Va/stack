@@ -1,9 +1,6 @@
-#include <cassert>
-#include <cstddef>
-#include <cstdlib>
-#include <cstring>
+#include <assert.h>
+#include <stddef.h>
 #include <stdlib.h>
-#include <stdio.h>
 
 #include "general.h"
 #include "error_processing.h"

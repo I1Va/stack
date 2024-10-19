@@ -1,8 +1,9 @@
 #ifndef GENERAL_H
 #define GENERAL_H
 
-#include <cstddef>
+#include <stddef.h>
 #include <time.h>
+#include <stdio.h>
 
 #define GRN "\e[0;32m"
 #define WHT "\e[0;20m"
@@ -58,7 +59,7 @@ enum RETURN_STATES {
             }                                                                                          \
         }
     #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err, __FILE__, __LINE__, __PRETTY_FUNCTION__);
-    #define MY_ASSERT(err_code, exit_instruction) {DEBUG_ERROR(err_code); exit_instruction;};
+    #define MY_ASSERT(stack_err, exit_instruction) {DEBUG_ERROR(stack_err); exit_instruction;};
 
 #else
     #define debug(str_, ...) ;
@@ -66,7 +67,7 @@ enum RETURN_STATES {
     #define ON_DEBUG(...)
     #define VERIFY(stk, return_err, exit_instruction) ;
     #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err);
-    #define MY_ASSERT(err_code, exit_instruction) ;
+    #define MY_ASSERT(stack_err, exit_instruction) ;
 
 #endif // _DEBUG
 
