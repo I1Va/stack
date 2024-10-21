@@ -11,8 +11,6 @@ enum log_type_t {
     LOG_ERROR = 2,
 };
 
-const char *get_descr(enum log_type_t log_type);
-
 void print_log_func_info(const char file_name[], const char func_name[], const int line_idx);
 
 ON_HASH(void HASH_print(hash_t *HASH);)
@@ -27,15 +25,15 @@ void print_log_type(enum log_type_t log_type);
 
 void print_log_border();
 
-void log_err_print(enum log_type_t log_type, const unsigned long long err, const char file_name[], const char func_name[], const int line_idx);
+void log_stk_err_print(enum log_type_t log_type, const stk_err err, const char file_name[], const char func_name[], const int line_idx);
 
-void log_init(const char log_path[], unsigned long long *return_err);
+void log_init(const char log_path[], stk_err *return_err);
 
 const char *get_log_descr(enum log_type_t log_type);
 
 void log_var_print(enum log_type_t log_type, const char file_name[], const char func_name[], const int line_idx, const char fmt[], ...);
 
-#define LogErr(log_type, err) log_err_print(log_type, err, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__);
+#define LogErr(log_type, err) log_stk_err_print(log_type, err, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__);
 
 #define LogVar(log_type, fmt, ...) log_var_print(log_type, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, fmt, ##__VA_ARGS__);
 

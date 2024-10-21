@@ -1,47 +1,43 @@
 #ifndef ERROR_PROCESSING_H
 #define ERROR_PROCESSING_H
 
-enum stack_err {
-    ERR_OK                         = 0,
-    ERR_NULLPTR                    = 1 << 0,
-    ERR_CALLOC                     = 1 << 1,
-    ERR_MEM                        = 1 << 2,
-    ERR_UNKNOWN                    = 1 << 3,
-    ERR_STAT                       = 1 << 4,
-    ERR_INPUT_DATA                 = 1 << 5,
-    ERR_FILE_OPEN                  = 1 << 6,
-    ERR_FILE_CLOSE                 = 1 << 7,
-    ERR_ARGS                       = 1 << 8,
-    ERR_WRONG_COEF                 = 1 << 9,
-    ERR_INIT                       = 1 << 10,
-    ERR_STACK_NULLPTR              = 1 << 11,
-    ERR_STACK_CONT_NULLPTR         = 1 << 12,
-    ERR_STACK_OVERFLOW             = 1 << 13,
-    ERR_STACK_POP                  = 1 << 14,
-    ERR_REALLOC                    = 1 << 15,
-    ERR_CANARY_LEFT                = 1 << 16,
-    ERR_CANARY_MID                 = 1 << 17,
-    ERR_CANARY_RIGHT               = 1 << 18,
-    ERR_CANARY_STK_RIGHT           = 1 << 19,
-    ERR_HASH_STACK_DATA_MISMATCH   = 1 << 20,
-    ERR_CANARY_STK_LEFT            = 1 << 21,
-    ERR_SYSTEM                     = 1 << 22,
-    ERR_STACK_LAST_ELEM            = 1 << 23,
-    ERR_HASH_STACK_STRUCT_MISMATCH = 1 << 24,
+enum stk_err {
+    STK_ERR_OK                         = 0,
+    STK_ERR_NULLPTR                    = 1 << 0,
+    STK_ERR_CALLOC                     = 1 << 1,
+    STK_ERR_MEM                        = 1 << 2,
+    STK_ERR_UNKNOWN                    = 1 << 3,
+    STK_ERR_STAT                       = 1 << 4,
+    STK_ERR_INPUT_DATA                 = 1 << 5,
+    STK_ERR_FILE_OPEN                  = 1 << 6,
+    STK_ERR_FILE_CLOSE                 = 1 << 7,
+    STK_ERR_ARGS                       = 1 << 8,
+    STK_ERR_WRONG_COEF                 = 1 << 9,
+    STK_ERR_INIT                       = 1 << 10,
+    STK_ERR_STACK_NULLPTR              = 1 << 11,
+    STK_ERR_STACK_CONT_NULLPTR         = 1 << 12,
+    STK_ERR_STACK_OVERFLOW             = 1 << 13,
+    STK_ERR_STACK_POP                  = 1 << 14,
+    STK_ERR_REALLOC                    = 1 << 15,
+    STK_ERR_CANARY_LEFT                = 1 << 16,
+    STK_ERR_CANARY_MID                 = 1 << 17,
+    STK_ERR_CANARY_RIGHT               = 1 << 18,
+    STK_ERR_CANARY_STK_RIGHT           = 1 << 19,
+    STK_ERR_HASH_STACK_DATA_MISMATCH   = 1 << 20,
+    STK_ERR_CANARY_STK_LEFT            = 1 << 21,
+    STK_ERR_SYSTEM                     = 1 << 22,
+    STK_ERR_STACK_LAST_ELEM            = 1 << 23,
+    STK_ERR_HASH_STACK_STRUCT_MISMATCH = 1 << 24,
 };
 
-const char *get_descr(unsigned long long err);
+const char *stkerr_get_descr(stk_err err);
+
+const char *stkerr_get_bit_descr(stk_err err);
 
 int fprintf_abort(const char file_name[], const int line, const char function_name[], const char error_descr[]);
 
-const char *get_bit_descr(unsigned long long err);
 
-// stack_err fprintf_return(const char file_name[], const int line, const char function_name[], const stack_err code);
 
-// #ifndef _REALIZE
-//     #define asserted(code) ? 1 : printf_red(stderr, "{%s}; [%s: %d]; err_info: %s\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, get_descr(code));
-// #else
-//     #define asserted(code) ;
-// #endif // _REALIZE
+void stk_add_err(stk_err *src, stk_err add);
 
 #endif // ERROR_PROCESSING_H

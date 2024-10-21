@@ -1,13 +1,13 @@
 ----------------------------------------------------------------------------------------------------
 log_type: {LOG_DEBUG}
-Date: 10/19/2024 Time: 03:38:22 Ms: {0.003448}
-file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, long long unsigned int*)}; line: {145}
+Date: 10/21/2024 Time: 22:01:00 Ms: {0.001134}
+file : {src/args_proc.cpp}; func: {void main_testing_mode_launch(main_config_t*, stk_err*)}; line: {147}
 ----------------------------------------------------------------------------------------------------
-[0;31mstack_t [0x7ffc366ce0d0] at src/args_proc.cpp:145 born at src/args_proc.cpp:144(void main_testing_mode_launch(main_config_t*, long long unsigned int*))
+[0;31mstack_t [0x7fffb4bc2990] at src/args_proc.cpp:147 born at (null):0((null))
 [0;20m[0;20m{
 [0;20m[0;33msize = 0
 [0;20m[0;33mcapacity = 14
-[0;20m[0;33mstack[0x50b000000040]
+[0;20m[0;33mstack[0x558d270f4890]
 [0;20m[0;20m{
 [0;20m[0;32m[0] = POISON;
 [0;20m[0;32m[1] = POISON;

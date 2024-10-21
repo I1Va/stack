@@ -27,10 +27,10 @@ opt_data *option_list_ptr(const char *name, opt_data opts[], const size_t n_opts
 
 void get_options(const int argc, const char* argv[], opt_data opts[], const size_t n_opts);
 
-void main_mode_launch(main_config_t *conf, unsigned long long *return_err);
+void main_mode_launch(main_config_t *conf, stk_err *return_err);
 
-void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_err);
+void main_testing_mode_launch(main_config_t *conf, stk_err *return_err);
 
-void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *return_err);
+void auto_testing_mode_launch(auto_testing_config_t *conf, stk_err *return_err);
 
 #endif // ARGS_PROC_H

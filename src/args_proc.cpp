@@ -79,7 +79,7 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
 //     return stack_elem_1;
 // }
 
-// void breaking_test_launch(main_config_t *conf, unsigned long long *return_err) {
+// void breaking_test_launch(main_config_t *conf, stk_err *return_err) {
 //     log_init(NULL, return_err);
 
 //     assert(conf != NULL);
@@ -107,7 +107,7 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
 //     printf("hash1: %llu\n", HASH_get(&hash1));
 //     printf("hash2: %llu\n", HASH_get(&hash2));
 
-//     unsigned long long last_err = ERR_OK;
+//     stk_err last_err = STK_ERR_OK;
 //     stack_t stk = {};
 //     STACK_INIT(&stk, 0, &last_err);
 
@@ -133,9 +133,9 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
 //     stack_destroy(&stk);
 // }
 
-void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_err) {
+void main_testing_mode_launch(main_config_t *conf, stk_err *return_err) {
     printf(RED "main_testing_mode_launch" WHT "\n");
-    unsigned long long last_err = ERR_OK;
+    stk_err last_err = STK_ERR_OK;
 
     char log_path[] = "./logs/log.txt";
     if (!conf->log_file_stderr) {
@@ -152,14 +152,14 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
 
 
 
-    // last_err |= ERR_CANARY_MID;
-    // last_err |= ERR_STACK_LAST_ELEM;
-    // last_err |= ERR_ARGS;
-    // last_err |= ERR_MEM;
+    // last_err |= STK_ERR_CANARY_MID;
+    // last_err |= STK_ERR_STACK_LAST_ELEM;
+    // last_err |= STK_ERR_ARGS;
+    // last_err |= STK_ERR_MEM;
 
     // LogErr(LOG_ERROR, last_err)
 
-    // last_err = ERR_OK;
+    // last_err = STK_ERR_OK;
 
     // DEBUG_ERROR(last_err)
 
@@ -169,7 +169,7 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
 
     // for (size_t i = 0; i < 10; i++) {
     //     stack_push(&stk, rand(), &last_err);
-    //     if (last_err != ERR_OK) {
+    //     if (last_err != STK_ERR_OK) {
     //         DEBUG_ERROR(last_err)
     //         CLEAR_MEMORY(exit_mark)
     //     }
@@ -178,7 +178,7 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
     // LogStkPtrInfo(LOG_ANALYS, &stk)
     // for (size_t i = 0; i < 10; i++) {
     //     stack_pop(&stk, &last_err);
-    //     if (last_err != ERR_OK) {
+    //     if (last_err != STK_ERR_OK) {
     //         DEBUG_ERROR(last_err)
     //         CLEAR_MEMORY(exit_mark)
     //     }
@@ -197,7 +197,7 @@ void main_testing_mode_launch(main_config_t *conf, unsigned long long *return_er
     // return;
 }
 
-void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *return_err) {
+void auto_testing_mode_launch(auto_testing_config_t *conf, stk_err *return_err) {
     assert(conf != NULL);
     if (!conf->exist) {
         return;
@@ -205,7 +205,7 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
     assert(return_err != NULL);
 
 
-    unsigned long long last_err = ERR_OK;
+    stk_err last_err = STK_ERR_OK;
 
     char log_path[] = "./logs/log.txt";
 
@@ -225,7 +225,7 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
     } else {
         log_init(NULL, &last_err);
     }
-    if (last_err != ERR_OK) {
+    if (last_err != STK_ERR_OK) {
         DEBUG_ERROR(last_err);
         CLEAR_MEMORY(exit_mark)
     }
@@ -233,27 +233,27 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
     STACK_INIT(&stk, 0, &last_err)
 
     if (system(create_test_command)) {
-        *return_err |= ERR_SYSTEM;
+        stk_add_err(return_err, STK_ERR_SYSTEM);
         DEBUG_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
 
     if (system(create_answer_command)) {
-        *return_err |= ERR_SYSTEM;
+        stk_add_err(return_err, STK_ERR_SYSTEM);
         DEBUG_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
 
     input_file = fopen(input_path, "r");
     if (input_file == NULL) {
-        *return_err |= ERR_FILE_OPEN;
+        stk_add_err(return_err, STK_ERR_FILE_OPEN);
         DEBUG_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
 
     output_file = fopen(output_path, "w");
     if (output_file == NULL) {
-        *return_err = ERR_FILE_OPEN;
+        *return_err = STK_ERR_FILE_OPEN;
         DEBUG_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
@@ -273,12 +273,12 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
                 stack_push(&stk, com_val, return_err);
             } else if (strcmp(com_str, "pop") == 0) {
                 stack_pop(&stk, &last_err);
-                if (last_err != ERR_OK) {
+                if (last_err != STK_ERR_OK) {
                     fprintf(output_file, "pop_error\n");
                 }
             } else if (strcmp(com_str, "last") == 0) {
                 stack_elem_t last_elem = stack_get_last(&stk, &last_err);
-                if (last_err != ERR_OK) {
+                if (last_err != STK_ERR_OK) {
                     fprintf(output_file, "last_error\n");
                 } else {
                     fprintf(output_file, "%lld\n", last_elem);
@@ -286,7 +286,7 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
             } else {
                 assert(1);
             }
-            last_err = ERR_OK; // спефика авто тестинга. Предыдущие ошибки должны быть аннулированы, чтобы не перетирать будущие
+            last_err = STK_ERR_OK; // спефика авто тестинга. Предыдущие ошибки должны быть аннулированы, чтобы не перетирать будущие
         }
         if (!system("diff src/testing/output.txt src/testing/answer.txt")) {
             debug("dismatch");
@@ -316,7 +316,7 @@ void auto_testing_mode_launch(auto_testing_config_t *conf, unsigned long long *r
     return;
 }
 
-void main_mode_launch(main_config_t *conf, unsigned long long *return_err) {
+void main_mode_launch(main_config_t *conf, stk_err *return_err) {
     assert(conf != NULL);
     assert(return_err != NULL);
 }

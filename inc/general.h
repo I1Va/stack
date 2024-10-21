@@ -28,23 +28,23 @@ enum RETURN_STATES {
 };
 
 #define ASSERT(error, end_instruction)                                                                                    \
-    fprintf_red(stderr, "{%s} [%s: %d]: descr{%s}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, get_descr(error));    \
+    fprintf_red(stderr, "{%s} [%s: %d]: descr{%s}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, stkerr_get_descr(error));    \
     end_instruction;
 
 #define CLEAR_MEMORY(mark) goto mark;
 
 #ifdef _DEBUG
     #define debug(str_, ...) fprintf_red(stderr, "{%s} [%s: %d]: descr{" str_ "}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-    #define DEBUG_ERROR(code) fprintf_red(stderr, "{%s} [%s: %d]: descr{%s}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, get_descr(code));
+    #define DEBUG_ERROR(code) fprintf_red(stderr, "{%s} [%s: %d]: descr{%s}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, stkerr_get_descr(code));
     #define ON_DEBUG(...) __VA_ARGS__
     #define VERIFY(stk, return_err, exit_instruction)                                         \
         {                                                                                             \
-            if (verify(stk, return_err, __FILE__, __PRETTY_FUNCTION__, __LINE__) != ERR_OK) { \
+            if (verify(stk, return_err, __FILE__, __PRETTY_FUNCTION__, __LINE__) != stk_err_OK) { \
                 exit_instruction;                                                                     \
             }                                                                                          \
         }
     #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err, __FILE__, __LINE__, __PRETTY_FUNCTION__);
-    #define MY_ASSERT(stack_err, exit_instruction) {DEBUG_ERROR(stack_err); exit_instruction;};
+    #define MY_ASSERT(stk_err, exit_instruction) {DEBUG_ERROR(stk_err); exit_instruction;};
 
 #else
     #define debug(str_, ...) ;
@@ -52,7 +52,7 @@ enum RETURN_STATES {
     #define ON_DEBUG(...)
     #define VERIFY(stk, return_err, exit_instruction) ;
     #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err);
-    #define MY_ASSERT(stack_err, exit_instruction) ;
+    #define MY_ASSERT(stk_err, exit_instruction) ;
 
 #endif // _DEBUG
 

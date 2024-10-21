@@ -18,10 +18,10 @@ ON_HASH(
         HASH->hash_value = 0;
     }
 
-    unsigned long long HASH_get(hash_t *HASH) {
+    stk_err HASH_get(hash_t *HASH) {
         unsigned char *left_ptr = (unsigned char *) HASH->left_ptr;
         unsigned char *right_ptr = (unsigned char *) HASH->right_ptr;
-        unsigned long long hash_value = 0;
+        stk_err hash_value = 0;
 
         while (left_ptr < right_ptr) {
             hash_value += *left_ptr++ * HASH->hash_mult; // использую переполнение
@@ -48,7 +48,7 @@ ON_CANARY(
     canary_elem_t *stack_end_canary_getptr(stack_t *stk) {
         size_t stack_byte_size = stk->capacity * sizeof(stack_elem_t);
         char *canary_ptr = (char *) stk->data + stack_byte_size;
-        unsigned long long alignment = (unsigned long long) canary_ptr % 8;
+        stk_err alignment = (stk_err) canary_ptr % 8;
         canary_elem_t *canary_ptr_align = (canary_elem_t *) (canary_ptr + alignment);
     }
 
@@ -68,33 +68,33 @@ void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) 
     }
 }
 
-unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char file_name[], const char func_name[], const int line_idx) {
+stk_err verify(stack_t *stk, stk_err *return_err, const char file_name[], const char func_name[], const int line_idx) {
     assert(return_err != NULL);
 
     if (stk == NULL) {
-        *return_err |= ERR_STACK_NULLPTR;
+        stk_add_err(return_err, STK_ERR_STACK_NULLPTR);
         goto dump_mark;
     }
 
     ON_CANARY(
         if (*stk->CANARIES.canary_left_ptr != CANARY_VALUE) {
-            *return_err |= ERR_CANARY_LEFT;
+            stk_add_err(return_err, STK_ERR_CANARY_LEFT);
             MY_ASSERT(*return_err, abort())
         }
         if (*stk->CANARIES.canary_mid_ptr != CANARY_VALUE) { // FIXME: что за canary_mid_ptr
-            *return_err |= ERR_CANARY_MID;
+            stk_add_err(return_err, STK_ERR_CANARY_MID);
             MY_ASSERT(*return_err, abort())
         }
         if (*stk->CANARIES.canary_right_ptr != CANARY_VALUE) {
-            *return_err |= ERR_CANARY_RIGHT;
+            stk_add_err(return_err, STK_ERR_CANARY_RIGHT);
             MY_ASSERT(*return_err, abort())
         }
         if (*stk->CANARIES.canary_stk_left_ptr != CANARY_VALUE) {
-            *return_err |= ERR_CANARY_STK_LEFT;
+            stk_add_err(return_err, STK_ERR_CANARY_STK_LEFT);
             MY_ASSERT(*return_err, abort())
         }
         if (*stk->CANARIES.canary_stk_right_ptr != CANARY_VALUE) {
-            *return_err |= ERR_CANARY_STK_RIGHT;
+            stk_add_err(return_err, STK_ERR_CANARY_STK_RIGHT);
             MY_ASSERT(*return_err, abort())
         }
     )
@@ -102,27 +102,27 @@ unsigned long long verify(stack_t *stk, unsigned long long *return_err, const ch
     ON_HASH(
         if (!HASH_check(&stk->HASH_STACK_STRUCT)) {
             HASH_print(&stk->HASH_STACK_STRUCT);
-            *return_err |= ERR_HASH_STACK_STRUCT_MISMATCH;
+            stk_add_err(return_err, STK_ERR_HASH_STACK_STRUCT_MISMATCH);
             MY_ASSERT(*return_err, return *return_err)
         }
         if (!HASH_check(&stk->HASH_STACK_DATA)) {
             HASH_print(&stk->HASH_STACK_DATA);
-            *return_err |= ERR_HASH_STACK_DATA_MISMATCH;
+            stk_add_err(return_err, STK_ERR_HASH_STACK_DATA_MISMATCH);
             MY_ASSERT(*return_err, return *return_err)
         }
     )
 
     if (stk->data == NULL) {
-        *return_err |= ERR_STACK_CONT_NULLPTR;
+        stk_add_err(return_err, STK_ERR_STACK_CONT_NULLPTR);
         goto dump_mark;
     }
 
     if (stk->size > stk->capacity) {
-        *return_err |= ERR_STACK_OVERFLOW;
+        stk_add_err(return_err, STK_ERR_STACK_OVERFLOW);
         goto dump_mark;
     }
 
-    return ERR_OK;
+    return STK_ERR_OK;
 
     dump_mark:
 
@@ -132,12 +132,12 @@ unsigned long long verify(stack_t *stk, unsigned long long *return_err, const ch
     return *return_err;
 }
 
-void stack_init(stack_t *stk, const size_t size, unsigned long long *return_err, const char born_file[], const int born_line, const char born_func[]) {
+void stack_init(stack_t *stk, const size_t size, stk_err *return_err, const char born_file[], const int born_line, const char born_func[]) {
     assert(return_err != NULL);
 
     if (stk == NULL) {
-        *return_err |= ERR_CALLOC;
-        DEBUG_ERROR(ERR_CALLOC)
+        stk_add_err(return_err,  STK_ERR_CALLOC);
+        DEBUG_ERROR(STK_ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
     }
 
@@ -153,7 +153,7 @@ void stack_init(stack_t *stk, const size_t size, unsigned long long *return_err,
     ON_CANARY    (stk->data = (stack_elem_t *) calloc(stk->capacity * sizeof(stack_elem_t) + 2 * CANARY_NMEMB + LEFT_CANARY_INDENT * sizeof(stack_elem_t), sizeof(char));)
 
     if (stk->data == NULL) {
-        *return_err |= ERR_CALLOC;
+        stk_add_err(return_err, STK_ERR_CALLOC);
         DEBUG_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
@@ -212,7 +212,7 @@ void stack_destroy(stack_t *stk) {
     FREE(stk->data);
 }
 
-void resize(stack_t *stk, unsigned long long *return_err) {
+void resize(stack_t *stk, stk_err *return_err) {
     assert(stk != NULL);
     assert(return_err != NULL);
 
@@ -248,7 +248,7 @@ void resize(stack_t *stk, unsigned long long *return_err) {
     )
 
     if (stk->data == NULL) {
-        *return_err |= ERR_REALLOC;
+        stk_add_err(return_err, STK_ERR_REALLOC);
         DEBUG_ERROR(*return_err);
         return;
     }
@@ -271,15 +271,15 @@ void resize(stack_t *stk, unsigned long long *return_err) {
     )
 }
 
-void stack_push(stack_t *stk, stack_elem_t value, unsigned long long *return_err) {
+void stack_push(stack_t *stk, stack_elem_t value, stk_err *return_err) {
     assert(return_err != NULL);
 
     VERIFY(stk, return_err, return)
 
-    unsigned long long last_err = ERR_OK;
+    stk_err last_err = STK_ERR_OK;
     resize(stk, &last_err);
-    if (last_err != ERR_OK) {
-        *return_err |= last_err;
+    if (last_err != STK_ERR_OK) {
+        stk_add_err(return_err, last_err);
         DEBUG_ERROR(last_err);
         return;
     }
@@ -292,22 +292,22 @@ void stack_push(stack_t *stk, stack_elem_t value, unsigned long long *return_err
     VERIFY(stk, return_err, return)
 }
 
-stack_elem_t stack_pop(stack_t *stk, unsigned long long *return_err) {
+stack_elem_t stack_pop(stack_t *stk, stk_err *return_err) {
     assert(return_err != NULL);
 
-    unsigned long long last_err = ERR_OK;
+    stk_err last_err = STK_ERR_OK;
     stack_elem_t last_elem = POISON_STACK_VALUE;
     VERIFY(stk, return_err, CLEAR_MEMORY(exit_mark))
 
     if (stk->size == 0) {
-        *return_err |= ERR_STACK_POP;
+        stk_add_err(return_err, STK_ERR_STACK_POP);
         DEBUG_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
 
     resize(stk, &last_err);
-    if (last_err != ERR_OK) {
-        *return_err |= last_err;
+    if (last_err != STK_ERR_OK) {
+        stk_add_err(return_err, last_err);
         DEBUG_ERROR(last_err)
         CLEAR_MEMORY(exit_mark)
     }
@@ -325,13 +325,13 @@ stack_elem_t stack_pop(stack_t *stk, unsigned long long *return_err) {
     return POISON_STACK_VALUE;
 }
 
-stack_elem_t stack_get_last(stack_t *stk, unsigned long long *return_err) {
+stack_elem_t stack_get_last(stack_t *stk, stk_err *return_err) {
     assert(stk != NULL);
 
     VERIFY(stk, return_err, )
 
     if (stk->size == 0) {
-        *return_err |= ERR_STACK_LAST_ELEM;
+        stk_add_err(return_err, STK_ERR_STACK_LAST_ELEM);
         DEBUG_ERROR(*return_err)
         return POISON_STACK_VALUE;
     }

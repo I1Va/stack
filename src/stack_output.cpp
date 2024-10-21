@@ -16,7 +16,7 @@ FILE* log_output_file_ptr = NULL;
 const size_t date_nmemb = 16;
 const size_t time_nmemb = 16;
 
-void log_init(const char log_path[], unsigned long long *return_err) {
+void log_init(const char log_path[], stk_err *return_err) {
     if (log_path == NULL) {
         log_output_file_ptr = stderr;
         return;
@@ -24,7 +24,7 @@ void log_init(const char log_path[], unsigned long long *return_err) {
 
     log_output_file_ptr = fopen(log_path, "w");
     if (log_output_file_ptr == NULL) {
-        *return_err = ERR_FILE_OPEN;
+        *return_err = STK_ERR_FILE_OPEN;
         DEBUG_ERROR(*return_err);
     }
     setbuf(log_output_file_ptr, NULL); //disabling buffering
@@ -147,7 +147,7 @@ void dump(stack_t *stk, const char file_name[], const char func_name[], const in
     } else {
         ON_CANARY(
             canary_elem_t left_canary_val = *(canary_elem_t *)(stk->data - LEFT_CANARY_INDENT);
-            fprintf_grn(log_output_file_ptr, "[_left_canary] = %llx;\n", left_canary_val); //FIXME: %x? для unsigned long long работает?
+            fprintf_grn(log_output_file_ptr, "[_left_canary] = %llx;\n", left_canary_val); //FIXME: %x? для stk_err работает?
         )
         for (size_t i = 0; i < stk->capacity; i++) {
             if (stk->data[i] == POISON_STACK_VALUE) {
@@ -158,7 +158,7 @@ void dump(stack_t *stk, const char file_name[], const char func_name[], const in
         }
         ON_CANARY(
             canary_elem_t right_canary_val = *stack_end_canary_getptr(stk);
-            fprintf_grn(log_output_file_ptr, "[right_canary] = %llx;\n", right_canary_val); //FIXME: %x? для unsigned long long работает?
+            fprintf_grn(log_output_file_ptr, "[right_canary] = %llx;\n", right_canary_val); //FIXME: %x? для stk_err работает?
         )
     }
     fprintf_wht(log_output_file_ptr, "}\n");
@@ -169,7 +169,7 @@ void dump(stack_t *stk, const char file_name[], const char func_name[], const in
     fprintf(log_output_file_ptr, "\n");
 }
 
-void log_err_print(enum log_type_t log_type, const unsigned long long err, const char file_name[], const char func_name[], const int line_idx) {
+void log_stk_err_print(enum log_type_t log_type, const stk_err err, const char file_name[], const char func_name[], const int line_idx) {
     print_log_border();
     print_log_type(log_type);
     print_log_time();
@@ -177,9 +177,9 @@ void log_err_print(enum log_type_t log_type, const unsigned long long err, const
     print_log_border();
 
     fprintf(log_output_file_ptr, "-----------ERROR_LIST------------------\n");
-    for (size_t err_bit = 0; err_bit < 32; err_bit++) {
-        if ((err >> err_bit) & 1ull) {
-            fprintf(log_output_file_ptr, "%s\n", get_bit_descr(1 << err_bit));
+    for (size_t stk_err_bit = 0; stk_err_bit < 32; stk_err_bit++) {
+        if ((err >> stk_err_bit) & 1ull) {
+            fprintf(log_output_file_ptr, "%s\n", stkerr_get_bit_descr((stk_err) (1ull << stk_err_bit)));
         }
     }
     print_log_border();

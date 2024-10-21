@@ -26,23 +26,23 @@ struct hash_t {
     void *left_ptr;
     void *right_ptr;
 
-    unsigned long long hash_value;
-    unsigned long long hash_mult;
+    stk_err hash_value;
+    stk_err hash_mult;
 };
 
 struct stack_t {
-    
+
     ON_HASH(hash_t HASH_STACK_STRUCT;)
     ON_HASH(hash_t HASH_STACK_DATA;)
 
-    ON_CANARY(const unsigned long long CANARY_LEFT = CANARY_VALUE;)
+    ON_CANARY(const stk_err CANARY_LEFT = CANARY_VALUE;)
 
     ON_CANARY(canaries_t CANARIES;)
 
     size_t size;
     size_t capacity;
 
-    ON_CANARY(const unsigned long long CANARY_MID = CANARY_VALUE;)
+    ON_CANARY(const stk_err CANARY_MID = CANARY_VALUE;)
 
     stack_elem_t *data;
 
@@ -50,7 +50,7 @@ struct stack_t {
     int born_line;
     const char *born_func;
 
-    ON_CANARY(const unsigned long long CANARY_RIGHT = CANARY_VALUE;)
+    ON_CANARY(const stk_err CANARY_RIGHT = CANARY_VALUE;)
 };
 
 const size_t resize_up_coeff = 2;
@@ -68,7 +68,7 @@ ON_CANARY(
 ON_HASH(
     void HASH_init(hash_t *HASH);
 
-    unsigned long long HASH_get(hash_t *HASH);
+    stk_err HASH_get(hash_t *HASH);
 
     void HASH_rebuild_ptr(hash_t *HASH, char *left_ptr, char *right_ptr);
 
@@ -77,20 +77,20 @@ ON_HASH(
     bool HASH_check(hash_t *HASH);
 )
 
-void stack_init(stack_t *stk, const size_t size, unsigned long long *return_err, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
+void stack_init(stack_t *stk, const size_t size, stk_err *return_err, const char born_file[] = NULL, const int born_line = 0, const char born_func[] = NULL);
 
 void stack_destroy(stack_t *stk);
 
-unsigned long long verify(stack_t *stk, unsigned long long *return_err, const char file_name[], const char func_name[], const int line_idx);
+stk_err verify(stack_t *stk, stk_err *return_err, const char file_name[], const char func_name[], const int line_idx);
 
 void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n);
 
-void resize(stack_t *stk, unsigned long long *return_err);
+void resize(stack_t *stk, stk_err *return_err);
 
-void stack_push(stack_t *stk, stack_elem_t value, unsigned long long *return_err);
+void stack_push(stack_t *stk, stack_elem_t value, stk_err *return_err);
 
-stack_elem_t stack_pop(stack_t *stk, unsigned long long *return_err);
+stack_elem_t stack_pop(stack_t *stk, stk_err *return_err);
 
-stack_elem_t stack_get_last(stack_t *stk, unsigned long long *return_err);
+stack_elem_t stack_get_last(stack_t *stk, stk_err *return_err);
 
 #endif // STACK_FUNCS_H
