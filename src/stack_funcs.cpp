@@ -4,7 +4,7 @@
 
 #include "general.h"
 #include "error_processing.h"
-#include "output.h"
+#include "stack_output.h"
 
 typedef long long stack_elem_t;
 #include "stack_funcs.h"

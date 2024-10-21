@@ -3,9 +3,10 @@
 #include <time.h>
 #include <stdarg.h>
 
-#include "output.h"
+#include "stack_output.h"
 #include "error_processing.h"
 #include "general.h"
+#include "./../general_output/inc/general_output.h"
 
 typedef long long stack_elem_t;
 #include "stack_funcs.h"

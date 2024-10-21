@@ -1,0 +1,3 @@
+[submodule "general_output"]
+	path = general_output
+	url = https://github.com/I1Va/general_output.git

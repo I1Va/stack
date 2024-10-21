@@ -53,6 +53,10 @@ SECURITY_FLAGS = -D_HASH -D_CANARY
 #EXTRA_FLAGS used in linking in debug mode
 EXTRA_FLAGS =
 
+SUBMODULES = output_funcs
+COMMONINC += $(addsuffix /inc,-I./$(SUBMODULES))
+CSRC += $(wildcard $(addsuffix /src,$(SUBMODULES))/*.cpp)
+
 OUT_O_DIR = build
 COMMONINC = -I./inc
 SRC = ./src
@@ -73,7 +77,7 @@ endif
 override CFLAGS += $(COMMONINC) # CFLAGS - environment variable. We can change it using only override, but not +=, :=, =
 
 #There are src folder files. We can use wildcard $(SRC_DIR)/*.cpp, but it isn't a good manner
-CSRC = src/main.cpp src/args_proc.cpp src/conf_ctor.cpp src/error_processing.cpp src/output.cpp src/stack_funcs.cpp
+CSRC = main.cpp src/args_proc.cpp src/conf_ctor.cpp src/error_processing.cpp src/stack_output.cpp src/stack_funcs.cpp
 
 COBJ := $(addprefix $(OUT_O_DIR)/,$(CSRC:.cpp=.o))
 #":=" - forced assignment (not lazy)

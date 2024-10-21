@@ -7,13 +7,15 @@
 #include "conf_ctor.h"
 #include "general.h"
 #include "error_processing.h"
-#include "output.h"
+#include "stack_output.h"
+#include "args_proc.h"
+
 
 typedef long long stack_elem_t;
 #include "stack_funcs.h"
 
+#include "./../general_output/inc/general_output.h"
 
-#include "args_proc.h"
 
 void opt_data_ctor(opt_data *option, const char *const short_name_src, const char *const long_name_src,
     const char *const fmt_src, void *val_ptr_src) {
