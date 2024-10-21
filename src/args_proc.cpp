@@ -11,7 +11,7 @@
 #include "args_proc.h"
 
 
-typedef long long stack_elem_t;
+typedef int stack_elem_t;
 #include "stack_funcs.h"
 
 #include "./../general_output/inc/general_output.h"

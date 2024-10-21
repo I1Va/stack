@@ -6,7 +6,7 @@
 #include "error_processing.h"
 #include "stack_output.h"
 
-typedef long long stack_elem_t;
+typedef int stack_elem_t;
 #include "stack_funcs.h"
 
 ON_HASH(
