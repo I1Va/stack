@@ -6,7 +6,7 @@
 #include "general.h"
 
 int main(const int argc, const char *argv[]) {
-    stk_err last_err = STK_ERR_OK;
+    // stk_err last_err = STK_ERR_OK;
 
     main_config_t main_config = {}; main_config_ctor(&main_config);
 
@@ -25,15 +25,6 @@ int main(const int argc, const char *argv[]) {
     //     CLEAR_MEMORY(exit_mark)
     // }
 
-    main_testing_mode_launch(&main_config, &last_err);
-    if (last_err != STK_ERR_OK) {
-        DEBUG_ERROR(last_err)
-        CLEAR_MEMORY(exit_mark)
-    }
-
     return EXIT_SUCCESS;
 
-    exit_mark:
-
-    return EXIT_FAILURE;
 }

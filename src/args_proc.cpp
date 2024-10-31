@@ -14,7 +14,6 @@
 typedef int stack_elem_t;
 #include "stack_funcs.h"
 
-#include "./../general_output/inc/general_output.h"
 
 
 void opt_data_ctor(opt_data *option, const char *const short_name_src, const char *const long_name_src,
@@ -132,70 +131,6 @@ void get_options(const int argc, const char* argv[], opt_data opts[], const size
 //     VERIFY(&stk, &last_err, abort())
 //     stack_destroy(&stk);
 // }
-
-void main_testing_mode_launch(main_config_t *conf, stk_err *return_err) {
-    printf(RED "main_testing_mode_launch" WHT "\n");
-    stk_err last_err = STK_ERR_OK;
-
-    char log_path[] = "./logs/log.txt";
-    if (!conf->log_file_stderr) {
-        log_init(log_path, &last_err);
-    } else {
-        log_init(NULL, &last_err);
-    }
-    stack_t stk = {}; STACK_INIT(&stk, 14, return_err)
-    DUMP(&stk)
-    // breaking_test_launch(conf, return_err);
-
-
-
-
-
-
-    // last_err |= STK_ERR_CANARY_MID;
-    // last_err |= STK_ERR_STACK_LAST_ELEM;
-    // last_err |= STK_ERR_ARGS;
-    // last_err |= STK_ERR_MEM;
-
-    // LogErr(LOG_ERROR, last_err)
-
-    // last_err = STK_ERR_OK;
-
-    // DEBUG_ERROR(last_err)
-
-
-    // DUMP(&stk)
-
-
-    // for (size_t i = 0; i < 10; i++) {
-    //     stack_push(&stk, rand(), &last_err);
-    //     if (last_err != STK_ERR_OK) {
-    //         DEBUG_ERROR(last_err)
-    //         CLEAR_MEMORY(exit_mark)
-    //     }
-    // }
-    // DUMP(&stk)
-    // LogStkPtrInfo(LOG_ANALYS, &stk)
-    // for (size_t i = 0; i < 10; i++) {
-    //     stack_pop(&stk, &last_err);
-    //     if (last_err != STK_ERR_OK) {
-    //         DEBUG_ERROR(last_err)
-    //         CLEAR_MEMORY(exit_mark)
-    //     }
-    // }
-
-    // DUMP(&stk);
-
-
-    // LogStkPtrInfo(LOG_DEBUG, &stk)
-
-    // stack_destroy(&stk);
-    // return;
-
-    // exit_mark:
-
-    // return;
-}
 
 void auto_testing_mode_launch(auto_testing_config_t *conf, stk_err *return_err) {
     assert(conf != NULL);

@@ -2,14 +2,51 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdarg.h>
+#include <assert.h>
 
 #include "stack_output.h"
 #include "error_processing.h"
 #include "general.h"
-#include "./../general_output/inc/general_output.h"
 
 typedef int stack_elem_t;
 #include "stack_funcs.h"
+
+#define GRN "\e[0;32m"
+#define WHT "\e[0;20m"
+#define RED "\e[0;31m"
+#define YEL "\e[0;33m"
+
+#define printf_red(str_, ...) printf(RED str_ WHT, ##__VA_ARGS__)
+#define printf_wht(str_, ...) printf(WHT str_ WHT, ##__VA_ARGS__)
+#define printf_grn(str_, ...) printf(GRN str_ WHT, ##__VA_ARGS__)
+#define printf_yel(str_, ...) printf(YEL str_ WHT, ##__VA_ARGS__)
+
+#define fprintf_red(stream, str_, ...) fprintf(stream, RED str_ WHT, ##__VA_ARGS__)
+#define fprintf_wht(stream, str_, ...) fprintf(stream, WHT str_ WHT, ##__VA_ARGS__)
+#define fprintf_grn(stream, str_, ...) fprintf(stream, GRN str_ WHT, ##__VA_ARGS__)
+#define fprintf_yel(stream, str_, ...) fprintf(stream, YEL str_ WHT, ##__VA_ARGS__)
+
+void fprintf_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line) {
+    for (size_t i = 0; i < bord_sz; i++) {
+        fprintf(stream, WHT);
+        fputc(bord_char, stream);
+    }
+    if (new_line) {
+        fputc('\n', stream);
+    }
+}
+
+void fprintf_title(FILE *stream, const char tittle[], const char bord_char, const size_t bord_sz) {
+    assert(tittle != NULL);
+    size_t tittle_sz = strlen(tittle);
+    if (bord_sz < tittle_sz) {
+        return;
+    }
+    size_t len = bord_sz - tittle_sz;
+    fprintf_border(stream, bord_char, len / 2, false);
+    fprintf_red(stream, "%s", tittle);
+    fprintf_border(stream, bord_char, (len + 1) / 2, true);
+}
 
 FILE* log_output_file_ptr = NULL;
 
@@ -204,4 +241,17 @@ void log_var_print(enum log_type_t log_type, const char file_name[], const char 
     fprintf(log_output_file_ptr, "\n");
 }
 
-// TODO: как сделать макросы LogVar(),
+#undef GRN
+#undef WHT
+#undef RED
+#undef YEL
+
+#undef printf_red
+#undef printf_wht
+#undef printf_grn
+#undef printf_yel
+
+#undef fprintf_red
+#undef fprintf_wht
+#undef fprintf_grn
+#undef fprintf_yel
