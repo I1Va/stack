@@ -11,6 +11,11 @@ enum log_type_t {
     LOG_ERROR = 2,
 };
 
+
+void stack_fprintf_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line);
+
+void stack_fprintf_title(FILE *stream, const char tittle[], const char bord_char, const size_t bord_sz);
+
 void print_log_func_info(const char file_name[], const char func_name[], const int line_idx);
 
 ON_HASH(void HASH_print(hash_t *HASH);)

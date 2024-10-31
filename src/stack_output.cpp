@@ -26,7 +26,7 @@ typedef int stack_elem_t;
 #define fprintf_grn(stream, str_, ...) fprintf(stream, GRN str_ WHT, ##__VA_ARGS__)
 #define fprintf_yel(stream, str_, ...) fprintf(stream, YEL str_ WHT, ##__VA_ARGS__)
 
-void fprintf_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line) {
+void stack_fprintf_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line) {
     for (size_t i = 0; i < bord_sz; i++) {
         fprintf(stream, WHT);
         fputc(bord_char, stream);
@@ -36,16 +36,16 @@ void fprintf_border(FILE* stream, const char bord_char, const size_t bord_sz, bo
     }
 }
 
-void fprintf_title(FILE *stream, const char tittle[], const char bord_char, const size_t bord_sz) {
+void stack_fprintf_title(FILE *stream, const char tittle[], const char bord_char, const size_t bord_sz) {
     assert(tittle != NULL);
     size_t tittle_sz = strlen(tittle);
     if (bord_sz < tittle_sz) {
         return;
     }
     size_t len = bord_sz - tittle_sz;
-    fprintf_border(stream, bord_char, len / 2, false);
+    stack_fprintf_border(stream, bord_char, len / 2, false);
     fprintf_red(stream, "%s", tittle);
-    fprintf_border(stream, bord_char, (len + 1) / 2, true);
+    stack_fprintf_border(stream, bord_char, (len + 1) / 2, true);
 }
 
 FILE* log_output_file_ptr = NULL;
