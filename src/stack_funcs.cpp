@@ -6,9 +6,6 @@
 #include "error_processing.h"
 #include "stack_output.h"
 
-typedef int stack_elem_t;
-#include "stack_funcs.h"
-
 ON_HASH(
 
     void HASH_init(hash_t *HASH) {
