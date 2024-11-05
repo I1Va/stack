@@ -272,7 +272,7 @@ stack_elem_t stack_get_elem(stack_t *stk, const size_t idx, stk_err *return_err)
     if (idx >= stk->size) {
         stk_add_err(return_err, STK_ERR_INVALID_INDEX);
         debug("index {%lu} out of range. size = {%lu}", idx, stk->size);
-        DEBUG_ERROR(last_err);
+        DEBUG_ERROR(*return_err);
         return POISON_STACK_VALUE;
     }
 
@@ -282,7 +282,7 @@ stack_elem_t stack_get_elem(stack_t *stk, const size_t idx, stk_err *return_err)
 bool stack_assign_elem(stack_t *stk, const size_t idx, const stack_elem_t val) {
     if (idx >= stk->size) {
         debug("index {%lu} out of range. size = {%lu}", idx, stk->size);
-        DEBUG_ERROR(last_err);
+        DEBUG_ERROR(STK_ERR_INVALID_INDEX);
         return false;
     }
 

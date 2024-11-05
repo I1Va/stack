@@ -12,7 +12,7 @@ typedef unsigned long long canary_elem_t;
 const canary_elem_t CANARY_VALUE = 0xC0FFEEABACABABAC;
 const size_t CANARY_NMEMB = sizeof(canary_elem_t);
 
-const stack_elem_t POISON_STACK_VALUE = 0x0BAD0DED; // FIXME: использовать при resize
+const stack_elem_t POISON_STACK_VALUE = NULL; // FIXME: использовать при resize
 
 struct canaries_t {
     const canary_elem_t *canary_left_ptr;
