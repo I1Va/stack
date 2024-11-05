@@ -1,11 +1,29 @@
+#include "inc/general.h"
+#include "inc/stack_output.h"
 #include <stdlib.h>
 
+typedef int stack_elem_t;
+#include "stack_funcs.h"
 #include "error_processing.h"
-#include "args_proc.h"
-#include "conf_ctor.h"
-#include "general.h"
 
 int main(const int argc, const char *argv[]) {
+
+
+    stk_err last_err = STK_ERR_OK;
+    log_init(NULL, &last_err);
+
+    stack_t stk = {};
+    STACK_INIT(&stk, 0, &last_err);
+
+    for (int i = 0; i < 10; i++) {
+        stack_push(&stk, i * i + 52, &last_err);
+    }
+
+    printf("stack[3]: %d\n", stack_get_elem(&stk, 3, &last_err));
+    stack_assign_elem(&stk, 3, 525252);
+    DUMP(&stk);
+
+
     // stk_err last_err = STK_ERR_OK;
 
     // main_config_t main_config = {}; main_config_ctor(&main_config);

@@ -89,6 +89,10 @@ void resize(stack_t *stk, stk_err *return_err);
 
 void stack_push(stack_t *stk, stack_elem_t value, stk_err *return_err);
 
+bool stack_assign_elem(stack_t *stk, const size_t idx, const stack_elem_t val);
+
+stack_elem_t stack_get_elem(stack_t *stk, const size_t idx, stk_err *return_err);
+
 stack_elem_t stack_pop(stack_t *stk, stk_err *return_err);
 
 stack_elem_t stack_get_last(stack_t *stk, stk_err *return_err);

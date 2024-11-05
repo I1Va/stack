@@ -28,6 +28,7 @@ enum stk_err {
     STK_ERR_SYSTEM                     = 1 << 22,
     STK_ERR_STACK_LAST_ELEM            = 1 << 23,
     STK_ERR_HASH_STACK_STRUCT_MISMATCH = 1 << 24,
+    STK_ERR_INVALID_INDEX              = 1 << 25,
 };
 
 const char *stkerr_get_descr(stk_err err);

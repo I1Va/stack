@@ -271,6 +271,28 @@ void resize(stack_t *stk, stk_err *return_err) {
     )
 }
 
+stack_elem_t stack_get_elem(stack_t *stk, const size_t idx, stk_err *return_err) {
+    if (idx >= stk->size) {
+        stk_add_err(return_err, STK_ERR_INVALID_INDEX);
+        debug("index {%lu} out of range. size = {%lu}", idx, stk->size);
+        DEBUG_ERROR(last_err);
+        return POISON_STACK_VALUE;
+    }
+
+    return stk->data[idx];
+}
+
+bool stack_assign_elem(stack_t *stk, const size_t idx, const stack_elem_t val) {
+    if (idx >= stk->size) {
+        debug("index {%lu} out of range. size = {%lu}", idx, stk->size);
+        DEBUG_ERROR(last_err);
+        return false;
+    }
+
+    stk->data[idx] = val;
+    return true;
+}
+
 void stack_push(stack_t *stk, stack_elem_t value, stk_err *return_err) {
     assert(return_err != NULL);
 
