@@ -43,7 +43,7 @@ enum RETURN_STATES {
                 exit_instruction;                                                                     \
             }                                                                                          \
         }
-    #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err, __FILE__, __LINE__, __PRETTY_FUNCTION__);
+    #define STACK_INIT(stk, size, nmemb, return_err) stack_init(stk, size, nmemb, return_err, __FILE__, __LINE__, __PRETTY_FUNCTION__);
     #define MY_ASSERT(stk_err, exit_instruction) {DEBUG_ERROR(stk_err); exit_instruction;};
 
 #else
@@ -51,7 +51,7 @@ enum RETURN_STATES {
     #define DEBUG_ERROR(code) ;
     #define ON_DEBUG(...)
     #define VERIFY(stk, return_err, exit_instruction) ;
-    #define STACK_INIT(stk, size, return_err) stack_init(stk, size, return_err);
+    #define STACK_INIT(stk, size, nmemb, return_err) stack_init(stk, size, nmemb, return_err);
     #define MY_ASSERT(stk_err, exit_instruction) ;
 
 #endif // _DEBUG

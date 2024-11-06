@@ -6,22 +6,31 @@ typedef int stack_elem_t;
 #include "stack_funcs.h"
 #include "error_processing.h"
 
-int main(const int argc, const char *argv[]) {
-
-
+int main() {
     stk_err last_err = STK_ERR_OK;
     log_init(NULL, &last_err);
 
     stack_t stk = {};
-    STACK_INIT(&stk, 0, &last_err);
+    // stack_init(&stk, 0, sizeof(int), &last_err, "", 12, "");
+
+    STACK_INIT(&stk, 0, sizeof(int), &last_err);
 
     for (int i = 0; i < 10; i++) {
-        stack_push(&stk, i * i + 52, &last_err);
+        int value = i * i + 52;
+        printf("value: %d\n", value);
+        stack_push(&stk, &value, &last_err);
+        DUMP(&stk);
+    }
+     for (int i = 0; i < 10; i++) {
+        int value = i * i + 52;
+        printf("value: %d\n", value);
+        stack_pop(&stk, &last_err);
+        DUMP(&stk);
     }
 
-    printf("stack[3]: %d\n", stack_get_elem(&stk, 3, &last_err));
-    stack_assign_elem(&stk, 3, 525252);
-    DUMP(&stk);
+    // printf("stack[3]: %d\n", stack_get_elem(&stk, 3, &last_err));
+    // stack_assign_elem(&stk, 3, 525252);
+
 
 
     // stk_err last_err = STK_ERR_OK;

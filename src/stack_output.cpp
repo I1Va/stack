@@ -187,11 +187,7 @@ void dump(stack_t *stk, const char file_name[], const char func_name[], const in
             fprintf_grn(log_output_file_ptr, "[_left_canary] = %llx;\n", left_canary_val); //FIXME: %x? для stk_err работает?
         )
         for (size_t i = 0; i < stk->capacity; i++) {
-            if (stk->data[i] == POISON_STACK_VALUE) {
-                fprintf_grn(log_output_file_ptr, "[%lu] = POISON;\n", i);
-            } else {
-                fprintf_grn(log_output_file_ptr, "*[%lu] = %lld;\n", i, stk->data[i]);
-            }
+            fprintf_grn(log_output_file_ptr, "*[%lu] = %d;\n", i, *(int *)(stk->data + i * stk->elem_nmemb)); // FIXME: сделать dump для любого колва байт
         }
         ON_CANARY(
             canary_elem_t right_canary_val = *stack_end_canary_getptr(stk);

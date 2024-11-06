@@ -2,7 +2,6 @@
 #define OUTPUT_H
 #include "general.h"
 
-typedef int stack_elem_t;
 #include "stack_funcs.h"
 
 enum log_type_t {
