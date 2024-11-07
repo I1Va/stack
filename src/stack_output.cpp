@@ -8,23 +8,7 @@
 #include "error_processing.h"
 #include "general.h"
 
-typedef int stack_elem_t;
 #include "stack_funcs.h"
-
-#define GRN "\e[0;32m"
-#define WHT "\e[0;20m"
-#define RED "\e[0;31m"
-#define YEL "\e[0;33m"
-
-#define printf_red(str_, ...) printf(RED str_ WHT, ##__VA_ARGS__)
-#define printf_wht(str_, ...) printf(WHT str_ WHT, ##__VA_ARGS__)
-#define printf_grn(str_, ...) printf(GRN str_ WHT, ##__VA_ARGS__)
-#define printf_yel(str_, ...) printf(YEL str_ WHT, ##__VA_ARGS__)
-
-#define fprintf_red(stream, str_, ...) fprintf(stream, RED str_ WHT, ##__VA_ARGS__)
-#define fprintf_wht(stream, str_, ...) fprintf(stream, WHT str_ WHT, ##__VA_ARGS__)
-#define fprintf_grn(stream, str_, ...) fprintf(stream, GRN str_ WHT, ##__VA_ARGS__)
-#define fprintf_yel(stream, str_, ...) fprintf(stream, YEL str_ WHT, ##__VA_ARGS__)
 
 void stack_fprintf_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line) {
     for (size_t i = 0; i < bord_sz; i++) {
@@ -62,7 +46,7 @@ void log_init(const char log_path[], stk_err *return_err) {
     log_output_file_ptr = fopen(log_path, "w");
     if (log_output_file_ptr == NULL) {
         *return_err = STK_ERR_FILE_OPEN;
-        DEBUG_ERROR(*return_err);
+        DEBUG_STK_ERROR(*return_err);
     }
     setbuf(log_output_file_ptr, NULL); //disabling buffering
 }
@@ -115,45 +99,20 @@ void log_ptr_stack_dump(enum log_type_t log_type, stack_t *stk, const char file_
     fprintf(log_output_file_ptr, RED "------------------------------------------------------------\n" WHT);
     fprintf(log_output_file_ptr, GRN "_________stk: [%p:%p)" RED " | " WHT "bytes: %2lu\n" GRN, stk, stk + 1, sizeof(*stk));
     fprintf(log_output_file_ptr, RED "------------------------------------------------------------\n" WHT);
-    ON_HASH(
-    fprintf(log_output_file_ptr, "________HASH: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->HASH_STACK_STRUCT, &stk->HASH_STACK_STRUCT + 1, sizeof(stk->HASH_STACK_STRUCT));
-    fprintf(log_output_file_ptr, "________HASH: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->HASH_STACK_DATA, &stk->HASH_STACK_DATA + 1, sizeof(stk->HASH_STACK_DATA));
-    )
-    ON_CANARY(
-    fprintf(log_output_file_ptr, "_CANARY_LEFT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
-    fprintf(log_output_file_ptr, "_CANARY_LEFT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_LEFT, &stk->CANARY_LEFT + 1, sizeof(stk->CANARY_LEFT))
-    )
+
     fprintf(log_output_file_ptr, "________size: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->size, &stk->size + 1, sizeof(stk->size));
     fprintf(log_output_file_ptr, "____capacity: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->capacity, &stk->capacity + 1, sizeof(stk->capacity));
-    ON_CANARY(
-    fprintf(log_output_file_ptr, "__CANARY_MID: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_MID, &stk->CANARY_MID + 1, sizeof(stk->CANARY_MID));
-    )
+
     fprintf(log_output_file_ptr, "_______*data: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->data, &stk->data + 1, sizeof(stk->data));
     fprintf(log_output_file_ptr, "__*born_file: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->born_file, &stk->born_file + 1, sizeof(stk->born_file));
     fprintf(log_output_file_ptr, "__*born_line: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->born_line, &stk->born_line + 1, sizeof(stk->born_line));
     fprintf(log_output_file_ptr, "__*born_func: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->born_func, &stk->born_func + 1, sizeof(stk->born_func));
-    ON_CANARY(
-    fprintf(log_output_file_ptr, "CANARY_RIGHT: [%p:%p)" RED " | " WHT "bytes: %2lu\n", &stk->CANARY_RIGHT, &stk->CANARY_RIGHT + 1, sizeof(stl->CANARY_RIGHT))
-    )
+
     fprintf(log_output_file_ptr, RED "------------------------------------------------------------\n" WHT);
 
     print_log_border();
     fprintf(log_output_file_ptr, "\n");
 }
-
-ON_HASH(
-    void HASH_print(hash_t *HASH) {
-        print_log_border();
-        print_log_type(LOG_DEBUG);
-        print_log_time();
-        print_log_border();
-        fprintf(log_output_file_ptr, "seg: [%p:%p)\n", HASH->left_ptr, HASH->right_ptr);
-        fprintf(log_output_file_ptr, "hash_value: [%llu]\n", HASH->hash_value);
-        fprintf(log_output_file_ptr, "get _value: [%llu]\n", HASH_get(HASH));
-        print_log_border();
-        fprintf(log_output_file_ptr, "\n");
-    }
-)
 
 void dump(stack_t *stk, const char file_name[], const char func_name[], const int line_idx) {
     print_log_border();
@@ -170,7 +129,7 @@ void dump(stack_t *stk, const char file_name[], const char func_name[], const in
     stk, file_name, line_idx, stk->born_file, stk->born_line, stk->born_func);
 
     fprintf_wht(log_output_file_ptr, "{\n");
-    ON_CANARY(fprintf_yel(log_output_file_ptr, "canl_ptr[%p]\n", &stk->CANARY_LEFT);)
+
     fprintf_yel(log_output_file_ptr, "size = %lu\n", stk->size);
     // fprintf_yel(log_output_file_ptr, "size_ptr[%p]\n", &stk->size);
     fprintf_yel(log_output_file_ptr, "capacity = %lu\n", stk->capacity);
@@ -182,17 +141,10 @@ void dump(stack_t *stk, const char file_name[], const char func_name[], const in
     if (stk->data == NULL) {
         fprintf_red(log_output_file_ptr, "NULLPTR\n");
     } else {
-        ON_CANARY(
-            canary_elem_t left_canary_val = *(canary_elem_t *)(stk->data - LEFT_CANARY_INDENT);
-            fprintf_grn(log_output_file_ptr, "[_left_canary] = %llx;\n", left_canary_val); //FIXME: %x? для stk_err работает?
-        )
+
         for (size_t i = 0; i < stk->capacity; i++) {
             fprintf_grn(log_output_file_ptr, "*[%lu] = %d;\n", i, *(int *)(stk->data + i * stk->elem_nmemb)); // FIXME: сделать dump для любого колва байт
         }
-        ON_CANARY(
-            canary_elem_t right_canary_val = *stack_end_canary_getptr(stk);
-            fprintf_grn(log_output_file_ptr, "[right_canary] = %llx;\n", right_canary_val); //FIXME: %x? для stk_err работает?
-        )
     }
     fprintf_wht(log_output_file_ptr, "}\n");
 

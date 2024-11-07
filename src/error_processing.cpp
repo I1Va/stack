@@ -29,6 +29,7 @@ const char *stkerr_get_bit_descr(stk_err err) {
         BIT_DESCR_(STK_ERR_SYSTEM)
         BIT_DESCR_(STK_ERR_STACK_LAST_ELEM)
         BIT_DESCR_(STK_ERR_HASH_STACK_STRUCT_MISMATCH)
+        BIT_DESCR_(STK_ERR_INVALID_INDEX)
 
         default: return "VERY STRANGE ERROR:(";
     }

@@ -1,8 +1,7 @@
-#include "inc/general.h"
-#include "inc/stack_output.h"
 #include <stdlib.h>
 
-typedef int stack_elem_t;
+#include "inc/general.h"
+#include "inc/stack_output.h"
 #include "stack_funcs.h"
 #include "error_processing.h"
 
@@ -49,9 +48,11 @@ int main() {
     // printf("DONE\n");
     // // auto_testing_mode_launch(&auto_testing_config, &last_err);
     // // if (last_err != stk_err_OK) {
-    // //     DEBUG_ERROR(last_err)
+    // //     DEBUG_STK_ERROR(last_err)
     // //     CLEAR_MEMORY(exit_mark)
     // // }
+
+    stack_destroy(&stk);
 
     return EXIT_SUCCESS;
 

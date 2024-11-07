@@ -1,5 +1,5 @@
-#ifndef ERROR_PROCESSING_H
-#define ERROR_PROCESSING_H
+#ifndef STK_ERROR_PROCESSING_H
+#define STK_ERROR_PROCESSING_H
 
 enum stk_err {
     STK_ERR_OK                         = 0,
@@ -32,13 +32,18 @@ enum stk_err {
 };
 
 const char *stkerr_get_descr(stk_err err);
-
 const char *stkerr_get_bit_descr(stk_err err);
-
 int fprintf_abort(const char file_name[], const int line, const char function_name[], const char error_descr[]);
-
-
-
 void stk_add_err(stk_err *src, stk_err add);
 
-#endif // ERROR_PROCESSING_H
+#ifdef _DEBUG
+    #define DEBUG_STK_ERROR(code) fprintf_red(stderr, "{%s} [%s: %d]: descr{%s}\n", __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, stkerr_get_descr(code));
+    #define MY_ASSERT(stk_err, exit_instruction) {DEBUG_STK_ERROR(stk_err); exit_instruction;};
+
+#else
+    #define DEBUG_STK_ERROR(code) ;
+    #define ON_DEBUG(...)
+    #define MY_ASSERT(stk_err, exit_instruction) ;
+#endif // _DEBUG
+
+#endif // STK_ERROR_PROCESSING_H

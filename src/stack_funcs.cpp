@@ -37,7 +37,7 @@ stk_err verify(stack_t *stk, stk_err *return_err, const char file_name[], const 
 
     dump_mark:
 
-    DEBUG_ERROR(*return_err);
+    DEBUG_STK_ERROR(*return_err);
     dump(stk, file_name, func_name, line_idx);
 
     return *return_err;
@@ -48,7 +48,7 @@ void stack_init(stack_t *stk, const size_t size, const size_t elem_nmemb, stk_er
 
     if (stk == NULL) {
         stk_add_err(return_err,  STK_ERR_CALLOC);
-        DEBUG_ERROR(STK_ERR_CALLOC)
+        DEBUG_STK_ERROR(STK_ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
     }
 
@@ -61,7 +61,7 @@ void stack_init(stack_t *stk, const size_t size, const size_t elem_nmemb, stk_er
 
     if (stk->data == NULL) {
         stk_add_err(return_err, STK_ERR_CALLOC);
-        DEBUG_ERROR(*return_err)
+        DEBUG_STK_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
 
@@ -111,7 +111,7 @@ void resize(stack_t *stk, stk_err *return_err) {
 
     if (stk->data == NULL) {
         stk_add_err(return_err, STK_ERR_REALLOC);
-        DEBUG_ERROR(*return_err);
+        DEBUG_STK_ERROR(*return_err);
         return;
     }
 
@@ -129,7 +129,7 @@ void *stack_get_elem(stack_t *stk, const size_t idx, stk_err *return_err) {
     if (idx >= stk->size) {
         stk_add_err(return_err, STK_ERR_INVALID_INDEX);
         debug("index {%lu} out of range. size = {%lu}", idx, stk->size);
-        DEBUG_ERROR(*return_err);
+        DEBUG_STK_ERROR(*return_err);
         return NULL;
     }
 
@@ -139,7 +139,7 @@ void *stack_get_elem(stack_t *stk, const size_t idx, stk_err *return_err) {
 bool stack_assign_elem(stack_t *stk, const size_t idx, void *value) {
     if (idx >= stk->size) {
         debug("index {%lu} out of range. size = {%lu}", idx, stk->size);
-        DEBUG_ERROR(STK_ERR_INVALID_INDEX);
+        DEBUG_STK_ERROR(STK_ERR_INVALID_INDEX);
         return false;
     }
 
@@ -156,7 +156,7 @@ void stack_push(stack_t *stk, void *value, stk_err *return_err) {
     resize(stk, &last_err);
     if (last_err != STK_ERR_OK) {
         stk_add_err(return_err, last_err);
-        DEBUG_ERROR(last_err);
+        DEBUG_STK_ERROR(last_err);
         return;
     }
 
@@ -175,14 +175,14 @@ void *stack_pop(stack_t *stk, stk_err *return_err) {
 
     if (stk->size == 0) {
         stk_add_err(return_err, STK_ERR_STACK_POP);
-        DEBUG_ERROR(*return_err)
+        DEBUG_STK_ERROR(*return_err)
         CLEAR_MEMORY(exit_mark)
     }
 
     resize(stk, &last_err);
     if (last_err != STK_ERR_OK) {
         stk_add_err(return_err, last_err);
-        DEBUG_ERROR(last_err)
+        DEBUG_STK_ERROR(last_err)
         CLEAR_MEMORY(exit_mark)
     }
 
@@ -202,7 +202,7 @@ void *stack_get_last(stack_t *stk, stk_err *return_err) {
 
     if (stk->size == 0) {
         stk_add_err(return_err, STK_ERR_STACK_LAST_ELEM);
-        DEBUG_ERROR(*return_err)
+        DEBUG_STK_ERROR(*return_err)
         return NULL;
     }
 
