@@ -128,10 +128,13 @@ void dump(stack_t *stk, FILE* log_output_file_ptr, const char file_name[], const
         fprintf_red(log_output_file_ptr, "NULLPTR\n");
     } else {
 
-        for (size_t i = 0; i < stk->capacity; i++) {
+        for (size_t i = 0; i < stk->size; i++) {
             fprintf_grn(log_output_file_ptr, "*[%lu] = ", i);
             stk_elem_fprintf(log_output_file_ptr, stk->data + i * stk->elem_nmemb);
             fprintf_grn(log_output_file_ptr, ";\n");
+        }
+        for (size_t i = stk->size; i < stk->capacity; i++) {
+            fprintf_grn(log_output_file_ptr, "*[%lu] = EMPTY\n", i);
         }
     }
     fprintf_wht(log_output_file_ptr, "}\n");
