@@ -163,6 +163,7 @@ void *stack_pop(stack_t *stk, stk_err *return_err) {
     assert(return_err != NULL);
 
     stk_err last_err = STK_ERR_OK;
+    void *poped_elem = NULL;
 
     VERIFY(stk, return_err, CLEAR_MEMORY(exit_mark))
 
@@ -178,10 +179,12 @@ void *stack_pop(stack_t *stk, stk_err *return_err) {
         DEBUG_STK_ERROR(last_err)
         CLEAR_MEMORY(exit_mark)
     }
+    stk->size--;
 
+    poped_elem = stk->data + stk->size * stk->elem_nmemb;
     memset(stk->data + stk->size * stk->elem_nmemb, 0, stk->elem_nmemb);
 
-    return stk->data + (stk->size--) * stk->elem_nmemb;
+    return poped_elem;
 
     exit_mark:
 

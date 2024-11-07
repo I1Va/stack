@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <stdlib.h>
 
 #include "inc/general.h"
@@ -12,15 +13,16 @@ int main() {
     // stack_init(&stk, 0, sizeof(int), &last_err, "", 12, "");
 
     STACK_INIT(&stk, 0, sizeof(int), stdout, &last_err);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 5; i++) {
         int value = i * i + 52;
         printf("value: %d\n", value);
         stack_push(&stk, &value, &last_err);
-        DUMP(&stk, stdout);
+
     }
-    for (int i = 0; i < 10; i++) {
-        int value = i * i + 52;
-        printf("value: %d\n", value);
+    DUMP(&stk, stdout);
+    printf("b]b\\bb\\b\b\b\n\n\n");
+    for (int i = 0; i < 5; i++) {
+        printf("poped value: %d\n", *(int *)stack_get_elem(&stk, stk.size - 1, &last_err));
         stack_pop(&stk, &last_err);
         DUMP(&stk, stdout);
     }
