@@ -95,7 +95,12 @@ void log_ptr_stack_dump(enum log_type_t log_type, FILE *log_output_file_ptr, sta
     fprintf(log_output_file_ptr, "\n");
 }
 
-void dump(stack_t *stk, FILE* log_output_file_ptr, const char file_name[], const char func_name[], const int line_idx) {
+void default_stk_elem_fprintf(FILE * stream, void *elem) {
+    fprintf(stream, "{%d}", *(int *) elem);
+}
+
+void dump(stack_t *stk, FILE* log_output_file_ptr, const char file_name[], const char func_name[], const int line_idx,
+     void (*stk_elem_fprintf)(FILE *stream, void *elem_ptr)) {
     print_log_border(log_output_file_ptr);
     print_log_type(log_output_file_ptr, LOG_DEBUG);
     print_log_time(log_output_file_ptr);
@@ -124,7 +129,9 @@ void dump(stack_t *stk, FILE* log_output_file_ptr, const char file_name[], const
     } else {
 
         for (size_t i = 0; i < stk->capacity; i++) {
-            fprintf_grn(log_output_file_ptr, "*[%lu] = %d;\n", i, *(int *)(stk->data + i * stk->elem_nmemb)); // FIXME: сделать dump для любого колва байт
+            fprintf_grn(log_output_file_ptr, "*[%lu] = ", i);
+            stk_elem_fprintf(log_output_file_ptr, stk->data + i * stk->elem_nmemb);
+            fprintf_grn(log_output_file_ptr, ";\n");
         }
     }
     fprintf_wht(log_output_file_ptr, "}\n");

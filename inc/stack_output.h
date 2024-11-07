@@ -21,7 +21,9 @@ void print_log_border(FILE *log_output_file_ptr);
 void print_log_func_info(FILE *log_output_file_ptr, const char file_name[], const char func_name[], const int line_idx);
 void print_log_type(FILE *log_output_file_ptr, enum log_type_t log_type);
 void log_ptr_stack_dump(enum log_type_t log_type, FILE *log_output_file_ptr, stack_t *stk, const char file_name[], const char func_name[], const int line_idx);
-void dump(stack_t *stk, FILE* log_output_file_ptr, const char file_name[], const char func_name[], const int line_idx);
+void default_stk_elem_fprintf(FILE * stream, void *elem);
+void dump(stack_t *stk, FILE* log_output_file_ptr, const char file_name[], const char func_name[], const int line_idx,
+     void (*stk_elem_fprintf)(FILE *stream, void *elem_ptr) = default_stk_elem_fprintf);
 void log_stk_err_print(enum log_type_t log_type, FILE *log_output_file_ptr, const stk_err err, const char file_name[], const char func_name[], const int line_idx);
 void log_var_print(enum log_type_t log_type, FILE *log_output_file_ptr, const char file_name[], const char func_name[], const int line_idx, const char fmt[], ...);
 
