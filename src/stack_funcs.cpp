@@ -7,14 +7,6 @@
 #include "error_processing.h"
 #include "stack_output.h"
 
-// void stack_memset(stack_elem_t *data, const stack_elem_t value, const size_t n) { // FIXME: можно использовать memcpy (не жалуется на выравнивание)
-//     assert(data != NULL);
-
-//     for (size_t i = 0; i < n; i++) {
-//         *(data + i) = value;
-//     }
-// }
-
 stk_err verify(stack_t *stk, stk_err *return_err, const char file_name[], const char func_name[], const int line_idx) {
     assert(return_err != NULL);
 
@@ -38,12 +30,12 @@ stk_err verify(stack_t *stk, stk_err *return_err, const char file_name[], const 
     dump_mark:
 
     DEBUG_STK_ERROR(*return_err);
-    dump(stk, file_name, func_name, line_idx);
+    dump(stk, stk->log_file_ptr, file_name, func_name, line_idx);
 
     return *return_err;
 }
 
-void stack_init(stack_t *stk, const size_t size, const size_t elem_nmemb, stk_err *return_err, const char born_file[], const int born_line, const char born_func[]) {
+void stack_init(stack_t *stk, const size_t size, const size_t elem_nmemb, FILE* log_file_ptr, stk_err *return_err, const char born_file[], const int born_line, const char born_func[]) {
     assert(return_err != NULL);
 
     if (stk == NULL) {
@@ -68,6 +60,7 @@ void stack_init(stack_t *stk, const size_t size, const size_t elem_nmemb, stk_er
     stk->born_file = born_file;
     stk->born_line = born_line;
     stk->born_func = born_func;
+    stk->log_file_ptr = log_file_ptr;
 
     return;
 

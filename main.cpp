@@ -7,24 +7,22 @@
 
 int main() {
     stk_err last_err = STK_ERR_OK;
-    log_init(NULL, &last_err);
 
     stack_t stk = {};
     // stack_init(&stk, 0, sizeof(int), &last_err, "", 12, "");
 
-    STACK_INIT(&stk, 0, sizeof(int), &last_err);
-
+    STACK_INIT(&stk, 0, sizeof(int), stdout, &last_err);
     for (int i = 0; i < 10; i++) {
         int value = i * i + 52;
         printf("value: %d\n", value);
         stack_push(&stk, &value, &last_err);
-        DUMP(&stk);
+        DUMP(&stk, stdout);
     }
-     for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
         int value = i * i + 52;
         printf("value: %d\n", value);
         stack_pop(&stk, &last_err);
-        DUMP(&stk);
+        DUMP(&stk, stdout);
     }
 
     // printf("stack[3]: %d\n", stack_get_elem(&stk, 3, &last_err));
