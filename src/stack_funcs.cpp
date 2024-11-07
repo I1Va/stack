@@ -195,5 +195,5 @@ void *stack_get_last(stack_t *stk, stk_err *return_err) {
         return NULL;
     }
 
-    return stk->data + stk->size * (stk->elem_nmemb - 1);
+    return stk->data + (stk->size - 1) * stk->elem_nmemb;
 }
