@@ -19,12 +19,11 @@ int main() {
         stack_push(&stk, &value, &last_err);
 
     }
-    DUMP(&stk, stdout);
-    printf("b]b\\bb\\b\b\b\n\n\n");
+    DUMP(&stk, stdout, default_stk_elem_fprintf);
     for (int i = 0; i < 5; i++) {
         printf("poped value: %d\n", *(int *)stack_get_elem(&stk, stk.size - 1, &last_err));
         stack_pop(&stk, &last_err);
-        DUMP(&stk, stdout);
+        DUMP(&stk, stdout, default_stk_elem_fprintf);
     }
 
     // printf("stack[3]: %d\n", stack_get_elem(&stk, 3, &last_err));

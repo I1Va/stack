@@ -159,7 +159,7 @@ void stack_push(stack_t *stk, void *value, stk_err *return_err) {
     VERIFY(stk, return_err, return)
 }
 
-void *stack_pop(stack_t *stk, stk_err *return_err) {
+void stack_pop(stack_t *stk, stk_err *return_err) {
     assert(return_err != NULL);
 
     stk_err last_err = STK_ERR_OK;
@@ -170,25 +170,18 @@ void *stack_pop(stack_t *stk, stk_err *return_err) {
     if (stk->size == 0) {
         stk_add_err(return_err, STK_ERR_STACK_POP);
         DEBUG_STK_ERROR(*return_err)
-        CLEAR_MEMORY(exit_mark)
+        return;
     }
 
     resize(stk, &last_err);
     if (last_err != STK_ERR_OK) {
         stk_add_err(return_err, last_err);
         DEBUG_STK_ERROR(last_err)
-        CLEAR_MEMORY(exit_mark)
+        return;
     }
     stk->size--;
 
-    poped_elem = stk->data + stk->size * stk->elem_nmemb;
     memset(stk->data + stk->size * stk->elem_nmemb, 0, stk->elem_nmemb);
-
-    return poped_elem;
-
-    exit_mark:
-
-    return NULL;
 }
 
 void *stack_get_last(stack_t *stk, stk_err *return_err) {
