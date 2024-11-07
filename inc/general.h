@@ -6,6 +6,9 @@
 #include <stdio.h>
 
 
+const size_t date_nmemb = 16;
+const size_t time_nmemb = 16;
+
 #define GRN "\e[0;32m"
 #define WHT "\e[0;20m"
 #define RED "\e[0;31m"

@@ -11,10 +11,6 @@ enum log_type_t {
 
 void stack_fprintf_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line);
 void stack_fprintf_title(FILE *stream, const char tittle[], const char bord_char, const size_t bord_sz);
-
-static const size_t date_nmemb = 16;
-static const size_t time_nmemb = 16;
-
 const char *get_log_descr(enum log_type_t log_type);
 void print_log_time(FILE *log_output_file_ptr);
 void print_log_border(FILE *log_output_file_ptr);
