@@ -33,6 +33,6 @@ void log_var_print(enum log_type_t log_type, FILE *log_output_file_ptr, const ch
 
 #define LogStkPtrInfo(log_type, stk) log_ptr_stack_dump(log_type, stk, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__);
 
-#define DUMP(stk, file_ptr) dump(stk, file_ptr, __FILE__, __PRETTY_FUNCTION__, __LINE__);
+#define DUMP(stk, file_ptr, outp_func) dump(stk, file_ptr, __FILE__, __PRETTY_FUNCTION__, __LINE__, outp_func);
 
 #endif // OSTK_OUTPUT_H
