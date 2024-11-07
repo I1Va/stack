@@ -165,7 +165,7 @@ void stack_pop(stack_t *stk, stk_err *return_err) {
     stk_err last_err = STK_ERR_OK;
     void *poped_elem = NULL;
 
-    VERIFY(stk, return_err, CLEAR_MEMORY(exit_mark))
+    VERIFY(stk, return_err, return)
 
     if (stk->size == 0) {
         stk_add_err(return_err, STK_ERR_STACK_POP);
