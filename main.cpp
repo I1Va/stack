@@ -13,7 +13,7 @@ int main() {
     // stack_init(&stk, 0, sizeof(int), &last_err, "", 12, "");
 
     STACK_INIT(&stk, 0, sizeof(int), stdout, &last_err);
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 20; i++) {
         int value = i * i + 52;
         printf("value: %d\n", value);
         stack_push(&stk, &value, &last_err);
