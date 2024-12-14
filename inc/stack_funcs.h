@@ -4,8 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "error_processing.h"
-#include "general.h"
+#include "stack_err_proc.h"
 
 struct stack_t {
     size_t size;

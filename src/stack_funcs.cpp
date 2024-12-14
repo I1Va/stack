@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 #include "general.h"
-#include "error_processing.h"
 #include "stack_output.h"
 
 stk_err verify(stack_t *stk, stk_err *return_err, const char file_name[], const char func_name[], const int line_idx) {

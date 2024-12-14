@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 #include "inc/general.h"
-#include "inc/stack_output.h"
+#include "stack_output.h"
 #include "stack_funcs.h"
-#include "error_processing.h"
+#include "stack_err_proc.h"
 
 int main() {
     stk_err last_err = STK_ERR_OK;

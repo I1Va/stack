@@ -82,7 +82,7 @@ override CFLAGS += $(COMMONINC) # CFLAGS - environment variable. We can change i
 
 #/---------------------------PROJECT_SRC_CONFIG--------------------\#
 PROJECT_NAME = stack
-CSRC = main.cpp src/error_processing.cpp src/stack_funcs.cpp src/stack_output.cpp
+CSRC = main.cpp src/stack_err_proc.cpp src/stack_funcs.cpp src/stack_output.cpp
 LOGS_DIR = ./logs
 OUT_O_DIR = build
 COMMONINC = -I./inc

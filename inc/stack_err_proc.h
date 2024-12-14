@@ -1,5 +1,5 @@
-#ifndef STK_ERROR_PROCESSING_H
-#define STK_ERROR_PROCESSING_H
+#ifndef STK_ERR_PROC_H
+#define STK_ERR_PROC_H
 
 enum stk_err {
     STK_ERR_OK                         = 0,
@@ -46,4 +46,4 @@ void stk_add_err(stk_err *src, stk_err add);
     #define MY_ASSERT(stk_err, exit_instruction) ;
 #endif // _DEBUG
 
-#endif // STK_ERROR_PROCESSING_H
+#endif // STK_ERR_PROC_H

@@ -4,11 +4,8 @@
 #include <stdarg.h>
 #include <assert.h>
 
-#include "stack_output.h"
-#include "error_processing.h"
 #include "general.h"
-
-#include "stack_funcs.h"
+#include "stack_output.h"
 
 void stack_fprintf_border(FILE* stream, const char bord_char, const size_t bord_sz, bool new_line) {
     for (size_t i = 0; i < bord_sz; i++) {

@@ -1,4 +1,4 @@
-#include "error_processing.h"
+#include "stack_err_proc.h"
 
 const char *stkerr_get_bit_descr(stk_err err) {
     #define BIT_DESCR_(code) case code : return #code;
