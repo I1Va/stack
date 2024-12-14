@@ -32,8 +32,8 @@ void stack_init(stack_t *stk, const size_t size, const size_t elem_nmemb, FILE* 
 void resize(stack_t *stk, stk_err *return_err);
 void stack_push(stack_t *stk, void *value, stk_err *return_err);
 bool stack_assign_elem(stack_t *stk, const size_t idx, void *value);
-void *stack_get_elem(stack_t *stk, const size_t idx, stk_err *return_err);
-void stack_pop(stack_t *stk, stk_err *return_err);
+void stack_get_elem(stack_t *stk, void *dest, const size_t idx, stk_err *return_err);
+void stack_pop(stack_t *stk, void *dest, stk_err *return_err);
 
 void *stack_get_last(stack_t *stk, stk_err *return_err);
 
