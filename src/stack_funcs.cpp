@@ -4,11 +4,10 @@
 #include <stdlib.h>
 
 #include "general.h"
+#include "stack_err_proc.h"
 #include "stack_output.h"
 
 stk_err verify(stack_t *stk, stk_err *return_err, const char file_name[], const char func_name[], const int line_idx) {
-    assert(return_err != NULL);
-
     if (stk == NULL) {
         stk_add_err(return_err, STK_ERR_STACK_NULLPTR);
         goto dump_mark;
@@ -35,8 +34,6 @@ stk_err verify(stack_t *stk, stk_err *return_err, const char file_name[], const 
 }
 
 void stack_init(stack_t *stk, const size_t size, const size_t elem_nmemb, FILE* log_file_ptr, stk_err *return_err, const char born_file[], const int born_line, const char born_func[]) {
-    assert(return_err != NULL);
-
     if (stk == NULL) {
         stk_add_err(return_err,  STK_ERR_CALLOC);
         DEBUG_STK_ERROR(STK_ERR_CALLOC)
@@ -52,7 +49,7 @@ void stack_init(stack_t *stk, const size_t size, const size_t elem_nmemb, FILE* 
 
     if (stk->data == NULL) {
         stk_add_err(return_err, STK_ERR_CALLOC);
-        DEBUG_STK_ERROR(*return_err)
+        DEBUG_STK_ERROR(STK_ERR_CALLOC)
         CLEAR_MEMORY(exit_mark)
     }
 
@@ -103,7 +100,7 @@ void resize(stack_t *stk, stk_err *return_err) {
 
     if (stk->data == NULL) {
         stk_add_err(return_err, STK_ERR_REALLOC);
-        DEBUG_STK_ERROR(*return_err);
+        DEBUG_STK_ERROR(STK_ERR_REALLOC);
         return;
     }
 
@@ -118,10 +115,14 @@ void resize(stack_t *stk, stk_err *return_err) {
 }
 
 void stack_get_elem(stack_t *stk, void *dest, const size_t idx, stk_err *return_err) {
+    assert(stk);
+    assert(dest);
+    assert(return_err);
+
     if (idx >= stk->size) {
         stk_add_err(return_err, STK_ERR_INVALID_INDEX);
         debug("index {%lu} out of range. size = {%lu}", idx, stk->size);
-        DEBUG_STK_ERROR(*return_err);
+        DEBUG_STK_ERROR(STK_ERR_INVALID_INDEX);
         return;
     }
 
@@ -129,6 +130,9 @@ void stack_get_elem(stack_t *stk, void *dest, const size_t idx, stk_err *return_
 }
 
 bool stack_assign_elem(stack_t *stk, const size_t idx, void *value) {
+    assert(stk);
+    assert(value);
+
     if (idx >= stk->size) {
         debug("index {%lu} out of range. size = {%lu}", idx, stk->size);
         DEBUG_STK_ERROR(STK_ERR_INVALID_INDEX);
@@ -140,11 +144,13 @@ bool stack_assign_elem(stack_t *stk, const size_t idx, void *value) {
 }
 
 void stack_push(stack_t *stk, void *value, stk_err *return_err) {
-    assert(return_err != NULL);
+    assert(stk);
+    assert(value);
 
     VERIFY(stk, return_err, return)
-
     stk_err last_err = STK_ERR_OK;
+
+
     resize(stk, &last_err);
     if (last_err != STK_ERR_OK) {
         stk_add_err(return_err, last_err);
@@ -159,7 +165,8 @@ void stack_push(stack_t *stk, void *value, stk_err *return_err) {
 }
 
 void stack_pop(stack_t *stk, void *dest, stk_err *return_err) {
-    assert(return_err != NULL);
+    assert(stk);
+    assert(dest);
 
     stk_err last_err = STK_ERR_OK;
 
@@ -184,18 +191,4 @@ void stack_pop(stack_t *stk, void *dest, stk_err *return_err) {
     stk->size--;
 
     memset(stk->data + stk->size * stk->elem_nmemb, 0, stk->elem_nmemb);
-}
-
-void *stack_get_last(stack_t *stk, stk_err *return_err) {
-    assert(stk != NULL);
-
-    VERIFY(stk, return_err, )
-
-    if (stk->size == 0) {
-        stk_add_err(return_err, STK_ERR_STACK_LAST_ELEM);
-        DEBUG_STK_ERROR(*return_err)
-        return NULL;
-    }
-
-    return stk->data + (stk->size - 1) * stk->elem_nmemb;
 }

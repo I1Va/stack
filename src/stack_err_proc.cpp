@@ -79,7 +79,9 @@ const char *stkerr_get_descr(stk_err err) {
 }
 
 void stk_add_err(stk_err *src, stk_err add) {
-    *src = (stk_err)((unsigned long long)(*src) | (unsigned long long) add);
+    if (src) {
+        *src = (stk_err)((unsigned long long)(*src) | (unsigned long long) add);
+    }
 }
 
 #undef DESCR_

@@ -12,16 +12,16 @@ int main() {
     stack_t stk = {};
     // stack_init(&stk, 0, sizeof(int), &last_err, "", 12, "");
 
-    STACK_INIT(&stk, 0, sizeof(int), stdout, &last_err);
+    STACK_INIT(&stk, 0, sizeof(int), stdout, NULL);
     int a = 10;
 
-    stack_push(&stk, &a, &last_err);
+    stack_push(&stk, &a);
     int b = 22;
 
     STACK_DUMP(&stk, stdout, default_stk_elem_fprintf);
 
     // stack_get_elem(&stk, &b, 0, &last_err);
-    stack_pop(&stk, &b, &last_err);
+    stack_pop(&stk, &b);
 
     printf("b = {%d}\n", b);
 
