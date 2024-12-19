@@ -165,7 +165,6 @@ void stack_push(stack_t *stk, void *value, stk_err *return_err) {
 
 void stack_pop(stack_t *stk, void *dest, stk_err *return_err) {
     assert(stk);
-    assert(dest);
 
     stk_err last_err = STK_ERR_OK;
 
