@@ -117,7 +117,6 @@ void resize(stack_t *stk, stk_err *return_err) {
 void stack_get_elem(stack_t *stk, void *dest, const size_t idx, stk_err *return_err) {
     assert(stk);
     assert(dest);
-    assert(return_err);
 
     if (idx >= stk->size) {
         stk_add_err(return_err, STK_ERR_INVALID_INDEX);
