@@ -33,7 +33,7 @@ void resize(stack_t *stk, stk_err *return_err=NULL);
 void stack_push(stack_t *stk, void *value, stk_err *return_err=NULL);
 bool stack_assign_elem(stack_t *stk, const size_t idx, void *value);
 void stack_get_elem(stack_t *stk, void *dest, const size_t idx, stk_err *return_err=NULL);
-void stack_pop(stack_t *stk, void *dest, stk_err *return_err=NULL);
+void stack_pop(stack_t *stk, void *dest=NULL, stk_err *return_err=NULL);
 
 #ifdef _DEBUG
     #define VERIFY(stk, return_err, exit_instruction)                                         \
