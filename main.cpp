@@ -18,14 +18,14 @@ int main() {
     stack_push(&stk, &a, &last_err);
     int b = 22;
 
-    DUMP(&stk, stdout, default_stk_elem_fprintf);
+    STACK_DUMP(&stk, stdout, default_stk_elem_fprintf);
 
     // stack_get_elem(&stk, &b, 0, &last_err);
     stack_pop(&stk, &b, &last_err);
 
     printf("b = {%d}\n", b);
 
-    DUMP(&stk, stdout, default_stk_elem_fprintf);
+    STACK_DUMP(&stk, stdout, default_stk_elem_fprintf);
     // for (int i = 0; i < 5; i++) {
     //     printf("poped value: %d\n", *(int *)stack_get_elem(&stk, stk.size - 1, &last_err));
     //     stack_pop(&stk, &last_err);

@@ -29,7 +29,7 @@ stk_err verify(stack_t *stk, stk_err *return_err, const char file_name[], const 
     dump_mark:
 
     DEBUG_STK_ERROR(*return_err);
-    dump(stk, stk->log_file_ptr, file_name, func_name, line_idx);
+    stack_dump(stk, stk->log_file_ptr, file_name, func_name, line_idx);
 
     return *return_err;
 }
