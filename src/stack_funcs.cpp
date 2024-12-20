@@ -170,14 +170,15 @@ void stack_pop(stack_t *stk, void *dest, stk_err *return_err) {
 
     VERIFY(stk, return_err, return)
 
-    if (dest) {
-        memcpy(dest, stk->data + (stk->size - 1) * stk->elem_nmemb, stk->elem_nmemb);
-    }
-
     if (stk->size == 0) {
         stk_add_err(return_err, STK_ERR_STACK_POP);
         DEBUG_STK_ERROR(*return_err)
+        fprintf(stk->log_file_ptr, "stk_err: pop underflow\n");
         return;
+    }
+
+    if (dest) {
+        memcpy(dest, stk->data + (stk->size - 1) * stk->elem_nmemb, stk->elem_nmemb);
     }
 
     resize(stk, &last_err);
