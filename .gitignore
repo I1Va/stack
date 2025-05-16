@@ -1,7 +1,9 @@
-*.out
-.clangd
-*.json
-docs
-temp.txt
-build
-debug
+logs/*
+docs/*
+
+CMakeFiles/*
+build/*
+debug/*
+.vscode/*
+.cache/*
+compile_commands.json
