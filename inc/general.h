@@ -1,5 +1,5 @@
-#ifndef GENERAL_H
-#define GENERAL_H
+#ifndef STACK_GENERAL_H
+#define STACK_GENERAL_H
 
 #include <string.h>
 
@@ -53,4 +53,4 @@ const size_t STR_F_BORDER_SZ = 100;
 #endif // _DEBUG
 
 
-#endif // GENERAL_H
+#endif // STACK_GENERAL_H
